@@ -12,10 +12,8 @@ class Postamt {
 
 	public $config;
 	public $log;
-	public $theme;
 
-	public $pages;
-	public $posts;
+	public $session;
 
 	public $route;
 	
@@ -43,6 +41,10 @@ class Postamt {
 
 		$this->config = new Config( $this );
 		$this->log = new Log( $this );
+
+
+		$this->session = new Session( $this );
+		
 		
 		$this->route = new Route( $this );
 
