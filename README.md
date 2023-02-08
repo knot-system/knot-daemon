@@ -10,13 +10,17 @@ Here be dragons:
 
 Your server needs to run at least PHP 8.0 or later.
 
-Copy all the files into a directory on your webserver, then open the url to this path in a webbrowser. Follow the installation instructions.
+Copy all the files into a directory on your webserver, then open the url to this path in a webbrowser.
 
-This will create a `config.php` in the root folder that will hold the configuration of your system. This file is unique to your website and very important - keep a backup around, if you want to make sure to not lose anything.
+This will create a `config.php` in the root folder that will hold the configuration of your system, as well as a `content/` folder where all the feeds you follow live. These two items, the `config.php` and `content/` folder, are unique to your website and very important - keep a backup around, if you want to make sure to not lose anything.
 
 The setup also creates some other files that are needed, like a (hidden) `.htaccess` file and a `cache/` folder. When you delete those item, they will be re-created as needed. They will also be automatically deleted and recreated when you make a system update.
 
-You can now use the url as a microsub server (you need to use a microsub client to connect to it).
+You can now add the url as a microsub endpoint to your website, and then use a microsub client to login. To add the microsub endpoint, add something like this to your HTML \<head\>:
+
+```html
+<link rel="microsub" href="https://www.example.com/postamt/">
+```
 
 ## Additional Options
 
@@ -44,13 +48,13 @@ The loading order of the config is as follows:
 
 ## Updating
 
-**Important:** Before updating, backup your `config.php`. Better be safe than sorry.
+**Important:** Before updating, backup your `config.php` and the `content/` folder. Better be safe than sorry.
 
 Create a new empty file called `update` (or `update.txt`) in the root folder of your installation. Then open the website, and append `?update` to the URL to trigger the update process. **Important:** if you don't finish the update, manually delete the `update` (or `update.txt`) file (if the update process finishes, this file gets deleted automatically).
 
 Follow the steps of the updater. It will show you all of the new release notes that happened since your currently installed version - read them carefully, especially at the moment, because some things will change and may need manual intervention.
 
-After updating, open your website; this will trigger the setup process again, that creates some missing files. Then check if everything works as expected.
+After updating, check if everything works as expected.
 
 ### manual update
 
@@ -62,11 +66,13 @@ If you want to reset the whole system, delete the following files and folders an
 - `.htaccess`
 - `config.php`
 - the `cache/` folder
+- the `content/` folder
 
 ## Backup
 
-You should routinely backup your content. To do so, copy these files to a secure location:
+You should routinely backup your content. To do so, copy these files and folders to a secure location:
 
 - the `config.php`. This contains the theme you use and other settings
+- the `content/` folder. This contains the feeds you are subscribed to
 
 When you want to restore a backup, delete the current folders & files from your webserver, and upload your backup. You should also delete the `cache/` folder, so everything gets re-cached and is up to date. If you also want to update or reset your system, see the *Update* section above.
