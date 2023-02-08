@@ -1,0 +1,6 @@
+/build.sh
+/log/
+/cache/
+/config.php
+/.htaccess
+/update*
