@@ -57,10 +57,7 @@ class Postamt {
 		}
 
 		if( $this->config->get('debug') ) {
-			echo '<hr><strong>ERROR</strong>';
-			foreach( $messages as $message ) {
-				echo '<br>'.$message;
-			}
+			echo json_encode( [ 'error' => $messages ] );
 		}
 
 	}

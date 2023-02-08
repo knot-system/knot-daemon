@@ -29,6 +29,7 @@ $postamt = new Postamt();
 
 // here we gooo
 
+header("Content-type: application/json");
 
 $endpoint = $postamt->route->get('endpoint');
 if( ! file_exists( $postamt->abspath.'system/endpoints/'.$endpoint.'.php') ){
