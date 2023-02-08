@@ -10,7 +10,6 @@ if( ! file_exists($abspath.'config.php')
 ) {
 	// run the setup if we are missing required files
 	include_once( $abspath.'system/setup.php' );
-	exit;
 } elseif( isset($_GET['update'])
  && ( file_exists($abspath.'update') || file_exists($abspath.'update.txt') )
 ) {
