@@ -42,14 +42,17 @@ class Postamt {
 		$this->config = new Config( $this );
 		$this->log = new Log( $this );
 
+	}
+
+	function setup() {
 
 		$this->session = new Session( $this );
-		
-		
+			
 		$this->route = new Route( $this );
 
 		$this->refresh_cache();
 
+		return $this;
 	}
 
 	function error( $error, $description, $status_code = 400 ) {

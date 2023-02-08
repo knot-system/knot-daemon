@@ -27,6 +27,7 @@ include_once( $abspath.'system/classes.php' );
 
 
 $postamt = new Postamt();
+$postamt->setup();
 
 
 // here we gooo
