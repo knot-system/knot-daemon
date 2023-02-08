@@ -13,18 +13,23 @@ class Cache {
 	public $hash;
 	public $cache_file_name;
 	public $filesize;
+	public $lifetime;
 	
-	function __construct( $type, $input, $use_hash = false ) {
+	function __construct( $type, $input, $use_hash = false, $lifetime = false ) {
 
 		// TODO: add config option to disable cache
 		// TODO: add method to force a cache refresh?
 
 		global $postamt;
 
+		if( ! $type && ! $input ) return;
+
 		if( $type == 'image' || $type == 'image-preview' ) {
 			$this->cache_folder .= 'images/';
 		} elseif( $type == 'link' ) {
 			$this->cache_folder .= 'link-previews/';
+		} elseif( $type == 'session' ) {
+			$this->cache_folder .= 'sessions/';
 		} else {
 			$this->cache_folder .= $type.'/';
 		}
@@ -45,14 +50,49 @@ class Cache {
 
 		}
 
-		$this->cache_file = $this->cache_folder.$this->hash;
-		$this->cache_file_name = $this->hash;
+		if( $lifetime ) { // lifetime is in seconds
+			$this->lifetime = $lifetime;
+		} else {
+			$this->lifetime = $postamt->config->get( 'cache_lifetime' );
+		}
 
+		$this->cache_file_name = $this->get_file_name();
+
+		$this->cache_file = $this->cache_folder.$this->cache_file_name;
+
+	}
+
+
+	function get_file_name(){
+
+		global $postamt;
+
+		$hash = $this->hash;
+
+		$folderpath = $postamt->abspath.$this->cache_folder;
+
+		$files = read_folder( $folderpath, false, false );
+
+		foreach( $files as $filename ) {
+			if( str_starts_with($filename, $hash) ) {
+				return $filename;
+			}
+		}
+
+		// no file yet, create new name:
+		
+		$target_timestamp = time() + $this->lifetime;
+
+		$filename = $this->hash.'_'.$target_timestamp;
+
+		return $filename;
 	}
 
 
 	function get_data() {
 		if( ! file_exists($this->cache_file) ) return false;
+
+		if( isset($_GET['refresh']) ) return false; // force a refresh
 
 		$this->filesize = filesize($this->cache_file);
 
@@ -73,19 +113,17 @@ class Cache {
 	}
 
 
-	function get_remote_file( $url ) {
+	function remove() {
+		if( ! file_exists($this->cache_file) ) return;
 
-		$url = html_entity_decode($url);
+		unlink($this->cache_file);
+	}
 
-		$ch = curl_init( $url );
-		$fp = fopen( $this->cache_file, 'wb' );
-		curl_setopt( $ch, CURLOPT_FILE, $fp );
-		curl_setopt( $ch, CURLOPT_HEADER, 0 );
-		curl_setopt( $ch, CURLOPT_USERAGENT, get_user_agent() );
-		curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
-		curl_exec( $ch );
-		curl_close( $ch );
-		fclose( $fp );
+
+	function touch() {
+		if( ! file_exists($this->cache_file) ) return $this;
+
+		touch( $this->cache_file );
 
 		return $this;
 	}
@@ -101,6 +139,32 @@ class Cache {
 		}
 
 		return $this;
+	}
+
+
+	function clear_cache_folder(){
+		// this function clears out old cache files.
+
+		global $postamt;
+
+		$lifetime = $postamt->config->get( 'cache_lifetime' );
+
+		$folderpath = $postamt->abspath.'cache/';
+
+		$files = read_folder( $folderpath, true );
+
+		$current_timestamp = time();
+
+		foreach( $files as $file ) {
+
+			$file_explode = explode( '_', $file );
+			$expire_timestamp = (int) end($file_explode);
+
+			if( $expire_timestamp < $current_timestamp ) { // cachefile too old
+				@unlink($file); // delete old cache file; fail silently
+			}
+
+		}
 	}
 
 
