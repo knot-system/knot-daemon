@@ -218,7 +218,11 @@ if( $output ) {
 }
 
 if( $config ) {
-	$content = "<?php\r\n\r\nreturn [\r\n	'debug' => true,\r\n];\r\n"; // CLEANUP: remove the debug option, when the system is stable enough
+
+	include_once( $abspath.'system/functions/helper.php' );
+	$random_string = get_hash( $abspath.uniqid() );
+
+	$content = "<?php\r\n\r\nreturn [\r\n	'debug' => true,\r\n	'cron_secret' => '$random_string',\r\n];\r\n"; // CLEANUP: remove the debug option, when the system is stable enough
 	if( file_put_contents( $abspath.'config.php', $content ) === false ) {
 
 		if( $output ) {
