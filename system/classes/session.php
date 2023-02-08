@@ -21,6 +21,9 @@ class Session {
 		// TODO: how do we know, against which endpoint we need to verify?
 		// the client needs to send a 'me' parameter as well? then we can find
 		// the authorization endpoint, and verify against it.
+		// or does the microsub endpoint has a identifier in its url?
+		// (aperture does it like this, but does not verify that the access_token
+		// is allowed for the url)
 
 		// TODO: check authorization token
 		// failure: HTTP 403: "error":"forbidden" - The authenticated user does not have permission to perform this request.
@@ -30,6 +33,11 @@ class Session {
 
 		// TODO: check scope
 		// failure: HTTP 403: "error":"insufficient_scope" - The scope of this token does not meet the requirements for this request. The client may wish to re-authorize the user to obtain the necessary scope. The response MAY include the "scope" attribute with the scope necessary to successfully perform this request.
+
+		$scope = false;
+		if( isset($_REQUEST['scope']) ) $scope = $_REQUEST['scope'];
+
+		$this->scope = $scope;
 
 
 		// TODO: rate-limit
