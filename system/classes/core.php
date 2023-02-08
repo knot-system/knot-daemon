@@ -50,6 +50,18 @@ class Postamt {
 
 	}
 
+	function error( $error, $description, $status_code = 400 ) {
+
+		http_response_code( $status_code );
+
+		echo json_encode([
+			'error' => $error,
+			'error_description' => $description
+		]);
+
+		exit;
+	}
+
 	function debug( ...$messages ) {
 
 		if( $this->config->get('logging') ) {

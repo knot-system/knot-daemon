@@ -19,9 +19,55 @@ class Route {
 
 		$pagination = 0;
 
-		
+
+		if( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
+			$request_type = 'post';
+		} else if( $_SERVER['REQUEST_METHOD'] === 'GET' ) {
+			$request_type = 'get';
+		} else {
+			$postamt->error( 'invalid_request', 'unknown request method' );
+		}
+
+		$required_scopes = [ 'read' ];
+
+		if( isset($_REQUEST['action']) ) {
+			if( $_REQUEST['action'] == 'channels' ) {
+				// TODO
+				$required_scopes[] = 'channels';
+			} elseif( $_REQUEST['action'] == 'search' ) {
+				// TODO
+			} elseif( $_REQUEST['action'] == 'preview' ) {
+				// TODO
+			} elseif( $_REQUEST['action'] == 'follow' ) {
+				// TODO
+				$required_scopes[] = 'follow';
+			} elseif( $_REQUEST['action'] == 'unfollow' ) {
+				// TODO
+				$required_scopes[] = 'follow';
+			} elseif( $_REQUEST['action'] == 'timeline' ) {
+				// TODO
+			} elseif( $_REQUEST['action'] == 'mute' ) {
+				// TODO
+				$required_scopes[] = 'mute';
+			} elseif( $_REQUEST['action'] == 'unmute' ) {
+				// TODO
+				$required_scopes[] = 'mute';
+			} elseif( $_REQUEST['action'] == 'block' ) {
+				// TODO
+				$required_scopes[] = 'block';
+			} elseif( $_REQUEST['action'] == 'unblock' ) {
+				// TODO
+				$required_scopes[] = 'block';
+			} else {
+				$postamt->error( 'invalid_request', 'unknown action' );
+			}
+		} else {
+			$postamt->error( 'invalid_request', 'no action provided' );
+		}
+
 		$this->route = array(
-			'endpoint' => 'index'
+			'endpoint' => 'index',
+			'required_scopes' => $required_scopes,
 		);
 		
 
