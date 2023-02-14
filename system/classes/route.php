@@ -17,8 +17,6 @@ class Route {
 
 		$request = explode( '/', $request );
 
-		$pagination = 0;
-
 
 		if( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
 			$request_type = 'post';
@@ -30,49 +28,53 @@ class Route {
 
 		$required_scopes = [ 'read' ];
 
+		$action = false;
+
 		if( isset($_REQUEST['action']) ) {
-			if( $_REQUEST['action'] == 'channels' ) {
-				// TODO
+
+			$action = $_REQUEST['action'];
+
+			if( $action == 'channels' ) {
 				$required_scopes[] = 'channels';
-			} elseif( $_REQUEST['action'] == 'search' ) {
-				// TODO
-			} elseif( $_REQUEST['action'] == 'preview' ) {
-				// TODO
-			} elseif( $_REQUEST['action'] == 'follow' ) {
-				// TODO
+			} elseif( $action == 'search' ) {
+				//
+			} elseif( $action == 'preview' ) {
+				//
+			} elseif( $action == 'follow' ) {
 				$required_scopes[] = 'follow';
-			} elseif( $_REQUEST['action'] == 'unfollow' ) {
-				// TODO
+			} elseif( $action == 'unfollow' ) {
 				$required_scopes[] = 'follow';
-			} elseif( $_REQUEST['action'] == 'timeline' ) {
-				// TODO
-			} elseif( $_REQUEST['action'] == 'mute' ) {
-				// TODO
+			} elseif( $action == 'timeline' ) {
+				//
+			} elseif( $action == 'mute' ) {
 				$required_scopes[] = 'mute';
-			} elseif( $_REQUEST['action'] == 'unmute' ) {
-				// TODO
+			} elseif( $action == 'unmute' ) {
 				$required_scopes[] = 'mute';
-			} elseif( $_REQUEST['action'] == 'block' ) {
-				// TODO
+			} elseif( $action == 'block' ) {
 				$required_scopes[] = 'block';
-			} elseif( $_REQUEST['action'] == 'unblock' ) {
-				// TODO
+			} elseif( $action == 'unblock' ) {
 				$required_scopes[] = 'block';
 			} else {
 				$postamt->error( 'invalid_request', 'unknown action' );
 			}
-		} else {
+
+		}
+
+		if( ! $action ) {
 			$postamt->error( 'invalid_request', 'no action provided' );
 		}
 
-		$postamt->session->check_scope( $required_scopes );
+		$scope_valid = $postamt->session->check_scope( $required_scopes );
+
+		if( ! $scope_valid ) {
+			$postamt->error( 'insufficient_scope', 'The scope of this token does not meet the requirements for this request', 403 );
+		}
 
 		$this->route = array(
-			'endpoint' => 'index',
+			'endpoint' => $action,
 			'required_scopes' => $required_scopes,
 		);
 		
-
 		return $this;
 	}
 

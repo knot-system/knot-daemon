@@ -78,33 +78,27 @@ class Session {
 
 	function check_scope( $expected_scope ) {
 
-		$validated = true;
+		$scope_valid = true;
 
 		if( is_array($expected_scope) ) {
 			foreach( $expected_scope as $expected_sub_scope ) {
 				if( ! $this->check_scope($expected_sub_scope) ) {
-					$validated = false;
+					$scope_valid = false;
 				}
 			}
 		} else {
 
 			if( ! $this->scope ) {
-				$validated = false;
+				$scope_valid = false;
 			}
 
 			if( ! in_array( $expected_scope, $this->scope ) ) {
-				$validated = false;
+				$scope_valid = false;
 			}
 
 		}
 
-		global $postamt;
-
-		if( ! $validated ) {
-			$postamt->error( 'insufficient_scope', 'The scope of this token does not meet the requirements for this request', 403 );
-		}
-
-		return true;
+		return $scope_valid;
 	}
 
 
