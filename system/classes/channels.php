@@ -31,6 +31,8 @@ class Channels {
 	function read_channels(){
 		$channels = [];
 
+		// TODO: use Database class instead of directly reading the folder here
+
 		if( $handle = opendir($this->folder) ) {
 			while( false !== ($entry = readdir($handle)) ) {
 				if( str_starts_with( $entry, '.' ) ) continue;
@@ -178,8 +180,30 @@ class Channels {
 		@unlink( $this->folder.$uid.'/channel.txt' );
 
 		return rmdir( $this->folder.$uid );
+	}
 
-		return true;
+
+	function update_channel( $uid, $new_name ) {
+
+		if( ! $this->channel_exists( $uid ) ) {
+			return false;
+		}
+
+		$file = new File( $this->folder.$uid.'/channel.txt' );
+
+		if( ! $file->exists() ) return false;
+		
+		$content = $file->get();
+
+		if( $content['name'] == $new_name ) {
+			return $content;
+		}
+
+		$content['name'] = $new_name;
+
+		if( ! $file->create($content) ) return false;
+
+		return $content;
 	}
 
 

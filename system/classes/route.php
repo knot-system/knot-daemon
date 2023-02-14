@@ -24,7 +24,7 @@ class Route {
 			if( $action == 'channels' ) {
 
 				if( $request_type == 'post' ) {
-					// TODO $required_scopes[] = 'channels';
+					$required_scopes[] = 'channels';
 				}
 
 			} elseif( $action == 'search' ) {
