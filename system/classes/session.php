@@ -31,7 +31,7 @@ class Session {
 		$url = $indieauth->normalize_url( $me );
 		$token_endpoint = $indieauth->discover_endpoint( 'token_endpoint', $url );
 		if( ! $token_endpoint ) {
-			$postamt->error( 'unauthorized', 'could not find token endpoint' );
+			$postamt->error( 'unauthorized', 'could not find token endpoint (me url does not provide a token_endpoint)' );
 		}
 
 		$this->token_endpoint = $token_endpoint;
@@ -47,15 +47,15 @@ class Session {
 		}
 
 		if( isset($token_response['active']) && ! $token_response['active'] ) {
-			$postamt->error( 'unauthorized', 'could not verify via token endpoint' );
+			$postamt->error( 'unauthorized', 'could not verify via token endpoint (access_token responded with active=false)' );
 		}
 
 		if( ! isset($token_response['me']) || ! isset($token_response['scope']) ) {
-			$postamt->error( 'unauthorized', 'could not verify via token endpoint' );
+			$postamt->error( 'unauthorized', 'could not verify via token endpoint (access_token did not provide me and/or scope parameter)' );
 		}
 
 		if( un_trailing_slash_it($token_response['me']) != un_trailing_slash_it($me) ) {
-			$postamt->error( 'forbidden', 'The authenticated user does not have permission to perform this request', 403 );
+			$postamt->error( 'forbidden', 'The authenticated user does not have permission to perform this request (access_token me does not match provided me)', 403 );
 		}
 
 		if( isset($token_response['client_id']) && isset($_SERVER['HTTP_REFERER']) ) { // TODO: check & test this!
@@ -63,7 +63,7 @@ class Session {
 			$referer = un_trailing_slash_it($_SERVER['HTTP_REFERER']);
 
 			if( $client_id != $referer ) {
-				$postamt->error( 'forbidden', 'The authenticated user does not have permission to perform this request', 403 );
+				$postamt->error( 'forbidden', 'The authenticated user does not have permission to perform this request (access_token client_id does not match referer)', 403 );
 			}
 		}
 
@@ -120,6 +120,7 @@ class Session {
 		return $headers;
 	}
 
+	
 	function get_bearer_token() {
 
 		$headers = $this->get_authorization_header();
