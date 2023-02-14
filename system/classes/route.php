@@ -65,6 +65,8 @@ class Route {
 			$postamt->error( 'invalid_request', 'no action provided' );
 		}
 
+		$postamt->session->check_scope( $required_scopes );
+
 		$this->route = array(
 			'endpoint' => 'index',
 			'required_scopes' => $required_scopes,

@@ -8,45 +8,107 @@ class Session {
 
 	function __construct( $postamt ) {
 
-		$access_token = $this->getBearerToken();
+		// TODO: rate-limit
+
+		$access_token = $this->get_bearer_token();
 
 		if( ! $access_token && isset($_REQUEST['access_token'])) {
 			$access_token = $_REQUEST['access_token'];
 		}
 
 		if( ! $access_token ) {
-			$postamt->error( 'unauthorized', 'no access token was provided');
+			$postamt->error( 'unauthorized', 'no access token was provided' );
 		}
 
-		// TODO: how do we know, against which endpoint we need to verify?
-		// the client needs to send a 'me' parameter as well? then we can find
-		// the authorization endpoint, and verify against it.
-		// or does the microsub endpoint has a identifier in its url?
-		// (aperture does it like this, but does not verify that the access_token
-		// is allowed for the url)
+		if( ! isset($_REQUEST['me']) ) {
+			$postamt->error( 'unauthorized', 'no me parameter was provided' );
+		}
+		$me = $_REQUEST['me'];
 
-		// TODO: check authorization token
-		// failure: HTTP 403: "error":"forbidden" - The authenticated user does not have permission to perform this request.
+		$this->me = $me;
+
+		$indieauth = new IndieAuth();
+		$url = $indieauth->normalize_url( $me );
+		$token_endpoint = $indieauth->discover_endpoint( 'token_endpoint', $url );
+		if( ! $token_endpoint ) {
+			$postamt->error( 'unauthorized', 'could not find token endpoint' );
+		}
+
+		$this->token_endpoint = $token_endpoint;
+
+		$token_endpoint_request = new Request();
+		$token_verify = $token_endpoint_request->get( $token_endpoint, false, [ 'Authorization: Bearer '.$access_token ] );
+
+		$token_verify = explode( '&', $token_verify );
+		$token_response = [];
+		foreach( $token_verify as $url_part ) {
+			$url_part = explode( '=', $url_part );
+			$token_response[$url_part[0]] = urldecode($url_part[1]);
+		}
+
+		if( isset($token_response['active']) && ! $token_response['active'] ) {
+			$postamt->error( 'unauthorized', 'could not verify via token endpoint' );
+		}
+
+		if( ! isset($token_response['me']) || ! isset($token_response['scope']) ) {
+			$postamt->error( 'unauthorized', 'could not verify via token endpoint' );
+		}
+
+		if( un_trailing_slash_it($token_response['me']) != un_trailing_slash_it($me) ) {
+			$postamt->error( 'forbidden', 'The authenticated user does not have permission to perform this request', 403 );
+		}
+
+		if( isset($token_response['client_id']) && isset($_SERVER['HTTP_REFERER']) ) { // TODO: check & test this!
+			$client_id = un_trailing_slash_it($token_response['client_id']);
+			$referer = un_trailing_slash_it($_SERVER['HTTP_REFERER']);
+
+			if( $client_id != $referer ) {
+				$postamt->error( 'forbidden', 'The authenticated user does not have permission to perform this request', 403 );
+			}
+		}
 
 		$this->access_token = $access_token;
 		
-
-		// TODO: check scope
-		// failure: HTTP 403: "error":"insufficient_scope" - The scope of this token does not meet the requirements for this request. The client may wish to re-authorize the user to obtain the necessary scope. The response MAY include the "scope" attribute with the scope necessary to successfully perform this request.
-
-		$scope = false;
-		if( isset($_REQUEST['scope']) ) $scope = $_REQUEST['scope'];
+		$scope = explode( ' ', $token_response['scope'] );
 
 		$this->scope = $scope;
-
-
-		// TODO: rate-limit
-
 
 	}
 
 
-	function getAuthorizationHeader(){
+	function check_scope( $expected_scope ) {
+
+		$validated = true;
+
+		if( is_array($expected_scope) ) {
+			foreach( $expected_scope as $expected_sub_scope ) {
+				if( ! $this->check_scope($expected_sub_scope) ) {
+					$validated = false;
+				}
+			}
+		} else {
+
+			if( ! $this->scope ) {
+				$validated = false;
+			}
+
+			if( ! in_array( $expected_scope, $this->scope ) ) {
+				$validated = false;
+			}
+
+		}
+
+		global $postamt;
+
+		if( ! $validated ) {
+			$postamt->error( 'insufficient_scope', 'The scope of this token does not meet the requirements for this request', 403 );
+		}
+
+		return true;
+	}
+
+
+	function get_authorization_header(){
 		$headers = null;
 		if( isset($_SERVER['Authorization']) ){
 			$headers = trim($_SERVER["Authorization"]);
@@ -64,15 +126,14 @@ class Session {
 		return $headers;
 	}
 
-	function getBearerToken() {
+	function get_bearer_token() {
 
-		$headers = $this->getAuthorizationHeader();
+		$headers = $this->get_authorization_header();
 		if( empty($headers) ) return false;
 
 		if( ! preg_match('/Bearer\s(\S+)/', $headers, $matches) ) return false;
 
 		return $matches[1];
-		
 	}
 
 
