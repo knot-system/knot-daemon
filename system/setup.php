@@ -24,6 +24,16 @@ if( file_exists($abspath.'config.php') && file_exists($abspath.'.htaccess') ) {
 	return;
 }
 
+
+
+$config_missing = false;
+
+if( ! file_exists($abspath.'config.php') ) {
+	$config_missing = true;
+	$output = true;
+}
+
+
 if( $output ) {
 	?>
 	<p>Hi. This is the first-time setup of Postamt.</p>
@@ -39,6 +49,7 @@ if( $output ) {
 	</ul>
 	<?php
 }
+
 
 if( $abspath == '' ) {
 
@@ -71,8 +82,21 @@ if( $baseurl == '' ) {
 	exit;
 }
 
-$config = true;
-if( file_exists($abspath.'config.php') ) $config = false;
+
+if( $config_missing ) {
+	
+	if( empty($_POST['authorized_urls']) ) {
+		?>
+		<hr>
+		<form action="<?= $baseurl ?>" method="POST">
+			<p><label><strong>Allowed URLs</strong><br><textarea name="authorized_urls" style="width: 400px; height: 100px;" required placeholder="https://www.example.com/eigenheim/"></textarea></label></p>
+			<p><small>One URL per line; this field is required</small></p>
+			<p><button>start installation</button></p>
+		</form>
+		<?php
+		exit;
+	}
+}
 
 
 if( $output ) {
@@ -104,6 +128,7 @@ if( ! file_exists( $abspath.'.htaccess' ) ) {
 		}
 
 		exit;
+
 	} else {
 
 		if( $output ) {
@@ -149,6 +174,7 @@ if( ! is_dir( $abspath.'content/') ) {
 		}
 
 		exit;
+
 	} else {
 
 		if( $output ) {
@@ -190,7 +216,9 @@ if( ! is_dir( $abspath.'cache/') ) {
 			<li><strong>ERROR:</strong> folder <em>cache/</em> could not be created. Please check the permissions of the root folder and make sure we are allowed to write to it. we abort the setup here.</li>
 			<?php
 		}
+
 		exit;
+
 	} else {
 
 		if( $output ) {
@@ -217,12 +245,21 @@ if( $output ) {
 	<?php
 }
 
-if( $config ) {
+if( $config_missing ) {
+
+	$authorized_urls = [];
+	foreach( explode( "\n", $_POST['authorized_urls']) as $url ) {
+		$authorized_urls[] = trim($url);
+	}
 
 	include_once( $abspath.'system/functions/helper.php' );
 	$random_string = get_hash( $abspath.uniqid() );
 
-	$content = "<?php\r\n\r\nreturn [\r\n	'debug' => true,\r\n	'cron_secret' => '$random_string',\r\n];\r\n"; // CLEANUP: remove the debug option, when the system is stable enough
+	$content = "<?php\r\n\r\nreturn [\r\n	'debug' => true,\r\n	'cron_secret' => '$random_string',\r\n	'allowed_urls' => [";
+	foreach( $authorized_urls as $authorized_url ) {
+		$content .= "\r\n		'".$authorized_url."',";
+	}
+	$content .= "\r\n	],\r\n];\r\n"; // CLEANUP: remove the debug option, when the system is stable enough
 	if( file_put_contents( $abspath.'config.php', $content ) === false ) {
 
 		if( $output ) {
@@ -231,6 +268,8 @@ if( $config ) {
 			<?php
 		}
 
+		exit;
+		
 	} else {
 
 		if( $output ) {

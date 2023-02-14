@@ -10,7 +10,7 @@ Here be dragons:
 
 Your server needs to run at least PHP 8.0 or later.
 
-Copy all the files into a directory on your webserver, then open the url to this path in a webbrowser.
+Copy all the files into a directory on your webserver, then open the url to this path in a webbrowser. Follow the installation instructions.
 
 This will create a `config.php` in the root folder that will hold the configuration of your system, as well as a `content/` folder where all the feeds you follow live. These two items, the `config.php` and `content/` folder, are unique to your website and very important - keep a backup around, if you want to make sure to not lose anything.
 
@@ -32,6 +32,10 @@ You may want to edit the `config.php` a bit after the initial setup and add addi
 return [
 	'debug' => false,
 	'logging' => false,
+	'allowed_urls' => [ // a list of 'me' URLs that are allowed to use this microsub server
+		'https://www.example.com/eigenheim/',
+		'https://www.example.com/other-identity/',
+	],
 	
 	// for more config options, see the file system/config.php
 	

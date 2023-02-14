@@ -67,6 +67,13 @@ class Session {
 			}
 		}
 
+		$allowed_users = $postamt->config->get('allowed_urls');
+		$cleaned_me = un_trailing_slash_it($me);
+		$cleaned_allowed_users = array_map( 'un_trailing_slash_it', $allowed_users );
+		if( ! in_array( $cleaned_me, $cleaned_allowed_users ) ) {
+			$postamt->error( 'forbidden', 'The authenticated user does not have permission to perform this request (this user does not exist in the system)', 403 );
+		}
+
 		$this->access_token = $access_token;
 		
 		$scope = explode( ' ', $token_response['scope'] );
