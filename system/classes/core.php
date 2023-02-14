@@ -16,6 +16,8 @@ class Postamt {
 	public $session;
 
 	public $route;
+
+	public $channels;
 	
 	function __construct() {
 
@@ -51,6 +53,8 @@ class Postamt {
 		$this->route = new Route( $this );
 
 		$this->refresh_cache();
+
+		$this->channels = new Channels( $this );
 
 		return $this;
 	}

@@ -22,27 +22,51 @@ class Route {
 			$action = $_REQUEST['action'];
 
 			if( $action == 'channels' ) {
-				$required_scopes[] = 'channels';
+
+				if( $request_type == 'post' ) {
+					// TODO $required_scopes[] = 'channels';
+				}
+
 			} elseif( $action == 'search' ) {
+
 				//
+
 			} elseif( $action == 'preview' ) {
+
 				//
+
 			} elseif( $action == 'follow' ) {
+
 				$required_scopes[] = 'follow';
+
 			} elseif( $action == 'unfollow' ) {
+
 				$required_scopes[] = 'follow';
+
 			} elseif( $action == 'timeline' ) {
+
 				//
+
 			} elseif( $action == 'mute' ) {
+
 				$required_scopes[] = 'mute';
+
 			} elseif( $action == 'unmute' ) {
+
 				$required_scopes[] = 'mute';
+
 			} elseif( $action == 'block' ) {
+
 				$required_scopes[] = 'block';
+
 			} elseif( $action == 'unblock' ) {
+
 				$required_scopes[] = 'block';
+
 			} else {
+
 				$postamt->error( 'invalid_request', 'unknown action' );
+
 			}
 
 		} else {

@@ -3,6 +3,8 @@
 class Session {
 
 	public $me;
+	public $canonical_me;
+	public $me_folder;
 	public $scope;
 	private $access_token;
 
