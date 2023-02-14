@@ -56,6 +56,15 @@ function sanitize_string_for_url( $string ) {
 }
 
 
+function sanitize_folder_name( $string ) {
+
+	$string = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '-', $string);
+	$string = mb_ereg_replace("([\.]{1,})", '-', $string);
+
+	return $string;
+}
+
+
 function get_hash( $input ) {
 	// NOTE: this hash is for data validation, NOT cryptography!
 	// DO NOT USE FOR CRYPTOGRAPHIC PURPOSES

@@ -26,6 +26,7 @@ class Session {
 		$me = $_REQUEST['me'];
 
 		$this->me = $me;
+		$this->canonical_me = un_trailing_slash_it($me); // NOTE: for our purposes, https://www.example.com/ and https://www.example.com are the same user
 
 		$indieauth = new IndieAuth();
 		$url = $indieauth->normalize_url( $me );
@@ -54,7 +55,7 @@ class Session {
 			$postamt->error( 'unauthorized', 'could not verify via token endpoint (access_token did not provide me and/or scope parameter)' );
 		}
 
-		if( un_trailing_slash_it($token_response['me']) != un_trailing_slash_it($me) ) {
+		if( un_trailing_slash_it($token_response['me']) != $this->canonical_me ) {
 			$postamt->error( 'forbidden', 'The authenticated user does not have permission to perform this request (access_token me does not match provided me)', 403 );
 		}
 
@@ -68,9 +69,8 @@ class Session {
 		}
 
 		$allowed_users = $postamt->config->get('allowed_urls');
-		$cleaned_me = un_trailing_slash_it($me);
 		$cleaned_allowed_users = array_map( 'un_trailing_slash_it', $allowed_users );
-		if( ! in_array( $cleaned_me, $cleaned_allowed_users ) ) {
+		if( ! in_array( $this->canonical_me, $cleaned_allowed_users ) ) {
 			$postamt->error( 'forbidden', 'The authenticated user does not have permission to perform this request (this user does not exist in the system)', 403 );
 		}
 
@@ -79,6 +79,9 @@ class Session {
 		$scope = explode( ' ', $token_response['scope'] );
 
 		$this->scope = $scope;
+
+
+		$this->check_content_folder();
 
 	}
 
@@ -106,6 +109,34 @@ class Session {
 		}
 
 		return $scope_valid;
+	}
+
+
+	function check_content_folder(){
+
+		global $postamt;
+
+		$me = $this->canonical_me;
+
+		if( ! $me ) return;
+
+		$me_folder = str_replace( array('https://www.', 'http://www.', 'https://', 'http://'), '', $me );
+
+		$me_folder = sanitize_folder_name( $me_folder );
+
+		if( ! $me_folder ) return;
+
+		$this->me_foldername = $me_folder;
+
+		$this->me_folder = 'content/'.$me_folder.'/';
+
+		if( ! is_dir($postamt->abspath.$this->me_folder) ) {
+			if( mkdir( $postamt->abspath.$this->me_folder, 0777, true ) === false ) {
+				$postamt->error( 'internal_server_error', 'could not create user folder', 500 );
+			}
+		}
+
+		return $this;
 	}
 
 
