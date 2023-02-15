@@ -62,11 +62,13 @@ class Channels {
 		$updated = false;
 
 		if( ! array_key_exists('notifications', $this->channels) ) {
-			// the spec says we _must_ have a channel with uid 'notifications'
-			$new_channel = $this->create_channel( 'Notifications', 'notifications' );
+			// the spec says we _must_ have a channel with uid 'notifications'; it has always order 0
+			$new_channel = $this->create_channel( 'Notifications', 'notifications', 0 );
 			if( ! $new_channel ) {
 				$postamt->error( 'internal_server_error', 'default notifications channel not found', 500 );
 			}
+
+			$this->channels[] = $new_channel;
 
 			$updated = true;
 		}
@@ -77,6 +79,8 @@ class Channels {
 			if( ! $new_channel ) {
 				$postamt->error( 'internal_server_error', 'default channel not found', 500 );
 			}
+
+			$this->channels[] = $new_channel;
 
 			$updated = true;
 		}
@@ -116,7 +120,7 @@ class Channels {
 	}
 
 
-	function create_channel( $name, $uid = false ) {
+	function create_channel( $name, $uid = false, $order = false ) {
 
 		$folder = $this->folder;
 
@@ -130,20 +134,32 @@ class Channels {
 
 		$uid = trim($uid);
 
-		if( strtolower($uid) == 'global' ) return false; // uid of global is reserved
+		if( strtolower($uid) == 'notifications' ) {
+			return false;
+		}
+
+		if( strtolower($uid) == 'global' ) { // uid 'global' is reserved
+			return false;
+		}
 
 		if( $this->channel_exists( $uid ) ) {
 			// channel does already exist!
 			return false;
 		}
 
+		if( $order === false ) { // $order could also be 0, so explicitely check for false
+			$order = count($this->channels);
+		}
+
 		global $postamt;
 
-		if( mkdir( $folder.$uid, 0777, true ) === false ) {
+		$folder_path = $folder.$order.'_'.$uid;
+
+		if( mkdir( $folder_path, 0777, true ) === false ) {
 			$postamt->error( 'internal_server_error', 'could not create channel (folder error)', 500 );
 		}
 
-		$file = new File( $folder.$uid.'/channel.txt' );
+		$file = new File( $folder_path.'/channel.txt' );
 
 		if( ! $file->exists() ) {
 
@@ -176,7 +192,7 @@ class Channels {
 			return false;
 		}
 
-		if( $uid == 'notifications' ) {
+		if( strtolower($uid) == 'notifications' ) {
 			return false;
 		}
 
@@ -189,15 +205,19 @@ class Channels {
 
 	function update_channel( $uid, $new_name ) {
 
+		// TODO: check, if we also want / are allowed to update the uid of the channel
+		// (this would help with the folder structure)
+		// when updating the uid, make sure to keep the order correct
+
 		if( ! $this->channel_exists( $uid ) ) {
 			return false;
 		}
 
-		if( $uid == 'notifications' ) {
+		if( strtolower($uid) == 'notifications' ) {
 			return false;
 		}
 
-		if( $name == 'global' ) {
+		if( strtolower($uid) == 'global' ) {
 			return false;
 		}
 
