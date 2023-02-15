@@ -274,7 +274,7 @@ class Channels {
 	}
 
 
-	function get( $uid = false ) {
+	function get( $uid = false, $skip_cleanup = false ) {
 
 		$channels = $this->channels;
 
@@ -282,14 +282,22 @@ class Channels {
 
 			if( ! $this->channel_exists($uid) ) return false;
 
-			return $this->cleanup_channel( $channels[$uid] );
+			$channel = $channels[$uid];
+
+			if( ! $skip_cleanup ) {
+				$channel = $this->cleanup_channel( $channel );
+			}
+
+			return $channel;
 		}
 
+		if( ! $skip_cleanup ) {
+			$channels = array_map( function($channel){
+				return $this->cleanup_channel($channel);
+			}, $channels );
+			$channels = array_values($channels); // remove keys
+		}
 
-		$channels = array_map( function($channel){
-			return $this->cleanup_channel($channel);
-		}, $channels );
-		$channels = array_values($channels); // remove keys
 		return $channels;
 	}
 
