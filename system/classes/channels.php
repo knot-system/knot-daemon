@@ -50,7 +50,11 @@ class Channels {
 			$channel['_path'] = $path;
 			$channel['_order'] = $order;
 
-			// $channel['sources'] = []; // TODO: return list of sources, see https://github.com/indieweb/microsub/issues/44
+			// TODO: see https://github.com/indieweb/microsub/issues/44
+			// and https://indieweb.org/Microsub-spec#Channels_2
+			//$feeds = new Feeds( $channel );
+			//$items = $feeds->get();
+			//$channel['sources'] = $items;
 
 			// $channel['unread'] = 0; // TODO: return number of unread posts
 

@@ -56,6 +56,7 @@ class Feeds {
 
 		$id = str_replace( array('https://www.', 'http://www.', 'https://', 'http://'), '', $url );
 		$id = strtolower(trim($id));
+		$id = un_trailing_slash_it($id);
 		$id = sanitize_folder_name( $id );
 
 		return $id;
@@ -111,6 +112,9 @@ class Feeds {
 		}
 
 
+		// TODO: check, if the url is a valid feed
+
+
 		global $postamt;
 
 		$folder_path = $this->folder.$id;
@@ -143,6 +147,35 @@ class Feeds {
 		$this->refresh_feeds();
 
 		return $this->get( $id );
+	}
+
+
+	function remove_feed( $url ) {
+
+		$url = trim($url);
+
+		if( ! $url ) return false;
+
+		$id = $this->create_id( $url );
+
+		if( ! $id ) return false;
+
+		if( ! $this->feed_exists( $id ) ) return false;
+
+		$feed = $this->feeds[$id];
+
+		$path = $feed['_path'];
+
+		if( ! is_dir($path) ) return false; // just a small sanity check here ..
+
+		// TODO: delete all files in this folder
+		@unlink( $path.'/_feed.txt' );
+
+		$return = rmdir( $path );
+
+		$this->refresh_feeds();
+
+		return $return;
 	}
 
 
