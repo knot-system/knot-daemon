@@ -14,25 +14,24 @@ class Channels {
 
 		$folder = $postamt->abspath.$postamt->session->me_folder;
 
-		if( ! is_dir($folder) ) return false; // this should not happen (we create the folder in the session class, if it is missing; but better make a sanity check here ..
+		if( ! is_dir($folder) ) return false; // this should not happen (if this folder is missing, we create the folder in the session class and abort if this fails, but better make a sanity check here ..
 
 		$this->folder = $folder;
 
-		$this->channels = $this->read_channels();
+		$this->refresh_channels();
 
 		if( $this->check_default_folders() ) {
-			// refresh channel list
-			$this->channels = $this->read_channels();
+			$this->refresh_channels();
 		}
 
 	}
 
 
-	function read_channels(){
+	function refresh_channels(){
 		$channels = [];
 
 		// TODO: use Database class instead of directly reading the folder here
-
+		// TODO: sort by foldername before reading (because of order parameter)
 		if( $handle = opendir($this->folder) ) {
 			while( false !== ($entry = readdir($handle)) ) {
 				if( str_starts_with( $entry, '.' ) ) continue;
@@ -47,11 +46,13 @@ class Channels {
 
 				// $channel['unread'] = 0; // TODO: return number of unread posts
 
-				$channels[$entry] = $channel;
+				$channels[$channel['uid']] = $channel;
 			}
 		}
 
-		return $channels;
+		$this->channels = $channels;
+
+		return $this;
 	}
 
 
@@ -177,6 +178,7 @@ class Channels {
 			$postamt->error( 'internal_server_error', 'could not create channel (file retreive error)', 500 );
 		}
 
+		$this->refresh_channels();
 
 		return [
 			'uid' => $uid,
@@ -199,7 +201,11 @@ class Channels {
 		// TODO: delete all files in this folder
 		@unlink( $this->folder.$uid.'/channel.txt' );
 
-		return rmdir( $this->folder.$uid );
+		$return = rmdir( $this->folder.$uid );
+
+		$this->refresh_channels();
+
+		return $return;
 	}
 
 
@@ -208,6 +214,7 @@ class Channels {
 		// TODO: check, if we also want / are allowed to update the uid of the channel
 		// (this would help with the folder structure)
 		// when updating the uid, make sure to keep the order correct
+		// or, we update the foldername, but keep the uid in the channel.txt the same?
 
 		if( ! $this->channel_exists( $uid ) ) {
 			return false;
@@ -234,6 +241,8 @@ class Channels {
 		$content['name'] = $new_name;
 
 		if( ! $file->create($content) ) return false;
+
+		$this->refresh_channels();
 
 		return $content;
 	}
