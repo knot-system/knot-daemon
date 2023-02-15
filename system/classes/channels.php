@@ -15,7 +15,7 @@ class Channels {
 
 		$folder = $postamt->abspath.$postamt->session->me_folder;
 
-		if( ! is_dir($folder) ) return false; // this should not happen (if this folder is missing, we create the folder in the session class and abort if this fails, but better make a sanity check here ..
+		if( ! is_dir($folder) ) return false; // this should not happen (if this folder is missing, we create the folder in the Session class and abort if this fails, but better make a sanity check here .. )
 
 		$this->folder = $folder;
 
@@ -41,7 +41,7 @@ class Channels {
 
 			$order = $subfolder['order'];
 
-			$file = new File( $path.'channel.txt' );
+			$file = new File( $path.'_channel.txt' );
 
 			$channel = $file->get();
 
@@ -72,12 +72,10 @@ class Channels {
 
 		if( ! array_key_exists('notifications', $this->channels) ) {
 			// the spec says we _must_ have a channel with uid 'notifications'; it has always order 0
-			$new_channel = $this->create_channel( 'Notifications', 'notifications', 0 );
+			$new_channel = $this->create_channel( 'Notifications', 'notifications', 0, true );
 			if( ! $new_channel ) {
 				$postamt->error( 'internal_server_error', 'default notifications channel not found', 500 );
 			}
-
-			$this->channels[] = $new_channel;
 
 			$updated = true;
 		}
@@ -88,8 +86,6 @@ class Channels {
 			if( ! $new_channel ) {
 				$postamt->error( 'internal_server_error', 'default channel not found', 500 );
 			}
-
-			$this->channels[] = $new_channel;
 
 			$updated = true;
 		}
@@ -138,7 +134,7 @@ class Channels {
 	}
 
 
-	function create_channel( $name, $uid = false, $order = false ) {
+	function create_channel( $name, $uid = false, $order = false, $skip_check = false ) {
 
 		$name = trim($name);
 
@@ -150,7 +146,7 @@ class Channels {
 
 		if( ! $uid ) return false;
 
-		if( strtolower($uid) == 'notifications' ) {
+		if( ! $skip_check && strtolower($uid) == 'notifications' ) {
 			return false;
 		}
 
@@ -175,7 +171,7 @@ class Channels {
 			$postamt->error( 'internal_server_error', 'could not create channel (folder error)', 500 );
 		}
 
-		$file = new File( $folder_path.'/channel.txt' );
+		$file = new File( $folder_path.'/_channel.txt' );
 
 		if( ! $file->exists() ) {
 
@@ -222,7 +218,7 @@ class Channels {
 		}
 
 		// TODO: delete all files in this folder
-		@unlink( $path.'/channel.txt' );
+		@unlink( $path.'/_channel.txt' );
 
 		$return = rmdir( $path );
 
@@ -254,7 +250,7 @@ class Channels {
 			return false;
 		}
 
-		$file = new File( $path.'/channel.txt' );
+		$file = new File( $path.'/_channel.txt' );
 
 		if( ! $file->exists() ) return false;
 		
