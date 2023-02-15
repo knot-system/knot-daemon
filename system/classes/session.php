@@ -61,15 +61,6 @@ class Session {
 			$postamt->error( 'forbidden', 'The authenticated user does not have permission to perform this request (access_token me does not match provided me)', 403 );
 		}
 
-		if( isset($token_response['client_id']) && isset($_SERVER['HTTP_REFERER']) ) { // TODO: check & test this!
-			$client_id = un_trailing_slash_it($token_response['client_id']);
-			$referer = un_trailing_slash_it($_SERVER['HTTP_REFERER']);
-
-			if( $client_id != $referer ) {
-				$postamt->error( 'forbidden', 'The authenticated user does not have permission to perform this request (access_token client_id does not match referer)', 403 );
-			}
-		}
-
 		$allowed_users = $postamt->config->get('allowed_urls');
 		$cleaned_allowed_users = array_map( 'un_trailing_slash_it', $allowed_users );
 		if( ! in_array( $this->canonical_me, $cleaned_allowed_users ) ) {
