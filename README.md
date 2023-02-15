@@ -1,10 +1,42 @@
 # Postamt
 
-A small microsub server, without dependencies.
+A small microsub server, without dependencies (other than a default server install with PHP)
 
 This is currently in a early alpha stage. **You should not use this for now. THINGS WILL BREAK!**
 
 Here be dragons:
+
+## currently implemented
+
+- [x] channels
+	- [x] get
+	- [x] create
+	- [x] update
+	- [x] delete
+	- [ ] order
+- [x] follow
+	- [x] get
+	- [x] post
+- [x] unfollow
+- [ ] search
+- [ ] preview
+- [ ] timeline
+	- [ ] get
+	- [ ] post
+		- [ ] mark_read
+		- [ ] mark_unread
+		- [ ] remove
+- [ ] mute
+	- [ ] get
+	- [ ] post
+- [ ] unmute
+- [ ] block
+	- [ ] get
+	- [ ] post
+- [ ] unblock
+
+- [ ] collecting of posts
+- [ ] cronjob to collect in the background
 
 ## Initial Setup
 
