@@ -4,6 +4,7 @@
 
 class Channels {
 	
+	public $folder;
 	public $channels = [];
 
 	function __construct( $postamt ) {
@@ -38,13 +39,16 @@ class Channels {
 
 			$path = $subfolder['path'];
 
-			//$order = $subfolder['order'];
+			$order = $subfolder['order'];
 
 			$file = new File( $path.'channel.txt' );
 
 			$channel = $file->get();
 
 			if( ! $channel ) continue;
+
+			$channel['_path'] = $path;
+			$channel['_order'] = $order;
 
 			// $channel['sources'] = []; // TODO: return list of sources, see https://github.com/indieweb/microsub/issues/44
 
@@ -99,14 +103,16 @@ class Channels {
 		if( ! $name && ! $uid ) return 'error';
 
 		if( $uid ) {
+
 			$uid = trim($uid);
 
 			if( ! $uid ) return 'error';
 
-			return is_dir( $this->folder.$uid );
+			return array_key_exists( $uid, $this->channels );
 		}
 
 		if( $name ) {
+
 			$name = trim($name);
 
 			if( ! $name ) return 'error';
@@ -118,26 +124,31 @@ class Channels {
 			}
 
 			return false;
-
 		}
 
 		return 'error';
 	}
 
 
-	function create_channel( $name, $uid = false, $order = false ) {
+	function create_uid( $name ) {
+		$uid = sanitize_string_for_url($name);
+		$uid = trim($uid);
 
-		$folder = $this->folder;
+		return $uid;
+	}
+
+
+	function create_channel( $name, $uid = false, $order = false ) {
 
 		$name = trim($name);
 
-		if( ! $folder ) return false;
+		if( ! $name ) return false;
 
-		if( ! $uid ) $uid = sanitize_string_for_url($name);
+		if( $uid ) $uid = trim($uid);
 
-		if( ! trim($uid) ) return false;
+		if( ! $uid ) $uid = $this->create_uid( $name );
 
-		$uid = trim($uid);
+		if( ! $uid ) return false;
 
 		if( strtolower($uid) == 'notifications' ) {
 			return false;
@@ -158,7 +169,7 @@ class Channels {
 
 		global $postamt;
 
-		$folder_path = $folder.$order.'_'.$uid;
+		$folder_path = $this->folder.$order.'_'.$uid;
 
 		if( mkdir( $folder_path, 0777, true ) === false ) {
 			$postamt->error( 'internal_server_error', 'could not create channel (folder error)', 500 );
@@ -202,10 +213,18 @@ class Channels {
 			return false;
 		}
 
-		// TODO: delete all files in this folder
-		@unlink( $this->folder.$uid.'/channel.txt' );
+		$channel = $this->channels[$uid];
 
-		$return = rmdir( $this->folder.$uid );
+		$path = $channel['_path'];
+
+		if( ! is_dir($path) ) {
+			return false;
+		}
+
+		// TODO: delete all files in this folder
+		@unlink( $path.'/channel.txt' );
+
+		$return = rmdir( $path );
 
 		$this->refresh_channels();
 
@@ -214,11 +233,6 @@ class Channels {
 
 
 	function update_channel( $uid, $new_name ) {
-
-		// TODO: check, if we also want / are allowed to update the uid of the channel
-		// (this would help with the folder structure)
-		// when updating the uid, make sure to keep the order correct
-		// or, we update the foldername, but keep the uid in the channel.txt the same?
 
 		if( ! $this->channel_exists( $uid ) ) {
 			return false;
@@ -232,7 +246,15 @@ class Channels {
 			return false;
 		}
 
-		$file = new File( $this->folder.$uid.'/channel.txt' );
+		$channel = $this->channels[$uid];
+
+		$path = $channel['_path'];
+
+		if( ! is_dir($path) ) {
+			return false;
+		}
+
+		$file = new File( $path.'/channel.txt' );
 
 		if( ! $file->exists() ) return false;
 		
@@ -244,7 +266,15 @@ class Channels {
 
 		$content['name'] = $new_name;
 
+		$new_uid = $this->create_uid( $new_name );
+
+		$content['uid'] = $new_uid;
+
 		if( ! $file->create($content) ) return false;
+
+		$new_path = $this->folder.$channel['_order'].'_'.$new_uid;
+
+		if( ! rename( $path, $new_path ) ) return false;
 
 		$this->refresh_channels();
 
@@ -256,7 +286,16 @@ class Channels {
 
 		$channels = $this->channels;
 
-		return array_values($channels); // remove keys
+		$channels = array_map( function($channel){
+			unset($channel['_order']);
+			unset($channel['_path']);
+
+			return $channel;
+		}, $channels );
+
+		$channels = array_values($channels); // remove keys
+
+		return $channels;
 	}
 
 }
