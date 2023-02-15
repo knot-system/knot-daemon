@@ -30,24 +30,28 @@ class Channels {
 	function refresh_channels(){
 		$channels = [];
 
-		// TODO: use Database class instead of directly reading the folder here
-		// TODO: sort by foldername before reading (because of order parameter)
-		if( $handle = opendir($this->folder) ) {
-			while( false !== ($entry = readdir($handle)) ) {
-				if( str_starts_with( $entry, '.' ) ) continue;
+		$folder = new Folder( $this->folder );
 
-				$file = new File( $this->folder.$entry.'/channel.txt' );
+		$subfolders = $folder->load_subfolders()->get_subfolders();
 
-				$channel = $file->get();
+		foreach( $subfolders as $subfolder ) {
 
-				if( ! $channel ) continue;
+			$path = $subfolder['path'];
 
-				// $channel['sources'] = []; // TODO: return list of sources, see https://github.com/indieweb/microsub/issues/44
+			//$order = $subfolder['order'];
 
-				// $channel['unread'] = 0; // TODO: return number of unread posts
+			$file = new File( $path.'channel.txt' );
 
-				$channels[$channel['uid']] = $channel;
-			}
+			$channel = $file->get();
+
+			if( ! $channel ) continue;
+
+			// $channel['sources'] = []; // TODO: return list of sources, see https://github.com/indieweb/microsub/issues/44
+
+			// $channel['unread'] = 0; // TODO: return number of unread posts
+
+			$channels[$channel['uid']] = $channel;
+
 		}
 
 		$this->channels = $channels;
