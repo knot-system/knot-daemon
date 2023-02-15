@@ -168,8 +168,22 @@ class Feeds {
 
 		if( ! is_dir($path) ) return false; // just a small sanity check here ..
 
-		// TODO: delete all files in this folder
-		@unlink( $path.'/_feed.txt' );
+		$path = trailing_slash_it( $path );
+
+		$folder = new Folder( $path );
+		$all_files = $folder->get_content( true );
+
+		// first, delete files
+		foreach( $all_files as $file ) {
+			if( is_dir($path.$file) ) continue;
+			@unlink( $path.$file );
+		}
+
+		// then, delete folders
+		foreach( $all_files as $file ) {
+			if( ! is_dir($path.$file) ) continue;
+			@rmdir( $path.$file );
+		}
 
 		$return = rmdir( $path );
 

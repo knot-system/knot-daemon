@@ -27,6 +27,8 @@ class Folder {
 
 			if( ! is_dir($this->folder_path.$entry) ) continue;
 
+			$name = $entry;
+
 			$order = false;
 			if( $use_order ) {
 
@@ -62,6 +64,35 @@ class Folder {
 		ksort($subfolders);
 
 		return $subfolders;
+	}
+
+
+	function get_content( $recursive = false ) {
+
+		$handle = opendir( $this->folder_path );
+
+		$entries = [];
+
+		while( ($entry = readdir($handle)) !== false ) {
+
+			if( str_starts_with( $entry, '.' ) ) continue;
+
+			if( is_dir( $this->folder_path.$entry ) ) $entry = trailing_slash_it($entry);
+
+			if( $recursive && is_dir( $this->folder_path.$entry) ) {
+				$subfolder = new Folder( $this->folder_path.$entry );
+				$subitems = $subfolder->get_content( true );
+
+				foreach( $subitems as $subitem ) {
+					$entries[] = $entry.$subitem;
+				}
+			}
+
+			$entries[] = $entry;
+
+		}
+
+		return $entries;
 	}
 
 }
