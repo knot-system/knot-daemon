@@ -13,7 +13,7 @@ Here be dragons:
 	- [x] create
 	- [x] update
 	- [x] delete
-	- [ ] order
+	- [x] order
 - [x] follow
 	- [x] get
 	- [x] post
@@ -56,7 +56,7 @@ You can now add the url as a microsub endpoint to your website, and then use a m
 
 ## Additional Options
 
-You may want to edit the `config.php` a bit after the initial setup and add additional information:
+You may want to edit the `config.php` a bit after the initial setup and add additional settings:
 
 ```php
 <?php
@@ -64,7 +64,7 @@ You may want to edit the `config.php` a bit after the initial setup and add addi
 return [
 	'debug' => false,
 	'logging' => false,
-	'allowed_urls' => [ // a list of 'me' URLs that are allowed to use this microsub server
+	'allowed_urls' => [ // a list of 'me' URLs that are allowed to use this microsub server. every user has their own folder with their own channels and feeds
 		'https://www.example.com/eigenheim/',
 		'https://www.example.com/other-identity/',
 	],
@@ -108,7 +108,7 @@ If you want to reset the whole system, delete the following files and folders an
 
 You should routinely backup your content. To do so, copy these files and folders to a secure location:
 
-- the `config.php`. This contains the theme you use and other settings
-- the `content/` folder. This contains the feeds you are subscribed to
+- the `config.php`. This contains the settings for this server
+- the `content/` folder. This contains the user(s) with their channels and feeds
 
 When you want to restore a backup, delete the current folders & files from your webserver, and upload your backup. You should also delete the `cache/` folder, so everything gets re-cached and is up to date. If you also want to update or reset your system, see the *Update* section above.

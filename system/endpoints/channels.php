@@ -32,14 +32,13 @@ if( $request_type == 'get' ) {
 
 		$uid = $_REQUEST['channel'];
 
-		if( isset($_REQUEST['method']) ) {
-			$method = $_REQUEST['method'];
-		}
-
 	} else {
 		$method = 'create';
 	}
 
+	if( isset($_REQUEST['method']) ) {
+		$method = $_REQUEST['method'];
+	}
 
 	if( $method == 'create' ) {
 
@@ -102,8 +101,21 @@ if( $request_type == 'get' ) {
 
 	} elseif( $method == 'order' ) {
 
-		// TODO
-		$postamt->error( 'not_implemented', 'this method is not yet implemented' );
+		if( empty($_REQUEST['channels']) ) {
+			$postamt->error( 'invalid_request', 'no channels provided' );
+		}
+
+		$reorder_channels = $_REQUEST['channels'];
+
+		if( ! is_array($reorder_channels) || count($reorder_channels) < 2 ) {
+			$postamt->error( 'invalid_request', 'please provide at least 2 channels' );
+		}
+
+		if( ! $postamt->channels->reorder( $reorder_channels ) ) {
+			$postamt->error( 'internal_server_error', 'could not reorder channels', 500 );
+		}
+
+		exit;
 
 	} else {
 		$postamt->error( 'invalid_request', 'invalid method' );

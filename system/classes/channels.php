@@ -292,6 +292,52 @@ class Channels {
 	}
 
 
+	function reorder( $reorder_channels ) {
+
+		// see https://indieweb.org/Microsub-spec#Order_Algorithm
+
+		$map = [];
+
+		global $postamt;
+
+		foreach( $reorder_channels as $reorder_channel_uid ) {
+			if( ! $this->channel_exists( $reorder_channel_uid ) ) {
+				$postamt->error( 'invalid_request', 'at least one channel does not exist' );
+			}
+
+			$channel = $this->get( $reorder_channel_uid, true );
+			$order = $channel['_order'];
+
+			$map[$order] = $reorder_channel_uid;
+
+		}
+
+		ksort($map);
+
+		$i = 0;
+		foreach( $map as $map_order => $map_uid ) {
+			$map[$map_order] = $reorder_channels[$i];
+			$i++;
+		}
+
+		foreach( $map as $new_order => $uid ) {
+
+			$channel = $this->get( $uid, true );
+
+			$path = $channel['_path'];
+
+			$new_path = $this->folder.$new_order.'_'.$uid;
+
+			if( ! rename( $path, $new_path ) ) return false;
+
+		}
+
+		$this->refresh_channels();
+
+		return true;
+	}
+
+
 	function get( $uid = false, $skip_cleanup = false ) {
 
 		$channels = $this->channels;
