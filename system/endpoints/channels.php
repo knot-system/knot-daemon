@@ -43,6 +43,10 @@ if( $request_type == 'get' ) {
 
 	if( $method == 'create' ) {
 
+		if( ! $name ) {
+			$postamt->error( 'invalid_request', 'missing channel name' );
+		}
+
 		// check if channel exists;
 		if( $postamt->channels->channel_exists( false, $name ) ) {
 			$postamt->error( 'internal_server_error', 'a channel with this name already exists', 500 );
@@ -62,6 +66,10 @@ if( $request_type == 'get' ) {
 			$postamt->error( 'invalid_request', 'missing channel name' );
 		}
 
+		if( ! $uid ) {
+			$postamt->error( 'invalid_request', 'missing channel uid' );
+		}
+
 		if( ! $postamt->channels->channel_exists( $uid ) ) {
 			$postamt->error( 'invalid_request', 'this channel does not exist' );
 		}		
@@ -78,8 +86,8 @@ if( $request_type == 'get' ) {
 
 	} elseif( $method == 'delete' ) {
 
-		if( $uid == 'notifications' ) {
-			$postamt->error( 'invalid_request', 'notifications channel cannot be deleted' );
+		if( ! $uid ) {
+			$postamt->error( 'invalid_request', 'missing channel uid' );
 		}
 
 		if( ! $postamt->channels->channel_exists( $uid ) ) {

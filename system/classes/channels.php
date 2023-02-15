@@ -176,6 +176,10 @@ class Channels {
 			return false;
 		}
 
+		if( $uid == 'notifications' ) {
+			return false;
+		}
+
 		// TODO: delete all files in this folder
 		@unlink( $this->folder.$uid.'/channel.txt' );
 
@@ -186,6 +190,14 @@ class Channels {
 	function update_channel( $uid, $new_name ) {
 
 		if( ! $this->channel_exists( $uid ) ) {
+			return false;
+		}
+
+		if( $uid == 'notifications' ) {
+			return false;
+		}
+
+		if( $name == 'global' ) {
 			return false;
 		}
 
