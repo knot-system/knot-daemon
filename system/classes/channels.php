@@ -191,11 +191,7 @@ class Channels {
 
 		$this->refresh_channels();
 
-		return [
-			'uid' => $uid,
-			'name' => $name
-		];
-
+		return $this->get( $uid );
 	}
 
 
@@ -274,24 +270,35 @@ class Channels {
 
 		$this->refresh_channels();
 
-		return $content;
+		return $this->get( $new_uid );
 	}
 
 
-	function get() {
+	function get( $uid = false ) {
 
 		$channels = $this->channels;
 
+		if( $uid ) {
+
+			if( ! $this->channel_exists($uid) ) return false;
+
+			return $this->cleanup_channel( $channels[$uid] );
+		}
+
+
 		$channels = array_map( function($channel){
-			unset($channel['_order']);
-			unset($channel['_path']);
-
-			return $channel;
+			return $this->cleanup_channel($channel);
 		}, $channels );
-
 		$channels = array_values($channels); // remove keys
-
 		return $channels;
+	}
+
+
+	function cleanup_channel( $channel ) {
+		unset($channel['_order']);
+		unset($channel['_path']);
+
+		return $channel;
 	}
 
 }
