@@ -33,7 +33,7 @@ class Channels {
 
 		$folder = new Folder( $this->folder );
 
-		$subfolders = $folder->load_subfolders()->get_subfolders();
+		$subfolders = $folder->get_subfolders( true );
 
 		foreach( $subfolders as $subfolder ) {
 

@@ -28,7 +28,7 @@ class Feeds {
 
 		$folder = new Folder( $this->folder );
 
-		$subfolders = $folder->load_subfolders()->get_subfolders();
+		$subfolders = $folder->get_subfolders();
 
 		foreach( $subfolders as $subfolder ) {
 

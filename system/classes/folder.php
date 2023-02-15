@@ -3,7 +3,6 @@
 class Folder {
 	
 	public $folder_path;
-	public $subfolders = [];
 
 	function __construct( $folder_path ){
 
@@ -16,7 +15,7 @@ class Folder {
 	}
 
 
-	function load_subfolders() {
+	function get_subfolders( $use_order = false ) {
 
 		$handle = opendir( $this->folder_path );
 
@@ -28,36 +27,41 @@ class Folder {
 
 			if( ! is_dir($this->folder_path.$entry) ) continue;
 
-			$name_exp = explode( '_', $entry );
+			$order = false;
+			if( $use_order ) {
 
-			if( count($name_exp) > 1 ) {
-				$order = (int) array_shift($name_exp);
-				$name = implode( '_', $name_exp );
-			} else {
-				$order = 0;
-				$name = $entry;
+				$name_exp = explode( '_', $entry );
+				if( count($name_exp) > 1 ) {
+					$order = (int) array_shift($name_exp);
+					$name = implode( '_', $name_exp );
+				} else {
+					$order = 0;
+					$name = $entry;
+				}
+
+				$order_pad = str_pad( $order, 8, '0', STR_PAD_LEFT );
+
 			}
 
-			$order_pad = str_pad( $order, 8, '0', STR_PAD_LEFT );
-
-			$subfolders[$order_pad.'-'.$name] = [
-				'order' => $order,
+			$subfolder =  [
 				'name' => $name,
 				'path' => trailing_slash_it($this->folder_path.$entry)
 			];
+
+			$subfolder_id = $name;
+
+			if( $order !== false ) {
+				$subfolder['order'] = $order;
+				$subfolder_id = $order_pad.'-'.$subfolder_id;
+			}
+
+			$subfolders[$subfolder_id] = $subfolder;
 
 		}
 
 		ksort($subfolders);
 
-		$this->subfolders = $subfolders;
-
-		return $this;
-	}
-
-
-	function get_subfolders() {
-		return $this->subfolders;
+		return $subfolders;
 	}
 
 }
