@@ -6,7 +6,8 @@ class Request {
 	private $timeout;
 	private $url;
 
-	private $body;
+	private $http_status_code;
+	private $output;
 
 	function __construct() {
 
@@ -28,27 +29,51 @@ class Request {
 
 		$this->curl_request();
 
-		if( ! $this->body ) return false;
+		if( ! $this->output ) return false;
 
-		return $this->body;
+		return $this->output;
 	}
 
-	function curl_request( $force = false ) {
+	function curl_request( $force = false, $header = false, $nobody = false, $http_status_code = false, $followlocation = true ) {
 
 		if( ! $this->url ) return false;
 
-		if( $force || ! $this->body ) {
+		if( $force || ! $this->output ) {
 
 			$ch = curl_init( $this->url );
 			curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+
+			if( $header ) curl_setopt( $ch, CURLOPT_HEADER, true );
+			if( $nobody ) curl_setopt( $ch, CURLOPT_NOBODY, true );
+			
 			curl_setopt( $ch, CURLOPT_USERAGENT, $this->user_agent );
-			curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
+			
+			if( $followlocation ) curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
+
 			curl_setopt( $ch, CURLOPT_TIMEOUT, $this->timeout );
 
-			$this->body = curl_exec( $ch );
+			$output = curl_exec( $ch );
+
+			if( $http_status_code ) {
+				$this->http_status_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+			}
+
+			$this->output = $output;
+
 			curl_close( $ch );
 		}
 
+		return $this;
+	}
+
+
+	function get_status_code() {
+		return $this->http_status_code;
+	}
+
+
+	function get_output() {
+		return $this->output;
 	}
 
 

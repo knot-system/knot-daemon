@@ -101,6 +101,21 @@ class Feeds {
 
 		if( ! $url ) return false;
 
+
+		$request = new Request();
+		$request->set_url( $url );
+		$request->curl_request( true, true, true, true, false );
+		$status_code = $request->get_status_code();
+		$original_url = false;
+
+		if( $status_code == 301 || $status_code == 308 ) {
+			$original_url = $url;
+			$headers = $request->get_output();
+
+			// TODO: use headers location url as $url and follow the redirect
+		}
+
+
 		$id = $this->create_id( $url );
 
 		if( ! $id ) return false;
@@ -111,9 +126,15 @@ class Feeds {
 			return false;
 		}
 
+		// TODO: check, if the url returns status code 200
+		// or if it is a temporary redirect, then check the target url for 200
+		// 302 Found
+		// 303 See Other
+		// 307 Temporary Redirect
+		// keep redirect url as $redirect_url and add it to the _feed.txt
 
 		// TODO: check, if the url is a valid feed
-
+		// (start with RSS, add other feeds later)
 
 		global $postamt;
 
@@ -130,6 +151,10 @@ class Feeds {
 			'type' => 'feed',
 			'url' => $url
 		];
+
+		if( $original_url ) {
+			$feed['_original_url'] = $original_url;
+		}
 
 		if( ! $file->exists() ) {
 
