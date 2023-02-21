@@ -16,8 +16,7 @@ include_once( $abspath.'system/classes.php' );
 $postamt = new Postamt( true );
 
 if( empty($_GET['secret']) ) {
-	echo 'please provide a secret';
-	exit;
+	$postamt->error( 'invalid_request', 'missing secret', 400, false );
 }
 
 $secret = $_GET['secret'];
@@ -25,7 +24,7 @@ $secret = $_GET['secret'];
 $secret_option = $postamt->config->get('cron_secret');
 
 if( $secret != $secret_option ) {
-	echo 'wrong secret';
+	$postamt->error( 'invalid_request', 'missing secret', 400, false );
 	exit;
 }
 

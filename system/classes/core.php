@@ -59,14 +59,18 @@ class Postamt {
 		return $this;
 	}
 
-	function error( $error, $description, $status_code = 400 ) {
+	function error( $error, $description, $status_code = 400, $json = true ) {
 
 		http_response_code( $status_code );
 
-		echo json_encode([
-			'error' => $error,
-			'error_description' => $description
-		]);
+		if( $json ) {
+			echo json_encode([
+				'error' => $error,
+				'error_description' => $description
+			]);
+		} else {
+			echo '<strong>'.$error.'</strong> - '.$description;
+		}
 
 		exit;
 	}
