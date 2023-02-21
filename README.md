@@ -40,7 +40,7 @@ Here be dragons:
 	- [o] json
 	- [ ] microformats2
 	- [ ] activitypub
-- [ ] cronjob to collect in the background
+- [o] cronjob to collect in the background
 
 ## Requirements
 
@@ -69,6 +69,25 @@ You can now add the url as a microsub endpoint to your website, and then use a m
 <link rel="microsub" href="https://www.example.com/postamt/">
 ```
 
+### Cronjob
+
+This service needs a cronjob, to update the feeds in the background. The best solution is to add a cronjob directly on the server, but you could also use an external service if this is not possible.
+
+After installing, open the `config.php` in the root folder. There you find a line `'cron_secret' => '…'` with a random string. Copy this random string, this is the secret that makes sure that we are allowed to call the cronjob.
+
+Add a cronjob, and point it to the `cron.php` in the root directory. Append the secret string as a parameter: `cron.php?secret=…`. This could be an example configuration:
+
+```
+$ crontab -e
+
+# postamt cronjob, every hour at minute 37:
+37 */1 * * * /usr/bin/php /path/to/postamt/cron.php secret=…
+```
+
+If you use an external service, point it to the `cron.php` in your base url, and append the secret string: `https://www.example.com/postamt/cron.php?secret=…`
+
+The recommended frequency is 1 hour. You should not use a frequency lower than 5 minutes to not overwhelm your own server or the servers of people you follow.
+
 ## Additional Options
 
 You may want to edit the `config.php` a bit after the initial setup and add additional settings:
@@ -79,6 +98,7 @@ You may want to edit the `config.php` a bit after the initial setup and add addi
 return [
 	'debug' => false,
 	'logging' => false,
+	'cron_secret' => '[a random string]',
 	'allowed_urls' => [ // a list of 'me' URLs that are allowed to use this microsub server. every user has their own folder with their own channels and feeds
 		'https://www.example.com/eigenheim/',
 		'https://www.example.com/other-identity/',
