@@ -139,6 +139,11 @@ class Feeds {
 			$headers = $request->get_headers();
 			if( ! empty($headers['location']) ) $redirect_url = $headers['location'];
 
+			if( $this->feed_exists( $this->create_id($redirect_url) ) ) {
+				// redirected url already exists as a feed!
+				return false;
+			}
+
 		} elseif( $status_code != 200 ) {
 			// 200 OK
 
@@ -256,6 +261,8 @@ class Feeds {
 	function cleanup_feed( $feed ) {
 		unset($feed['_id']);
 		unset($feed['_path']);
+		unset($feed['_original_url']);
+		unset($feed['_redirect_url']);
 
 		return $feed;
 	}
