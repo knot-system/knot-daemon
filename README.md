@@ -35,9 +35,9 @@ Here be dragons:
 	- [ ] post
 - [ ] unblock
 - [ ] collecting of feeds
-	- [ ] rss
-	- [ ] atom
-	- [ ] json
+	- [o] rss
+	- [o] atom
+	- [o] json
 	- [ ] microformats2
 	- [ ] activitypub
 - [ ] cronjob to collect in the background
