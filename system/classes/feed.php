@@ -7,6 +7,7 @@ class Feed {
 	private $id;
 	private $path;
 	private $info;
+	private $posts;
 
 	function __construct( $path ) {
 
@@ -243,11 +244,14 @@ class Feed {
 
 		if( ! empty($item['id']) ) {
 			$id = $item['id'];
-			$internal_id = get_hash($id);
+			$internal_id = $id;
 		} else {
 			$id = get_hash( $permalink );
 			$internal_id = $id;
 		}
+
+		$internal_id = get_hash( $this->path.$id ); // create a unique id for this item in this feed in this channel
+		
 
 		// check if item exists already
 
@@ -301,8 +305,19 @@ class Feed {
 			$author = $item['author'];
 		}
 
+
+		// TODO: streamline $date_published & $date_modified
+
+		if( ! $date_published ) {
+			$date_published = date('c', time()); // fallback, if no date is set
+			$this->import_error( 'item '.$internal_id.' ('.$id.') has no published date, fall back to current date' );
+		}
+
+		if( ! $date_modified ) $date_modified = $date_published; // fallback, if no modified date is set
+
 		$post = [
 			'id' => $id,
+			'permalink' => $permalink,
 			'internal_id' => $internal_id,
 			'title' => $title,
 			'content_html' => $content_html,
@@ -317,6 +332,79 @@ class Feed {
 		$file->create( $post );
 
 		return true;
+	}
+
+
+	function get_posts() {
+
+		if( $this->posts ) return $posts;
+
+		$posts = [];
+
+		$posts_folder = new Folder( $this->path );
+
+		$files = $posts_folder->get_content();
+
+		foreach( $files as $filename ) {
+			if( $filename == '_feed.txt' ) continue;
+
+			if( ! str_starts_with( strtolower($filename), 'item-' ) ) continue;
+
+			$filepath = $this->path.$filename;
+
+			$post = $this->get_post( $filepath );
+
+			$sort_id = $post['_sort_id'];
+			unset($post['_sort_id']);
+			
+			$posts[$sort_id] = $post;
+		}
+
+		krsort($posts);
+
+		$this->posts = $posts;
+
+		return $posts;
+	}
+
+
+	function get_post( $filepath ) {
+
+		if( ! file_exists($filepath) ) return false;
+
+		$file = new File( $filepath );
+
+		$file_content = $file->get();
+
+		if( isset($file_content['_raw']) ) unset($file_content['_raw']);
+
+		if( ! empty($file_content['date_modified']) ) {
+			$date = $file_content['date_modified'];
+		} else {
+			$date = $file_content['date_published'];
+		}
+
+		$sort_id = $date.'-'.$file_content['internal_id'];
+
+		$post = [
+			'_sort_id' => $sort_id,
+			'_id' => $file_content['internal_id'],
+			'type' => 'entry',
+			'uid' => $file_content['id'],
+			'published' => $date,
+			'url' => $file_content['permalink'],
+			'content' => [
+				'text' => $file_content['content_text'],
+				'html' => $file_content['content_html']
+			],
+		];
+
+		if( ! empty($file_content['author']) ) $post['author'] = $file_content['author'];
+		if( ! empty($file_content['image']) ) $post['photo'] = $file_content['image'];
+
+		// TODO: set $post['_is_read']		
+
+		return $post;
 	}
 
 

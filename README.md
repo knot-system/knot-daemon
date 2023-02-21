@@ -8,6 +8,8 @@ Here be dragons:
 
 ## currently implemented
 
+(everything is still work in progress and may change in the future, or not work fully yet)
+
 - [x] channels
 	- [x] get
 	- [x] create
@@ -21,7 +23,7 @@ Here be dragons:
 - [ ] search
 - [ ] preview
 - [ ] timeline
-	- [ ] get
+	- [x] get
 	- [ ] post
 		- [ ] mark_read
 		- [ ] mark_unread
@@ -35,12 +37,12 @@ Here be dragons:
 	- [ ] post
 - [ ] unblock
 - [ ] collecting of feeds
-	- [o] rss
-	- [o] atom
-	- [o] json
+	- [x] rss
+	- [x] atom
+	- [x] json
 	- [ ] microformats2
 	- [ ] activitypub
-- [o] cronjob to collect in the background
+- [x] cronjob to collect in the background
 
 ## Requirements
 

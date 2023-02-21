@@ -7,6 +7,7 @@ class Feeds {
 	public $channel;
 	public $folder;
 	public $feeds = [];
+	private $items;
 
 	function __construct( $channel ) {
 
@@ -229,6 +230,25 @@ class Feeds {
 		$this->refresh_feeds();
 
 		return $return;
+	}
+
+
+	function get_items() {
+
+		if( $this->items ) return $this->items;
+
+		$items = [];
+
+		foreach( $this->feeds as $feed ) {
+			$items = array_merge( $items, $feed->get_posts() );
+		}
+
+		krsort($items);
+		$items = array_values($items); // remove keys
+
+		$this->items = $items;
+
+		return $items;
 	}
 
 
