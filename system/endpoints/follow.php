@@ -20,7 +20,13 @@ $feeds = new Feeds( $channel );
 
 if( $request_type == 'get' ) {
 
-	$items = $feeds->get();
+	$feedlist = $feeds->get();
+
+	$items = [];
+
+	foreach( $feedlist as $feed ) {
+		$items[] = $feed->get( true );
+	}
 
 	echo json_encode([
 		'items' => $items
@@ -46,7 +52,7 @@ if( $request_type == 'get' ) {
 		$postamt->error( 'internal_server_error', 'could not add url to channel', 500 );
 	}
 	
-	echo json_encode( $new_feed );
+	echo json_encode( $new_feed->get(true) );
 
 	exit;
 

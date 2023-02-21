@@ -34,15 +34,11 @@ class Feeds {
 
 			$path = $subfolder['path'];
 
-			$file = new File( $path.'_feed.txt' );
-
-			$feed = $file->get();
+			$feed = new Feed( $path );
 
 			if( ! $feed ) continue;
 
-			$feed['_path'] = $path;
-
-			$feeds[$feed['_id']] = $feed;
+			$feeds[$feed->get_id()] = $feed;
 
 		}
 
@@ -83,9 +79,7 @@ class Feeds {
 			if( ! $url ) return 'error';
 
 			foreach( $this->feeds as $feed ) {
-				if( $feed['url'] == $url ) {
-					return true;
-				}
+				if( $feed->has_url($url) ) return true;
 			}
 
 			return false;
@@ -123,7 +117,6 @@ class Feeds {
 		$id = $this->create_id( $url );
 
 		if( ! $id ) return false;
-
 
 		if( $this->feed_exists( $id ) ) {
 			// a feed with this id does already exist!
@@ -210,7 +203,7 @@ class Feeds {
 
 		$feed = $this->feeds[$id];
 
-		$path = $feed['_path'];
+		$path = $feed->get_path();
 
 		if( ! is_dir($path) ) return false; // just a small sanity check here ..
 
@@ -246,25 +239,12 @@ class Feeds {
 		if( $id ) {
 			if( ! $this->feed_exists($id) ) return false;
 
-			return $this->cleanup_feed( $feeds[$id] );
+			$feed = $feeds[$id];
+
+			return $feed;
 		}
 
-
-		$feeds = array_map( function($feed){
-			return $this->cleanup_feed($feed);
-		}, $feeds );
-		$feeds = array_values($feeds); // remove keys
 		return $feeds;
-	}
-
-
-	function cleanup_feed( $feed ) {
-		unset($feed['_id']);
-		unset($feed['_path']);
-		unset($feed['_original_url']);
-		unset($feed['_redirect_url']);
-
-		return $feed;
 	}
 	
 }

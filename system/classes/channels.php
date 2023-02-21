@@ -7,15 +7,20 @@ class Channels {
 	public $folder;
 	public $channels = [];
 
-	function __construct( $postamt ) {
+	function __construct( $postamt, $folder = false ) {
 
-		$me = $postamt->session->canonical_me;
+		if( ! $folder ) {
 
-		if( ! $me ) return false;
+			$me = $postamt->session->canonical_me;
 
-		$folder = $postamt->abspath.$postamt->session->me_folder;
+			if( ! $me ) return false;
 
-		if( ! is_dir($folder) ) return false; // this should not happen (if this folder is missing, we create the folder in the Session class and abort if this fails, but better make a sanity check here .. )
+			$folder = $postamt->abspath.$postamt->session->me_folder;
+
+		}
+
+
+		if( ! is_dir($folder) ) return false;
 
 		$this->folder = $folder;
 
