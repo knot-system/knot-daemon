@@ -112,8 +112,8 @@ class Feed {
 
 		$body = $request->get_body();
 
-		if( str_contains($content_type, 'application/rss+xml') || str_contains($content_type, 'application/xml') ) {
-			// handle rss feed
+		if( str_contains($content_type, 'application/rss+xml') || str_contains($content_type, 'application/atom+xml') || str_contains($content_type, 'application/xml') ) {
+			// handle rss or atom feed
 
 			$this->import_posts_rss( $body );
 
@@ -136,8 +136,7 @@ class Feed {
 	}
 
 	function import_posts_json( $body ) {
-		// TODO: import json feed
-
+		
 		$json = json_decode($body, true);
 
 		if( $json === NULL ) {
@@ -145,8 +144,98 @@ class Feed {
 			return false; 
 		}
 
-		var_dump($json);
+		if( empty($json['items']) ) {
+			$this->import_error( 'json: no items found' );
+			return false;
+		}
 
+		foreach( $json['items'] as $item ) {
+			$this->import_item( $item );
+		}
+
+		return true;
+	}
+
+
+	function import_item( $item ) {
+
+		if( empty($item['permalink']) ) {
+			$this->import_error( 'item has no permalink' );
+			return false;
+		}
+
+		$permalink = $item['permalink'];
+
+		if( ! empty($item['id']) ) {
+			$id = $item['id'];
+			$internal_id = get_hash($id);
+		} else {
+			$id = get_hash( $permalink );
+			$internal_id = $id;
+		}
+
+		// check if item exists already
+
+		$post_path = $this->path.'item-'.$internal_id.'.txt';
+		$file = new File( $post_path );
+
+		if( $file->exists() ) {
+			// TODO: maybe try to refresh content?
+			return true;
+		}
+
+		$title = false;
+		if( ! empty($item['title']) ) {
+			$title = $item['title'];
+		}
+
+		$content_html = false;
+		if( ! empty($item['content_html']) ) {
+			$content_html = $item['content_html'];
+			// TODO: remove 'script' tags and other things that could be harmful?
+		}
+
+		$content_text = false;
+		if( ! empty($item['content_text']) ) {
+			$content_text = $item['content_text'];
+		} elseif( $content_html ) {
+			$content_text = strip_tags( $content_html );
+		}
+
+		if( ! $content_html && ! $content_text && ! $title ) {
+			$this->import_error( 'item '.$id.' has no title nor content' );
+		}
+
+		$date_published = false;
+		if( ! empty($item['date_published']) ) {
+			$date_published = $item['date_published'];
+		}
+
+		$date_modified = false;
+		if( ! empty($item['date_modified']) ) {
+			$date_modified = $item['date_modified'];
+		}
+
+		$image = false;
+		if( ! empty($item['image']) ) {
+			$image = $item['image'];
+		}
+
+		$post = [
+			'id' => $id,
+			'internal_id' => $internal_id,
+			'title' => $title,
+			'content_html' => $content_html,
+			'content_text' => $content_text,
+			'date_published' => $date_published,
+			'date_modified' => $date_modified,
+			'image' => $image,
+			'_raw' => json_encode($item)
+		];
+
+		$file->create( $post );
+
+		return true;
 	}
 
 
@@ -155,7 +244,11 @@ class Feed {
 		$id = $this->id;
 		$path = $this->path;
 
-		// TODO: log this
+		$message = 'feed import error in '.$id.' ('.$path.'): '.$message;
+
+		global $postamt;
+		$postamt->log->message( $message );
+
 		// TODO: disable this feed if it fails multiple times
 
 	}

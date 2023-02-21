@@ -4,7 +4,7 @@
 
 return [
 	'debug' => false,
-	'logging' => false,
+	'logging' => true,
 	'cache_lifetime' => 60*60*24*30, // 30 days, in seconds
 	'allowed_urls' => [], // an array with urls of allowed users ('me' parameters)
 ];
