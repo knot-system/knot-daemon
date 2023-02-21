@@ -72,6 +72,8 @@ class Postamt {
 			echo '<strong>'.$error.'</strong> - '.$description;
 		}
 
+		$this->log->message( $error.' ('.$status_code.'): '.$description );
+
 		exit;
 	}
 
