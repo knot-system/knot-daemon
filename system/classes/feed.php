@@ -77,13 +77,13 @@ class Feed {
 		if( $redirect_url ) {
 			// if available, use _redirect_url
 			$request = new Request( $redirect_url );
-			$request->curl_request( false );
+			$request->curl_request( true );
 			$status_code = $request->get_status_code();
 		}
 
 		if( $status_code != 200 ) {
 			$request = new Request( $url );
-			$request->curl_request( false );
+			$request->curl_request( true );
 			$status_code = $request->get_status_code();
 			// TODO: if $redirect_url is set, update with new location; see Feeds->create_feed()
 		}
@@ -91,7 +91,7 @@ class Feed {
 		if( $status_code != 200 ) {
 			// if available, and $url fails, us _original_url
 			$request = new Request( $original_url );
-			$request->curl_request( false );
+			$request->curl_request( true );
 			$status_code = $request->get_status_code();
 			// TODO: maybe update $url with new location; see Feeds->create_feed()
 		}
