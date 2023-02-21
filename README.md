@@ -34,8 +34,12 @@ Here be dragons:
 	- [ ] get
 	- [ ] post
 - [ ] unblock
-
-- [ ] collecting of posts
+- [ ] collecting of feeds
+	- [ ] rss
+	- [ ] atom
+	- [ ] json
+	- [ ] microformats2
+	- [ ] activitypub
 - [ ] cronjob to collect in the background
 
 ## Initial Setup

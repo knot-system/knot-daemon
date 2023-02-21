@@ -132,14 +132,15 @@ class Feeds {
 
 		$redirect_url = false;
 		if( $status_code == 302 || $status_code == 303 || $status_code == 307 ) {
-
 			// 302 Found
 			// 303 See Other
 			// 307 Temporary Redirect
+
 			$headers = $request->get_headers();
 			if( ! empty($headers['location']) ) $redirect_url = $headers['location'];
 
 		} elseif( $status_code != 200 ) {
+			// 200 OK
 
 			return false;
 
