@@ -220,6 +220,11 @@ class Feed {
 		}
 
 		foreach( $json['items'] as $item ) {
+
+			if( empty($item['permalink']) && ! empty($item['url']) ) {
+				$item['permalink'] = $item['url'];
+			}
+
 			$this->import_item( $item );
 		}
 
