@@ -70,9 +70,7 @@ class IndieAuth {
 
 		if( ! $this->url_is_valid($url) ) return false;
 
-		$this->request()->set_url($url);
-
-		$body = $this->request->get_body();
+		$body = $this->request()->set_url($url)->curl_request()->get_body();
 
 		if( ! $body ) return false;
 

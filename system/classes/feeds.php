@@ -102,9 +102,8 @@ class Feeds {
 		if( ! $url ) return false;
 
 
-		$request = new Request();
-		$request->set_url( $url );
-		$request->curl_request( true, true, true, true, false );
+		$request = new Request( $url );
+		$request->curl_request( true, false );
 		$status_code = $request->get_status_code();
 		$original_url = false;
 

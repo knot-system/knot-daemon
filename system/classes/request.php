@@ -7,14 +7,17 @@ class Request {
 	private $url;
 
 	private $http_status_code;
-	private $output;
+	private $headers = [];
+	private $body;
 
-	function __construct() {
+	function __construct( $url = false ) {
 
 		global $postamt;
 
 		$this->user_agent = 'maxhaesslein/postamt/'.$postamt->version();
 		$this->timeout = 10;
+
+		if( $url ) $this->url = $url;
 
 	}
 
@@ -25,40 +28,38 @@ class Request {
 	}
 
 
-	function get_body(){
-
-		$this->curl_request();
-
-		if( ! $this->output ) return false;
-
-		return $this->output;
-	}
-
-	function curl_request( $force = false, $header = false, $nobody = false, $http_status_code = false, $followlocation = true ) {
+	function curl_request( $force = false, $followlocation = true ) {
 
 		if( ! $this->url ) return false;
 
-		if( $force || ! $this->output ) {
+		if( $force || ! $this->body ) {
 
 			$ch = curl_init( $this->url );
 			curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
-
-			if( $header ) curl_setopt( $ch, CURLOPT_HEADER, true );
-			if( $nobody ) curl_setopt( $ch, CURLOPT_NOBODY, true );
-			
+			curl_setopt( $ch, CURLOPT_HEADER, true );
 			curl_setopt( $ch, CURLOPT_USERAGENT, $this->user_agent );
 			
 			if( $followlocation ) curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
 
 			curl_setopt( $ch, CURLOPT_TIMEOUT, $this->timeout );
 
-			$output = curl_exec( $ch );
+			$headers = [];
+			curl_setopt( $ch, CURLOPT_HEADERFUNCTION, function($curl, $header) use (&$headers) {
+				$len = strlen($header);
+				$header = explode(':', $header, 2);
+				if (count($header) < 2) // ignore invalid headers
+				return $len;
 
-			if( $http_status_code ) {
-				$this->http_status_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-			}
+				$headers[strtolower(trim($header[0]))][] = trim($header[1]);
 
-			$this->output = $output;
+				return $len;
+			});
+			$this->headers = $headers;
+
+			$body = curl_exec( $ch );
+			$this->body = $body;
+
+			$this->http_status_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
 
 			curl_close( $ch );
 		}
@@ -71,9 +72,18 @@ class Request {
 		return $this->http_status_code;
 	}
 
+	function get_body() {
 
-	function get_output() {
-		return $this->output;
+		if( ! $this->body ) return false;
+
+		return $this->body;
+	}
+
+	function get_headers() {
+
+		if( ! $this->headers || ! count($this->headers) ) return false;
+
+		return $this->headers;
 	}
 
 
