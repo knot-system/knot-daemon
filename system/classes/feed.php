@@ -132,7 +132,77 @@ class Feed {
 
 
 	function import_posts_rss( $body ) {
-		// TODO: import rss feed
+
+		// TODO: check compatibility with atom
+
+		$rss = simplexml_load_string( $body );
+
+		foreach( $rss->channel->item as $rss_item ) {
+
+			$title = $rss_item->title;
+			if( $title ) {
+				$title = $title->__toString();
+			} else {
+				$title = false;
+			}
+
+			$link = $rss_item->link;
+			if( $link ) {
+				$link = $link->__toString();
+			} else {
+				$link = false;
+			}
+
+			$guid = $rss_item->guid;
+			if( $guid ) {
+				$guid = $guid->__toString();
+			} else {
+				$guid = false;
+			}
+
+			$description = $rss_item->description;
+			if( $description ) {
+				$description = $description->__toString();
+			} else {
+				$description = false;
+			}
+
+			$pubDate = $rss_item->pubDate;
+			if( $pubDate ) {
+				$pubDate = $pubDate->__toString();
+			} else {
+				$pubDate = false;
+			}
+
+			$image_url = $rss_item->enclosure->url;
+			if( $image_url ) {
+				$image_url = $image_url->__toString();
+			} else {
+				$image_url = false;
+			}
+
+			$author = $rss_item->author;
+			if( $author ) {
+				$author = $author->__toString();
+			} else {
+				$author = false;
+			}
+			
+			$item = [
+				'id' => $guid,
+				'permalink' => $link,
+				'title' => $title,
+				'content_html' => $description,
+				'date_published' => $pubDate,
+				'image' => $image_url,
+				'author' => $author
+			];
+
+			$this->import_item($item);
+
+		}
+
+		return true;
 	}
 
 	function import_posts_json( $body ) {
@@ -221,6 +291,11 @@ class Feed {
 			$image = $item['image'];
 		}
 
+		$author = false;
+		if( ! empty($item['author']) ) {
+			$author = $item['author'];
+		}
+
 		$post = [
 			'id' => $id,
 			'internal_id' => $internal_id,
@@ -229,6 +304,7 @@ class Feed {
 			'content_text' => $content_text,
 			'date_published' => $date_published,
 			'date_modified' => $date_modified,
+			'author' => $author,
 			'image' => $image,
 			'_raw' => json_encode($item)
 		];
