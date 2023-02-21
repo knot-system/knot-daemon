@@ -28,41 +28,38 @@ class Request {
 	}
 
 
-	function curl_request( $force = false, $followlocation = true ) {
+	function curl_request( $followlocation = true ) {
 
 		if( ! $this->url ) return false;
 
-		if( $force || ! $this->body ) {
+		$ch = curl_init( $this->url );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+		curl_setopt( $ch, CURLOPT_HEADER, true );
+		curl_setopt( $ch, CURLOPT_USERAGENT, $this->user_agent );
+		
+		if( $followlocation ) curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
 
-			$ch = curl_init( $this->url );
-			curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
-			curl_setopt( $ch, CURLOPT_HEADER, true );
-			curl_setopt( $ch, CURLOPT_USERAGENT, $this->user_agent );
-			
-			if( $followlocation ) curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
+		curl_setopt( $ch, CURLOPT_TIMEOUT, $this->timeout );
 
-			curl_setopt( $ch, CURLOPT_TIMEOUT, $this->timeout );
+		$headers = [];
+		curl_setopt( $ch, CURLOPT_HEADERFUNCTION, function( $curl, $header ) use (&$headers) {
+			$len = strlen($header);
+			$header = explode(':', $header, 2);
+			if( count($header) < 2 ) return $len; // ignore invalid headers
 
-			$headers = [];
-			curl_setopt( $ch, CURLOPT_HEADERFUNCTION, function($curl, $header) use (&$headers) {
-				$len = strlen($header);
-				$header = explode(':', $header, 2);
-				if (count($header) < 2) // ignore invalid headers
-				return $len;
+			$headers[strtolower(trim($header[0]))] = trim($header[1]);
 
-				$headers[strtolower(trim($header[0]))][] = trim($header[1]);
+			return $len;
+		});
 
-				return $len;
-			});
-			$this->headers = $headers;
 
-			$body = curl_exec( $ch );
-			$this->body = $body;
+		$body = curl_exec( $ch );
 
-			$this->http_status_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+		$this->http_status_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+		$this->body = $body;
+		$this->headers = $headers;
 
-			curl_close( $ch );
-		}
+		curl_close( $ch );
 
 		return $this;
 	}

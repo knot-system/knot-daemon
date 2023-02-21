@@ -103,17 +103,22 @@ class Feeds {
 
 
 		$request = new Request( $url );
-		$request->curl_request( true, false );
+		$request->curl_request( false );
 		$status_code = $request->get_status_code();
+
 		$original_url = false;
-
 		if( $status_code == 301 || $status_code == 308 ) {
+			// 301 Moved Permanently
+			// 308 Permanent Redirect
+
 			$original_url = $url;
-			$headers = $request->get_output();
+			$headers = $request->get_headers();
 
-			// TODO: use headers location url as $url and follow the redirect
+			if( ! empty($headers['location']) ) {
+				$url = $headers['location'];
+				$status_code = 200; // TODO / FIXME: maybe make request to the new url? or call 'create_feed' again with new url, and a counter to catch endless redirects? for now, we just assume the new url is valid and returns 200
+			}
 		}
-
 
 		$id = $this->create_id( $url );
 
@@ -125,12 +130,20 @@ class Feeds {
 			return false;
 		}
 
-		// TODO: check, if the url returns status code 200
-		// or if it is a temporary redirect, then check the target url for 200
-		// 302 Found
-		// 303 See Other
-		// 307 Temporary Redirect
-		// keep redirect url as $redirect_url and add it to the _feed.txt
+		$redirect_url = false;
+		if( $status_code == 302 || $status_code == 303 || $status_code == 307 ) {
+
+			// 302 Found
+			// 303 See Other
+			// 307 Temporary Redirect
+			$headers = $request->get_headers();
+			if( ! empty($headers['location']) ) $redirect_url = $headers['location'];
+
+		} elseif( $status_code != 200 ) {
+
+			return false;
+
+		}
 
 		// TODO: check, if the url is a valid feed
 		// (start with RSS, add other feeds later)
@@ -153,6 +166,9 @@ class Feeds {
 
 		if( $original_url ) {
 			$feed['_original_url'] = $original_url;
+		}
+		if( $redirect_url ) {
+			$feed['_redirect_url'] = $redirect_url;
 		}
 
 		if( ! $file->exists() ) {
