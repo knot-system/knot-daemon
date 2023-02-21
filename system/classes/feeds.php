@@ -97,7 +97,7 @@ class Feeds {
 
 
 		$request = new Request( $url );
-		$request->curl_request( false );
+		$request->curl_request( false, true );
 		$status_code = $request->get_status_code();
 
 		$original_url = false;

@@ -28,7 +28,7 @@ class Request {
 	}
 
 
-	function curl_request( $followlocation = true ) {
+	function curl_request( $followlocation = true, $nobody = false ) {
 
 		if( ! $this->url ) return false;
 
@@ -36,6 +36,8 @@ class Request {
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
 		curl_setopt( $ch, CURLOPT_HEADER, true );
 		curl_setopt( $ch, CURLOPT_USERAGENT, $this->user_agent );
+
+		if( $nobody ) curl_setopt( $ch, CURLOPT_NOBODY, true );
 		
 		if( $followlocation ) curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
 
@@ -54,6 +56,9 @@ class Request {
 
 
 		$body = curl_exec( $ch );
+
+		$header_size = curl_getinfo( $ch, CURLINFO_HEADER_SIZE );
+		$body = substr( $body, $header_size );
 
 		$this->http_status_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
 		$this->body = $body;
