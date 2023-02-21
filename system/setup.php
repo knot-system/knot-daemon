@@ -255,7 +255,7 @@ if( $config_missing ) {
 	include_once( $abspath.'system/functions/helper.php' );
 	$random_string = get_hash( $abspath.uniqid() );
 
-	$content = "<?php\r\n\r\nreturn [\r\n	'debug' => true,\r\n	'cron_secret' => '$random_string',\r\n	'allowed_urls' => [";
+	$content = "<?php\r\n\r\nreturn [\r\n	'debug' => true,\r\n	'logging' => true,\r\n	'cron_secret' => '$random_string',\r\n	'allowed_urls' => [";
 	foreach( $authorized_urls as $authorized_url ) {
 		$content .= "\r\n		'".$authorized_url."',";
 	}
