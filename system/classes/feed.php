@@ -305,15 +305,18 @@ class Feed {
 			$author = $item['author'];
 		}
 
-
-		// TODO: streamline $date_published & $date_modified
-
 		if( ! $date_published ) {
 			$date_published = date('c', time()); // fallback, if no date is set
 			$this->import_error( 'item '.$internal_id.' ('.$id.') has no published date, fall back to current date' );
 		}
 
+
+		$date_published = streamline_date($date_published);
+		if( $date_modified ) $date_modified = streamline_date($date_modified);
+
+
 		if( ! $date_modified ) $date_modified = $date_published; // fallback, if no modified date is set
+
 
 		$post = [
 			'id' => $id,

@@ -77,6 +77,21 @@ function get_hash( $input ) {
 }
 
 
+function streamline_date( $input ) {
+
+	$date = strtotime($input);
+
+	if( $date === false ) {
+		global $postamt;
+		$postamt->debug( 'could not convert date', $input );
+	}
+
+	$return = date('c', $date);
+
+	return $return;
+}
+
+
 function read_folder( $folderpath, $recursive = false ) {
 
 	global $postamt;
