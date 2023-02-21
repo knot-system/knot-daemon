@@ -83,7 +83,7 @@ Add a cronjob, and point it to the `cron.php` in the root directory. Append the 
 $ crontab -e
 
 # postamt cronjob, every hour at minute 37:
-37 */1 * * * /usr/bin/php /path/to/postamt/cron.php secret=…
+37 */1 * * * curl 'https://www.example.com/postamt/cron.php?secret=…'
 ```
 
 If you use an external service, point it to the `cron.php` in your base url, and append the secret string: `https://www.example.com/postamt/cron.php?secret=…`
