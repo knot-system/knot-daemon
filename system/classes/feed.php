@@ -394,6 +394,7 @@ class Feed {
 			'_id' => $file_content['internal_id'],
 			'type' => 'entry',
 			'uid' => $file_content['id'],
+			'name' => $file_content['title'],
 			'published' => $date,
 			'url' => $file_content['permalink'],
 			'content' => [
