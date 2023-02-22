@@ -156,13 +156,17 @@ class Feed {
 		if( $feed_title ) $feed_title = $feed_title->__toString();
 
 		$author_link = false;
+		$feed_link = false;
 		if( $rss->link ) {
 			$author_link = $rss->link;
 			if( isset($author_link['href']) ) $author_link = $author_link['href'];
 		} elseif( $rss->channel->link ) {
 			$author_link = $rss->channel->link;
 		}
-		if( $author_link ) $author_link = $author_link->__toString();
+		if( $author_link ) {
+			$author_link = $author_link->__toString();
+			$feed_link = $author_link;
+		}
 
 		foreach( $items as $rss_item ) {
 
@@ -245,7 +249,8 @@ class Feed {
 				'image' => $image_url,
 				'author_name' => $author_name,
 				'author_link' => $author_link,
-				'feed_title' => $feed_title
+				'feed_title' => $feed_title,
+				'feed_link' => $feed_link,
 			];
 
 			$this->import_item($item);
@@ -275,8 +280,10 @@ class Feed {
 		}
 
 		$author_link = false;
+		$feed_link = false;
 		if( ! empty($json['home_page_url']) ) {
 			$author_link = $json['home_page_url'];
+			$feed_link = $json['home_page_url'];
 		}
 
 		$authors = false;
@@ -291,6 +298,7 @@ class Feed {
 			}
 
 			if( $feed_title ) $item['feed_title'] = $feed_title;
+			if( $feed_link ) $item['feed_link'] = $feed_link;
 			if( $author_link ) $item['author_link'] = $author_link;
 			if( $authors ) $item['authors'] = $authors;
 
@@ -392,6 +400,12 @@ class Feed {
 			$this->import_error( 'item '.$internal_id.' ('.$id.') has no published date, fall back to current date' );
 		}
 
+		$feed_title = false;
+		if( ! empty($item['feed_title']) ) $feed_title = $item['feed_title'];
+
+		$feed_link = false;
+		if( ! empty($item['feed_link']) ) $feed_link = $item['feed_link'];
+
 
 		$date_published = streamline_date($date_published);
 		if( $date_modified ) $date_modified = streamline_date($date_modified);
@@ -421,6 +435,8 @@ class Feed {
 			'date_modified' => $date_modified,
 			'author_name' => $author_name,
 			'author_link' => $author_link,
+			'feed_title' => $feed_title,
+			'feed_link' => $feed_link,
 			'category' => json_encode($categories),
 			'image' => $image,
 			'_raw' => json_encode($item)
@@ -521,9 +537,18 @@ class Feed {
 			$post['category'] = json_decode($file_content['category']);
 		}
 
-		// TODO: set $post['_is_read']	
+		# for _source see https://indieweb.org/Microsub-spec#Indicating_Item_Source_Proposal	
+		$source = false;
+		if( $file_content['feed_title'] ) {
+			$source = [
+				'_id' => $this->id,
+				'name' => $file_content['feed_title']
+			];
+			if( ! empty($file_content['feed_link']) ) $source['url'] = $file_content['feed_link'];
+		}
+		if( $source ) $post['_source'] = $source;
 
-		// TODO: set $post['_source'] - see https://indieweb.org/Microsub-spec#Indicating_Item_Source_Proposal	
+		// TODO: set $post['_is_read']	
 
 		return $post;
 	}
