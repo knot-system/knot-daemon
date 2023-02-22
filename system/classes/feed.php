@@ -147,6 +147,23 @@ class Feed {
 			return false;
 		}
 
+		$feed_title = false;
+		if( $rss->title ) {
+			$feed_title = $rss->title;
+		} elseif( $rss->channel->title ) {
+			$feed_title = $rss->channel->title;
+		}
+		if( $feed_title ) $feed_title = $feed_title->__toString();
+
+		$author_link = false;
+		if( $rss->link ) {
+			$author_link = $rss->link;
+			if( isset($author_link['href']) ) $author_link = $author_link['href'];
+		} elseif( $rss->channel->link ) {
+			$author_link = $rss->channel->link;
+		}
+		if( $author_link ) $author_link = $author_link->__toString();
+
 		foreach( $items as $rss_item ) {
 
 			$title = $rss_item->title;
@@ -209,14 +226,14 @@ class Feed {
 				$image_url = false;
 			}
 
-			$author = $rss_item->author;
-			if( $author ) {
-				if( $author->name ) {
-					$author = $author->name;
+			$author_name = $rss_item->author;
+			if( $author_name ) {
+				if( $author_name->name ) {
+					$author_name = $author_name->name;
 				}
-				$author = $author->__toString();
+				$author_name = $author_name->__toString();
 			} else {
-				$author = false;
+				$author_name = false;
 			}
 			
 			$item = [
@@ -226,7 +243,9 @@ class Feed {
 				'content_html' => $content,
 				'date_published' => $pubDate,
 				'image' => $image_url,
-				'author' => $author
+				'author_name' => $author_name,
+				'author_link' => $author_link,
+				'feed_title' => $feed_title
 			];
 
 			$this->import_item($item);
@@ -250,11 +269,30 @@ class Feed {
 			return false;
 		}
 
+		$feed_title = false;
+		if( ! empty($json['title']) ) {
+			$feed_title = $json['title'];
+		}
+
+		$author_link = false;
+		if( ! empty($json['home_page_url']) ) {
+			$author_link = $json['home_page_url'];
+		}
+
+		$authors = false;
+		if( ! empty($json['authors']) ) {
+			$authors = $json['authors'];
+		}
+
 		foreach( $json['items'] as $item ) {
 
 			if( empty($item['permalink']) && ! empty($item['url']) ) {
 				$item['permalink'] = $item['url'];
 			}
+
+			if( $feed_title ) $item['feed_title'] = $feed_title;
+			if( $author_link ) $item['author_link'] = $author_link;
+			if( $authors ) $item['authors'] = $authors;
 
 			$this->import_item( $item );
 		}
@@ -290,6 +328,7 @@ class Feed {
 
 		$updating = false;
 		if( $file->exists() ) {
+			global $postamt;
 			$force_refresh = $postamt->config->get('force_refresh_posts');
 			if( ! $force_refresh ) {
 				return true;
@@ -306,7 +345,6 @@ class Feed {
 		$content_html = false;
 		if( ! empty($item['content_html']) ) {
 			$content_html = $item['content_html'];
-			// TODO: remove 'script' tags and other things that could be harmful?
 		}
 
 		$content_text = false;
@@ -335,10 +373,19 @@ class Feed {
 			$image = $item['image'];
 		}
 
-		$author = false;
-		if( ! empty($item['author']) ) {
-			$author = $item['author'];
+		$author_name = false;
+		if( ! empty($item['author_name']) ) {
+			$author_name = $item['author_name'];
+		} elseif( ! empty($item['feed_title']) ) {
+			$author_name = $item['feed_title'];
 		}
+
+		$author_link = false;
+		if( ! empty($item['author_link']) ) {
+			$author_link = $item['author_link'];
+		}
+
+		// $item['authors']
 
 		if( ! $date_published ) {
 			$date_published = date('c', time()); // fallback, if no date is set
@@ -358,14 +405,15 @@ class Feed {
 
 		$post = [
 			'id' => $id,
-			'permalink' => $permalink,
 			'internal_id' => $internal_id,
+			'permalink' => $permalink,
 			'title' => $title,
 			'content_html' => $content_html,
 			'content_text' => $content_text,
 			'date_published' => $date_published,
 			'date_modified' => $date_modified,
-			'author' => $author,
+			'author_name' => $author_name,
+			'author_link' => $author_link,
 			'image' => $image,
 			'_raw' => json_encode($item)
 		];
@@ -439,11 +487,19 @@ class Feed {
 			],
 		];
 
-		if( ! empty($file_content['author']) ) {
+		// TODO: remove <script> tags and other things that could be harmful from $post['content']['html']
+
+		if( ! empty($file_content['author_name']) ) {
+
+			$author_link = false;
+			if( ! empty($file_content['author_link']) ) {
+				$author_link = $file_content['author_link'];
+			}
+
 			$post['author'] = [
 				'type' => 'card',
-				'name' => $file_content['author']
-				// 'url' => '', // TODO
+				'name' => $file_content['author_name'],
+				'url' => $author_link,
 				// 'photo' => '', // TODO
 			];
 		}
