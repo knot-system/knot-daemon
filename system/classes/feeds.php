@@ -260,7 +260,7 @@ class Feeds {
 		if( $before ) {
 
 			if( ! array_key_exists($before, $items) ) {
-				return []; // $before does not exist, return no items
+				return [ 'before' => false, 'after' => false, 'items' => [] ]; // $before does not exist, return no items
 			}
 
 			$before_position = array_search( $before, array_keys($items) );
@@ -273,7 +273,7 @@ class Feeds {
 
 				if( $limit < 0 ) {
 					$postamt->error( 'internal_server_error', 'could not retreive feed, limit is below 0', 500 );
-					return [];
+					return [ 'before' => false, 'after' => false, 'items' => [] ];
 				}
 			}
 
@@ -285,7 +285,7 @@ class Feeds {
 		if( $after ) {
 
 			if( ! array_key_exists($after, $items) ) {
-				return []; // $after does not exist, return no items
+				return [ 'before' => false, 'after' => false, 'items' => [] ]; // $after does not exist, return no items
 			}
 
 			$after_position = array_search( $after, array_keys($items) );
