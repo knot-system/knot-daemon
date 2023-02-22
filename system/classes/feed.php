@@ -288,10 +288,14 @@ class Feed {
 		$post_path = $this->path.'item-'.$internal_id.'.txt';
 		$file = new File( $post_path );
 
+		$updating = false;
 		if( $file->exists() ) {
-			// TODO: maybe try to refresh content? or maybe add a config option, if we want to refresh existing content
-			// how to handle read state? we probably should keep the old read state, but add a 'updated at ..' note or something
-			return true;
+			$force_refresh = $postamt->config->get('force_refresh_posts');
+			if( ! $force_refresh ) {
+				return true;
+			}
+
+			$updating = true;
 		}
 
 		$title = false;
@@ -347,6 +351,9 @@ class Feed {
 
 
 		if( ! $date_modified ) $date_modified = $date_published; // fallback, if no modified date is set
+
+
+		// TODO: if $updating is true, keep old read state
 
 
 		$post = [
