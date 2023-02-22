@@ -116,7 +116,7 @@ class Feed {
 		if( str_contains($content_type, 'application/rss+xml') || str_contains($content_type, 'application/atom+xml') || str_contains($content_type, 'application/xml') ) {
 			// handle rss or atom feed
 
-			$this->import_posts_rss( $body );
+			$this->import_posts_rss( $body, $content_type );
 
 		} elseif( str_contains($content_type, 'application/json') ) {
 			// handle json feed
@@ -132,13 +132,22 @@ class Feed {
 	}
 
 
-	function import_posts_rss( $body ) {
-
-		// TODO: check compatibility with atom
+	function import_posts_rss( $body, $content_type = false ) {
 
 		$rss = simplexml_load_string( $body );
 
-		foreach( $rss->channel->item as $rss_item ) {
+		if( $rss->channel->item ) {
+			$items = $rss->channel->item;
+		} elseif( $rss->entry ) {
+			$items = $rss->entry;
+		} elseif( $rss->item ) {
+			$items = $rss->item;
+		} else {
+			$this->import_error( 'rss: no items found' );
+			return false;
+		}
+
+		foreach( $items as $rss_item ) {
 
 			$title = $rss_item->title;
 			if( $title ) {
@@ -149,26 +158,44 @@ class Feed {
 
 			$link = $rss_item->link;
 			if( $link ) {
+				if( $link['href'] ) {
+					$link = $link['href'];
+				}
 				$link = $link->__toString();
 			} else {
 				$link = false;
 			}
 
-			$guid = $rss_item->guid;
+			$guid = false;
+			if( $rss_item->guid ) {
+				$guid = $rss_item->guid;
+			} elseif( $rss_item->id ) {
+				$id = $rss_item->id;
+			}
 			if( $guid ) {
 				$guid = $guid->__toString();
 			} else {
 				$guid = false;
 			}
 
-			$description = $rss_item->description;
-			if( $description ) {
-				$description = $description->__toString();
+			$content = false;
+			if( $rss_item->description ) {
+				$content = $rss_item->description;
+			} elseif( $rss_item->content ) {
+				$content = $rss_item->content;
+			}
+			if( $content ) {
+				$content = $content->__toString();
 			} else {
-				$description = false;
+				$content = false;
 			}
 
-			$pubDate = $rss_item->pubDate;
+			$pubDate = false;
+			if( $rss_item->pubDate ) {
+				$pubDate = $rss_item->pubDate;
+			} elseif( $rss_item->updated ) {
+				$pubDate = $rss_item->updated;
+			}
 			if( $pubDate ) {
 				$pubDate = $pubDate->__toString();
 			} else {
@@ -184,6 +211,9 @@ class Feed {
 
 			$author = $rss_item->author;
 			if( $author ) {
+				if( $author->name ) {
+					$author = $author->name;
+				}
 				$author = $author->__toString();
 			} else {
 				$author = false;
@@ -193,7 +223,7 @@ class Feed {
 				'id' => $guid,
 				'permalink' => $link,
 				'title' => $title,
-				'content_html' => $description,
+				'content_html' => $content,
 				'date_published' => $pubDate,
 				'image' => $image_url,
 				'author' => $author
@@ -259,7 +289,8 @@ class Feed {
 		$file = new File( $post_path );
 
 		if( $file->exists() ) {
-			// TODO: maybe try to refresh content?
+			// TODO: maybe try to refresh content? or maybe add a config option, if we want to refresh existing content
+			// how to handle read state? we probably should keep the old read state, but add a 'updated at ..' note or something
 			return true;
 		}
 
