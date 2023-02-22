@@ -393,7 +393,21 @@ class Feed {
 			$author_link = $item['author_link'];
 		}
 
-		// $item['authors']
+		if( ! empty($item['authors']) ) {
+
+			$author = $item['authors'];
+			
+			// if multiple authors are provided, fall back to the first
+			//if( is_array($author) ) $author = $author[0];
+
+			if( ! empty($author['name']) ) {
+				$author_name = $author['name'];
+			}
+			if( ! empty($author['url']) ) { // TODO: check if this is the correct field name
+				$author_link = $author['url'];
+			}
+
+		}
 
 		if( ! $date_published ) {
 			$date_published = date('c', time()); // fallback, if no date is set
