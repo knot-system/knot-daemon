@@ -24,7 +24,7 @@ $secret = $_GET['secret'];
 $secret_option = $postamt->config->get('cron_secret');
 
 if( $secret != $secret_option ) {
-	$postamt->error( 'invalid_request', 'missing secret', 400, false );
+	$postamt->error( 'invalid_request', 'invalid secret', 400, false );
 	exit;
 }
 
