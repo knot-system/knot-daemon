@@ -76,7 +76,7 @@ class Feed {
 		$request = false;
 		$status_code = false;
 		if( $redirect_url ) {
-			// if available, use _redirect_url
+			// if available, use $redirect_url
 			$request = new Request( $redirect_url );
 			$request->curl_request( true );
 			$status_code = $request->get_status_code();
@@ -90,7 +90,7 @@ class Feed {
 		}
 
 		if( $status_code != 200 ) {
-			// if available, and $url fails, us _original_url
+			// if available, and $url fails, use $original_url
 			$request = new Request( $original_url );
 			$request->curl_request( true );
 			$status_code = $request->get_status_code();
