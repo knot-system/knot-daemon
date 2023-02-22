@@ -250,9 +250,8 @@ class Feeds {
 
 		global $postamt;
 		$limit_count = $postamt->config->get( 'item_limit_count' );
-		
-		var_dump(count($items_sorted));
-		
+
+
 		if( $before ) {
 
 			if( ! array_key_exists($before, $items) ) {
@@ -275,7 +274,10 @@ class Feeds {
 
 			$items = array_slice( $items, $before_position, $limit_count );
 
-		} elseif( $after ) {
+		}
+
+
+		if( $after ) {
 
 			if( ! array_key_exists($after, $items) ) {
 				return []; // $after does not exist, return no items
@@ -286,11 +288,12 @@ class Feeds {
 
 			$items = array_slice( $items, $after_position, $limit_count );
 
-		} else {
+		} 
 
+		if( count($items) > $limit_count ) {
 			$items = array_slice( $items, 0, $limit_count );
-
 		}
+
 
 		$next_before = false;
 		if( count($items) ) {
