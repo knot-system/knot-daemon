@@ -410,8 +410,6 @@ class Feed {
 
 		$file_content = $file->get();
 
-		if( isset($file_content['_raw']) ) unset($file_content['_raw']);
-
 		if( ! empty($file_content['date_modified']) ) {
 			$date = $file_content['date_modified'];
 		} else {
@@ -434,10 +432,25 @@ class Feed {
 			],
 		];
 
-		if( ! empty($file_content['author']) ) $post['author'] = $file_content['author'];
-		if( ! empty($file_content['image']) ) $post['photo'] = $file_content['image'];
+		if( ! empty($file_content['author']) ) {
+			$post['author'] = [
+				'type' => 'card',
+				'name' => $file_content['author']
+				// 'url' => '', // TODO
+				// 'photo' => '', // TODO
+			];
+		}
 
-		// TODO: set $post['_is_read']		
+		if( ! empty($file_content['image']) ) {
+			if( ! is_array($file_content['image']) ) $file_content['image'] = array($file_content['image']);
+			$post['photo'] = $file_content['image'];
+		}
+
+		// TODO: add $post['category'] = [ 'tag1', 'tag2' ]
+
+		// TODO: set $post['_is_read']	
+
+		// TODO: set $post['_source'] - see https://indieweb.org/Microsub-spec#Indicating_Item_Source_Proposal	
 
 		return $post;
 	}
