@@ -1,3 +1,10 @@
+alpha.2
+
+- timeline: added before & after pagination, added limit parameter
+- compatibility for atom & rss 1.0 feeds
+- bugfixes & enhancements
+
+
 alpha.1
 
 - initial release
