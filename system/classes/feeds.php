@@ -233,9 +233,86 @@ class Feeds {
 	}
 
 
-	function get_items() {
+	function get_items( $before = false, $after = false ) {
 
-		if( $this->items ) return $this->items;
+		// NOTE: we use the internal _id of items as $before or $after values
+
+		$this->refresh_items();
+
+		$items_sorted = $this->items;
+
+		$items = [];
+		foreach( $items_sorted as $item ) {
+			$items[$item['_id']] = $item;
+		}
+
+		$last_item_id = array_key_last($items);
+
+		global $postamt;
+		$limit_count = $postamt->config->get( 'item_limit_count' );
+		
+		var_dump(count($items_sorted));
+		
+		if( $before ) {
+
+			if( ! array_key_exists($before, $items) ) {
+				return []; // $before does not exist, return no items
+			}
+
+			$before_position = array_search( $before, array_keys($items) );
+
+			$before_position -= $limit_count;
+
+			if( $before_position < 0 ) {
+				$limit_count = $limit_count + $before_position;
+				$before_position = 0;
+
+				if( $limit_count < 0 ) {
+					$postamt->error( 'internal_server_error', 'could not retreive feed, limit_count is below 0', 500 );
+					return [];
+				}
+			}
+
+			$items = array_slice( $items, $before_position, $limit_count );
+
+		} elseif( $after ) {
+
+			if( ! array_key_exists($after, $items) ) {
+				return []; // $after does not exist, return no items
+			}
+
+			$after_position = array_search( $after, array_keys($items) );
+			$after_position += 1;
+
+			$items = array_slice( $items, $after_position, $limit_count );
+
+		} else {
+
+			$items = array_slice( $items, 0, $limit_count );
+
+		}
+
+		$next_before = false;
+		if( count($items) ) {
+			$next_before = array_key_first($items);
+		}
+
+		$next_after = array_key_last($items);
+		if( $next_after == $last_item_id ) {
+			$next_after = false;
+		}
+
+		return [
+			'before' => $next_before,
+			'after' => $next_after,
+			'items' => $items
+		];
+	}
+
+	
+	function refresh_items() {
+
+		if( $this->items ) return $this;
 
 		$items = [];
 
@@ -244,11 +321,10 @@ class Feeds {
 		}
 
 		krsort($items);
-		$items = array_values($items); // remove keys
 
 		$this->items = $items;
 
-		return $items;
+		return $this;
 	}
 
 

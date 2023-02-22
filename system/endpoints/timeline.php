@@ -15,12 +15,10 @@ if( $request_type == 'get' ) {
 	$before = false;
 	if( ! empty($_REQUEST['before']) ) {
 		$before = $_REQUEST['before'];
-		$postamt->error( 'invalid_request', 'the before parameter is not yet implemented' ); // DEBUG
 	}
 	$after = false;
 	if( ! empty($_REQUEST['after']) ) {
 		$after = $_REQUEST['after'];
-		$postamt->error( 'invalid_request', 'the after parameter is not yet implemented' ); // DEBUG
 	}
 
 	$channel = $postamt->channels->get($channel_uid, true);
@@ -35,15 +33,13 @@ if( $request_type == 'get' ) {
 		$postamt->error( 'invalid_request', 'no feeds found in this channel' );
 	}
 
-	$items = $feeds->get_items();
-
-	// TODO: limit $items
-	// TODO: pagination
+	list( 'before' => $next_before, 'after' => $next_after, 'items' => $items ) = $feeds->get_items( $before, $after );
 
 	$json = [
-		'items' => $items,
+		'items' => array_values($items), // remove keys from $items
 		'paging' => [
-			'not_implemented' => 'paging is not yet implemented'
+			'before' => $next_before,
+			'after' => $next_after
 		]
 	];
 
