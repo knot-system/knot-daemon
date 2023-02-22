@@ -11,15 +11,6 @@ if( $request_type == 'get' ) {
 	}
 
 	$channel_uid = $_REQUEST['channel'];
-		
-	$before = false;
-	if( ! empty($_REQUEST['before']) ) {
-		$before = $_REQUEST['before'];
-	}
-	$after = false;
-	if( ! empty($_REQUEST['after']) ) {
-		$after = $_REQUEST['after'];
-	}
 
 	$channel = $postamt->channels->get($channel_uid, true);
 
@@ -33,7 +24,24 @@ if( $request_type == 'get' ) {
 		$postamt->error( 'invalid_request', 'no feeds found in this channel' );
 	}
 
-	list( 'before' => $next_before, 'after' => $next_after, 'items' => $items ) = $feeds->get_items( $before, $after );
+		
+	$before = false;
+	if( ! empty($_REQUEST['before']) ) {
+		$before = $_REQUEST['before'];
+	}
+
+	$after = false;
+	if( ! empty($_REQUEST['after']) ) {
+		$after = $_REQUEST['after'];
+	}
+
+	$limit = $postamt->config->get( 'item_limit_count' );
+	if( ! empty($_REQUEST['limit']) ) {
+		$limit = (int) $_REQUEST['limit'];
+	}
+
+
+	list( 'before' => $next_before, 'after' => $next_after, 'items' => $items ) = $feeds->get_items( $before, $after, $limit );
 
 	$json = [
 		'items' => array_values($items), // remove keys from $items

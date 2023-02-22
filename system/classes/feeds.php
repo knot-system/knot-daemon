@@ -233,7 +233,7 @@ class Feeds {
 	}
 
 
-	function get_items( $before = false, $after = false ) {
+	function get_items( $before = false, $after = false, $limit = false ) {
 
 		// NOTE: we use the internal _id of items as $before or $after values
 
@@ -248,8 +248,13 @@ class Feeds {
 
 		$last_item_id = array_key_last($items);
 
-		global $postamt;
-		$limit_count = $postamt->config->get( 'item_limit_count' );
+		if( ! $limit ) {
+			global $postamt;
+			$limit = $postamt->config->get( 'item_limit_count' );
+		}
+
+		if( $limit < 1 ) $limit = 1;
+		if( $limit > 100 ) $limit = 100; // set a hard upper bound
 
 
 		if( $before ) {
@@ -260,19 +265,19 @@ class Feeds {
 
 			$before_position = array_search( $before, array_keys($items) );
 
-			$before_position -= $limit_count;
+			$before_position -= $limit;
 
 			if( $before_position < 0 ) {
-				$limit_count = $limit_count + $before_position;
+				$limit = $limit + $before_position;
 				$before_position = 0;
 
-				if( $limit_count < 0 ) {
-					$postamt->error( 'internal_server_error', 'could not retreive feed, limit_count is below 0', 500 );
+				if( $limit < 0 ) {
+					$postamt->error( 'internal_server_error', 'could not retreive feed, limit is below 0', 500 );
 					return [];
 				}
 			}
 
-			$items = array_slice( $items, $before_position, $limit_count );
+			$items = array_slice( $items, $before_position, $limit );
 
 		}
 
@@ -286,12 +291,12 @@ class Feeds {
 			$after_position = array_search( $after, array_keys($items) );
 			$after_position += 1;
 
-			$items = array_slice( $items, $after_position, $limit_count );
+			$items = array_slice( $items, $after_position, $limit );
 
 		} 
 
-		if( count($items) > $limit_count ) {
-			$items = array_slice( $items, 0, $limit_count );
+		if( count($items) > $limit ) {
+			$items = array_slice( $items, 0, $limit );
 		}
 
 
