@@ -399,6 +399,13 @@ class Feed {
 
 		if( ! $date_modified ) $date_modified = $date_published; // fallback, if no modified date is set
 
+		$categories = false;
+		if( ! empty($item['categories']) ) {
+			$categories = $item['categories'];
+		} elseif( ! empty($item['tags']) ) {
+			$categories = $item['tags'];
+		}
+
 
 		// TODO: if $updating is true, keep old read state
 
@@ -414,6 +421,7 @@ class Feed {
 			'date_modified' => $date_modified,
 			'author_name' => $author_name,
 			'author_link' => $author_link,
+			'category' => json_encode($categories),
 			'image' => $image,
 			'_raw' => json_encode($item)
 		];
@@ -509,7 +517,9 @@ class Feed {
 			$post['photo'] = $file_content['image'];
 		}
 
-		// TODO: add $post['category'] = [ 'tag1', 'tag2' ]
+		if( ! empty($file_content['category']) ) {
+			$post['category'] = json_decode($file_content['category']);
+		}
 
 		// TODO: set $post['_is_read']	
 
@@ -536,6 +546,7 @@ class Feed {
 
 	function cleanup_posts() {
 		// TODO: delete posts, that are older than a specific threshold; make the threshold a config option
+		// (also check for this threshold when importing, and don't import posts that are older)
 
 		return $this;
 	}
