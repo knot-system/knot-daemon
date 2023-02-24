@@ -51,6 +51,8 @@ if( $request_type == 'get' ) {
 	if( ! $new_feed ) {
 		$postamt->error( 'internal_server_error', 'could not add url to channel', 500 );
 	}
+
+	$new_feed->refresh_posts();
 	
 	echo json_encode( $new_feed->get(true) );
 
