@@ -37,7 +37,10 @@ class Request {
 		curl_setopt( $ch, CURLOPT_HEADER, true );
 		curl_setopt( $ch, CURLOPT_USERAGENT, $this->user_agent );
 
-		if( $nobody ) curl_setopt( $ch, CURLOPT_NOBODY, true );
+		if( $nobody ) {
+			curl_setopt( $ch, CURLOPT_NOBODY, true );
+			curl_setopt( $ch, CURLOPT_HTTPGET, true ); // this fixes the 404 error on some servers; see https://stackoverflow.com/a/10509085 -- TODO / FIXME: check this, it might automatically set CURLOPT_NOBODY to false, so we could also just remove the $nobody option altogether - see https://curl.se/libcurl/c/CURLOPT_HTTPGET.html
+		}
 		
 		if( $followlocation ) curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
 

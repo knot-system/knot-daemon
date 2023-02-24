@@ -96,7 +96,6 @@ class Feeds {
 
 		if( ! $url ) return false;
 
-
 		$request = new Request( $url );
 		$request->curl_request( false, true );
 		$status_code = $request->get_status_code();
