@@ -59,7 +59,10 @@ class Postamt {
 		return $this;
 	}
 
-	function error( $error, $description, $status_code = 400, $json = true, ...$additional_log_messages ) {
+	function error( $error, $description, $status_code = null, $json = null, ...$additional_log_messages ) {
+
+		if( $status_code === null ) $status_code = 400;
+		if( $json === null ) $json = true;
 
 		http_response_code( $status_code );
 
