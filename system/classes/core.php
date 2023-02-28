@@ -59,7 +59,7 @@ class Postamt {
 		return $this;
 	}
 
-	function error( $error, $description, $status_code = 400, $json = true ) {
+	function error( $error, $description, $status_code = 400, $json = true, ...$additional_log_messages ) {
 
 		http_response_code( $status_code );
 
@@ -72,7 +72,7 @@ class Postamt {
 			echo '<strong>'.$error.'</strong> - '.$description;
 		}
 
-		$this->log->message( $error.' ('.$status_code.'): '.$description );
+		$this->log->message( $error.' ('.$status_code.'): '.$description, ...$additional_log_messages );
 
 		exit;
 	}
