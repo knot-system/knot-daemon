@@ -43,7 +43,7 @@ class Session {
 		$url = $indieauth->normalize_url( $me );
 		$token_endpoint = $indieauth->discover_endpoint( 'token_endpoint', $url );
 		if( ! $token_endpoint ) {
-			$postamt->error( 'unauthorized', 'could not find token endpoint (me url does not provide a token_endpoint)' );
+			$postamt->error( 'unauthorized', 'could not find token endpoint (me url does not provide a token_endpoint)', null, null, $me, $url );
 		}
 
 		$this->token_endpoint = $token_endpoint;
@@ -59,21 +59,21 @@ class Session {
 		}
 
 		if( isset($token_response['active']) && ! $token_response['active'] ) {
-			$postamt->error( 'unauthorized', 'could not verify via token endpoint (access_token responded with active=false)' );
+			$postamt->error( 'unauthorized', 'could not verify via token endpoint (access_token responded with active=false)', null, null, $token_endpoint, $access_token, $token_verify, $token_response, $me, $url );
 		}
 
 		if( ! isset($token_response['me']) || ! isset($token_response['scope']) ) {
-			$postamt->error( 'unauthorized', 'could not verify via token endpoint (access_token did not provide me and/or scope parameter)' );
+			$postamt->error( 'unauthorized', 'could not verify via token endpoint (access_token did not provide me and/or scope parameter)', null, null, $token_endpoint, $access_token, $token_verify, $token_response, $me, $url );
 		}
 
 		if( un_trailing_slash_it($token_response['me']) != $this->canonical_me ) {
-			$postamt->error( 'forbidden', 'The authenticated user does not have permission to perform this request (access_token me does not match provided me)', 403 );
+			$postamt->error( 'forbidden', 'The authenticated user does not have permission to perform this request (access_token me does not match provided me)', 403, null, $token_endpoint, $access_token, $token_verify, $token_response, $me, $url );
 		}
 
 		$allowed_users = $postamt->config->get('allowed_urls');
 		$cleaned_allowed_users = array_map( 'un_trailing_slash_it', $allowed_users );
 		if( ! in_array( $this->canonical_me, $cleaned_allowed_users ) ) {
-			$postamt->error( 'forbidden', 'The authenticated user does not have permission to perform this request (this user does not exist in the system)', 403 );
+			$postamt->error( 'forbidden', 'The authenticated user does not have permission to perform this request (this user does not exist in the system)', 403, null, $this->canonical_me, $cleaned_allowed_users, $token_endpoint, $access_token, $token_verify, $token_response, $me, $url );
 		}
 
 		$this->access_token = $access_token;
@@ -134,7 +134,7 @@ class Session {
 
 		if( ! is_dir($postamt->abspath.$this->me_folder) ) {
 			if( mkdir( $postamt->abspath.$this->me_folder, 0777, true ) === false ) {
-				$postamt->error( 'internal_server_error', 'could not create user folder', 500 );
+				$postamt->error( 'internal_server_error', 'could not create user folder', 500, null, $me, $me_folder );
 			}
 		}
 
