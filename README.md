@@ -100,10 +100,10 @@ You may want to edit the `config.php` a bit after the initial setup and add addi
 <?php
 
 return [
-	'debug' => false,
-	'logging' => false,
+	'debug' => true, // should be true while in alpha
+	'logging' => true, // should be true while in alpha; writes logfiles into the /log directory
 	'cron_secret' => '[a random string]',
-	'refresh_on_connect' => true, // set to false if you use a cronjob, to make the system faster
+	'refresh_on_connect' => true, // this will refresh all items of all feeds of a channel, if you call the 'timeline' endpoint to get the feeds. set to false if you use a cronjob, to make the system faster
 	'allowed_urls' => [ // a list of 'me' URLs that are allowed to use this microsub server. every user has their own folder with their own channels and feeds
 		'https://www.example.com/eigenheim/',
 		'https://www.example.com/other-identity/',
