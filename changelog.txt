@@ -1,3 +1,18 @@
+alpha.3
+
+**you need to manually update to alpha.3**
+
+- new config option: 'refresh_on_connect', if you have no cronjob running
+- follow: bugfix for some feeds
+- follow: get posts of feed after adding it
+- timeline: refresh all feeds, if 'refresh_on_connect' option is set
+- show a HTML error message when connecting opening the URL via a browser
+- bugfix for autoupdater
+- log additional information when errors occur
+- import text/xml content_type as RSS feeds
+- bugfixes & enhancements
+
+
 alpha.2
 
 - timeline: added before & after pagination, added limit parameter
