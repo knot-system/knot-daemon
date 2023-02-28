@@ -89,8 +89,8 @@ if( $config_missing ) {
 		?>
 		<hr>
 		<form action="<?= $baseurl ?>" method="POST">
-			<p><label><strong>Allowed URLs</strong><br><textarea name="authorized_urls" style="width: 400px; height: 100px;" required placeholder="https://www.example.com/eigenheim/"></textarea></label></p>
-			<p><small>One URL per line; this field is required</small></p>
+			<p><label><strong>Allowed URLs</strong><br><small>One URL per line; this field is required</small><br><textarea name="authorized_urls" style="width: 400px; height: 100px;" required placeholder="https://www.example.com/eigenheim/"></textarea></label></p>
+			<p><label><input type="checkbox" name="refresh_on_connect" value="true" checked> <strong>refresh on connect</strong> <small>(this makes getting the posts slower, but you don't need to set up a cronjob; you can change this later via the config.php)</small></label>
 			<p><button>start installation</button></p>
 		</form>
 		<?php
@@ -255,8 +255,13 @@ if( $config_missing ) {
 	include_once( $abspath.'system/functions/helper.php' );
 	$random_string = get_hash( $abspath.uniqid() );
 
+	$refresh_on_connect = 'false';
+	if( isset($_POST['refresh_on_connect']) && $_POST['refresh_on_connect'] == 'true' ) {
+		$refresh_on_connect = 'true';
+	}
+
 	// TODO: remove 'debug => true', 'logging => true' & 'force_refresh_posts => true' if we reach a stable state
-	$content = "<?php\r\n\r\nreturn [\r\n	'debug' => true,\r\n	'logging' => true,\r\n	'force_refresh_posts' => true,\r\n	'cron_secret' => '$random_string',\r\n	'allowed_urls' => [";
+	$content = "<?php\r\n\r\nreturn [\r\n	'debug' => true,\r\n	'logging' => true,\r\n	'force_refresh_posts' => true,\r\n	'cron_secret' => '$random_string',\r\n	'refresh_on_connect' => $refresh_on_connect,\r\n	'allowed_urls' => [";
 	foreach( $authorized_urls as $authorized_url ) {
 		$content .= "\r\n		'".$authorized_url."',";
 	}
