@@ -39,7 +39,6 @@ class Request {
 
 		if( $nobody ) {
 			curl_setopt( $ch, CURLOPT_NOBODY, true );
-			curl_setopt( $ch, CURLOPT_HTTPGET, true ); // this fixes the 404 error on some servers; see https://stackoverflow.com/a/10509085 -- TODO / FIXME: check this, it might automatically set CURLOPT_NOBODY to false, so we could also just remove the $nobody option altogether - see https://curl.se/libcurl/c/CURLOPT_HTTPGET.html
 		}
 		
 		if( $followlocation ) curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
@@ -63,9 +62,18 @@ class Request {
 		$header_size = curl_getinfo( $ch, CURLINFO_HEADER_SIZE );
 		$body = substr( $body, $header_size );
 
-		$this->http_status_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-		$this->body = $body;
+		$http_status_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+
+
+		if( $nobody && $http_status_code == 404 ) {
+			// NOTE: some servers may respond with a 404 status code if we use CURLOPT_NOBODY, although the content is there. We need to not use CURLOPT_NOBODY in that case:
+			$this->curl_request( $followlocation, false );
+			return $this;
+		}
+
+		$this->http_status_code = $http_status_code;
 		$this->headers = $headers;
+		$this->body = $body;
 
 		curl_close( $ch );
 
