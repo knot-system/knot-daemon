@@ -73,9 +73,11 @@ You can now add the url as a microsub endpoint to your website, and then use a m
 
 ### Cronjob
 
-This service needs a cronjob, to update the feeds in the background. The best solution is to add a cronjob directly on the server, but you could also use an external service if this is not possible.
+By default, the `refresh_on_connect` option is set to true, so whenever you get a list of posts, the system refreshes all feeds to get new items. This takes some time (especcially if you follow a lot of feeds) and makes the system slow, so a better option is to set up a cronjob to handle feed refreshing in the background.
 
-After installing, open the `config.php` in the root folder. There you find a line `'cron_secret' => '…'` with a random string. Copy this random string, this is the secret that makes sure that we are allowed to call the cronjob.
+The best solution is to add a cronjob directly on the server, but you could also use an external service if this is not possible.
+
+After installing, open the `config.php` in the root folder. There you find a line `'cron_secret' => '…'` with a random string. Copy this random string, this is the secret that makes sure that we are allowed to call the cronjob. You should also set the `refresh_on_connect` option to false, to disable feed refreshing when listing posts and make the system faster.
 
 Add a cronjob, and point it to the `cron.php` in the root directory. Append the secret string as a parameter: `cron.php?secret=…`. This could be an example configuration:
 
@@ -101,6 +103,7 @@ return [
 	'debug' => false,
 	'logging' => false,
 	'cron_secret' => '[a random string]',
+	'refresh_on_connect' => true, // set to false if you use a cronjob, to make the system faster
 	'allowed_urls' => [ // a list of 'me' URLs that are allowed to use this microsub server. every user has their own folder with their own channels and feeds
 		'https://www.example.com/eigenheim/',
 		'https://www.example.com/other-identity/',
