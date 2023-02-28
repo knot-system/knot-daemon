@@ -6,7 +6,7 @@ alpha.3
 - follow: bugfix for some feeds
 - follow: get posts of feed after adding it
 - timeline: refresh all feeds, if 'refresh_on_connect' option is set
-- show a HTML error message when connecting opening the URL via a browser
+- show a HTML error message when connecting the URL via a browser
 - bugfix for autoupdater
 - log additional information when errors occur
 - import text/xml content_type as RSS feeds
