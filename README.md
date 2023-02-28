@@ -73,7 +73,7 @@ You can now add the url as a microsub endpoint to your website, and then use a m
 
 ### Cronjob
 
-By default, the `refresh_on_connect` option is set to true, so whenever you get a list of posts, the system refreshes all feeds to get new items. This takes some time (especcially if you follow a lot of feeds) and makes the system slow, so a better option is to set up a cronjob to handle feed refreshing in the background.
+By default, the `refresh_on_connect` option is set to true, so whenever you get a list of posts, the system refreshes all feeds to get new items. This takes some time (especially if you follow a lot of feeds) and makes the system slow, so a better option is to set up a cronjob to handle feed refreshing in the background.
 
 The best solution is to add a cronjob directly on the server, but you could also use an external service if this is not possible.
 
