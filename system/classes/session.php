@@ -19,7 +19,16 @@ class Session {
 		}
 
 		if( ! $access_token ) {
-			$postamt->error( 'unauthorized', 'no access token was provided' );
+
+			if( str_starts_with($_SERVER['HTTP_ACCEPT'], 'text/html') ) {
+				// show html error message
+				$postamt->include( 'system/no-content.php' );
+				exit;
+			} else {
+				// show json error
+				$postamt->error( 'unauthorized', 'no access_token was provided' );
+			}
+
 		}
 
 		if( ! isset($_REQUEST['me']) ) {

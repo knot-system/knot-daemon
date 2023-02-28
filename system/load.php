@@ -19,8 +19,6 @@ if( ! file_exists($abspath.'config.php')
 }
 
 
-header("Content-type: application/json");
-
 
 include_once( $abspath.'system/functions.php' );
 include_once( $abspath.'system/classes.php' );
@@ -31,6 +29,8 @@ $postamt->setup();
 
 
 // here we gooo
+
+header("Content-type: application/json");
 
 
 $endpoint = $postamt->route->get('endpoint');

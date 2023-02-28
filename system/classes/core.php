@@ -49,7 +49,7 @@ class Postamt {
 	function setup() {
 
 		$this->session = new Session( $this );
-			
+		
 		$this->route = new Route( $this );
 
 		$this->refresh_cache();
@@ -65,6 +65,8 @@ class Postamt {
 		if( $json === null ) $json = true;
 
 		http_response_code( $status_code );
+
+		header("Content-type: application/json");
 
 		if( $json ) {
 			echo json_encode([
