@@ -24,7 +24,7 @@ include_once( 'functions/request.php' );
 $postamt_version = get_postamt_version( $abspath );
 
 ?>
-<h1>Eigenheim System Update</h1>
+<h1>Postamt System Update</h1>
 <?php
 
 
