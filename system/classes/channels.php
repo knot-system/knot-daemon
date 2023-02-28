@@ -83,7 +83,7 @@ class Channels {
 			// the spec says we _must_ have a channel with uid 'notifications'; it has always order 0
 			$new_channel = $this->create_channel( 'Notifications', 'notifications', 0, true );
 			if( ! $new_channel ) {
-				$postamt->error( 'internal_server_error', 'default notifications channel not found', 500 );
+				$postamt->error( 'internal_server_error', 'default notifications channel not found', 500, null, $this->folder, $this->channels );
 			}
 
 			$updated = true;
@@ -93,7 +93,7 @@ class Channels {
 			// the spec says we _must_ have at least two channels
 			$new_channel = $this->create_channel( 'Home' );
 			if( ! $new_channel ) {
-				$postamt->error( 'internal_server_error', 'default channel not found', 500 );
+				$postamt->error( 'internal_server_error', 'default channel not found', 500, null, $this->folder, $this->channels );
 			}
 
 			$updated = true;
@@ -177,7 +177,7 @@ class Channels {
 		$folder_path = $this->folder.$order.'_'.$uid;
 
 		if( mkdir( $folder_path, 0777, true ) === false ) {
-			$postamt->error( 'internal_server_error', 'could not create channel (folder error)', 500 );
+			$postamt->error( 'internal_server_error', 'could not create channel (folder error)', 500, null, $folder_path, $order, $uid, $name );
 		}
 
 		$file = new File( $folder_path.'/_channel.txt' );
@@ -188,14 +188,14 @@ class Channels {
 				'uid' => $uid,
 				'name' => $name
 			]) ) {
-				$postamt->error( 'internal_server_error', 'could not create channel (file write error)', 500 );
+				$postamt->error( 'internal_server_error', 'could not create channel (file write error)', 500, null, $folder_path, $uid, $name );
 			}
 
 		}
 
 		$content = $file->get();
 		if( $content['uid'] != $uid || $content['name'] != $name ) {
-			$postamt->error( 'internal_server_error', 'could not create channel (file retreive error)', 500 );
+			$postamt->error( 'internal_server_error', 'could not create channel (file retreive error)', 500, null, $folder_path, $uid, $name, $content );
 		}
 
 		$this->refresh_channels();
@@ -307,7 +307,7 @@ class Channels {
 
 		foreach( $reorder_channels as $reorder_channel_uid ) {
 			if( ! $this->channel_exists( $reorder_channel_uid ) ) {
-				$postamt->error( 'invalid_request', 'at least one channel does not exist' );
+				$postamt->error( 'invalid_request', 'at least one channel does not exist', null, null, $reorder_channels, $this->channels, $this->folder );
 			}
 
 			$channel = $this->get( $reorder_channel_uid, true );
