@@ -98,7 +98,7 @@ class Feed {
 		}
 
 		if( $status_code != 200 ) {
-			$this->import_error( 'invalid status code' );
+			$this->import_error( 'invalid status code', $status_code );
 			return false;
 		}
 
@@ -116,7 +116,7 @@ class Feed {
 		if( str_contains($content_type, 'application/rss+xml') || str_contains($content_type, 'application/atom+xml') || str_contains($content_type, 'application/xml') ) {
 			// handle rss or atom feed
 
-			$this->import_posts_rss( $body, $content_type );
+			$this->import_posts_rss( $body );
 
 		} elseif( str_contains($content_type, 'application/json') ) {
 			// handle json feed
@@ -124,7 +124,7 @@ class Feed {
 			$this->import_posts_json( $body );
 
 		} else {
-			$this->import_error( 'invalid content-type' );
+			$this->import_error( 'invalid content-type', $content_type );
 			return false;
 		}
 
@@ -132,7 +132,7 @@ class Feed {
 	}
 
 
-	function import_posts_rss( $body, $content_type = false ) {
+	function import_posts_rss( $body ) {
 
 		$rss = simplexml_load_string( $body );
 
@@ -143,7 +143,7 @@ class Feed {
 		} elseif( $rss->item ) {
 			$items = $rss->item;
 		} else {
-			$this->import_error( 'rss: no items found' );
+			$this->import_error( 'rss: no items found', $rss, $body );
 			return false;
 		}
 
@@ -265,12 +265,12 @@ class Feed {
 		$json = json_decode($body, true);
 
 		if( $json === NULL ) {
-			$this->import_error( 'invalid json' );
+			$this->import_error( 'invalid json', $body );
 			return false; 
 		}
 
 		if( empty($json['items']) ) {
-			$this->import_error( 'json: no items found' );
+			$this->import_error( 'json: no items found', $json );
 			return false;
 		}
 
@@ -312,7 +312,7 @@ class Feed {
 	function import_item( $item ) {
 
 		if( empty($item['permalink']) ) {
-			$this->import_error( 'item has no permalink' );
+			$this->import_error( 'item has no permalink', $item );
 			return false;
 		}
 
@@ -363,7 +363,7 @@ class Feed {
 		}
 
 		if( ! $content_html && ! $content_text && ! $title ) {
-			$this->import_error( 'item '.$id.' has no title nor content' );
+			$this->import_error( 'item '.$id.' has no title nor content', $item );
 		}
 
 		$date_published = false;
@@ -411,7 +411,7 @@ class Feed {
 
 		if( ! $date_published ) {
 			$date_published = date('c', time()); // fallback, if no date is set
-			$this->import_error( 'item '.$internal_id.' ('.$id.') has no published date, fall back to current date' );
+			$this->import_error( 'item '.$internal_id.' ('.$id.') has no published date, fall back to current date', $item );
 		}
 
 		$feed_title = false;
@@ -568,15 +568,16 @@ class Feed {
 	}
 
 
-	function import_error( $message ) {
+	function import_error( ...$messages ) {
 
 		$id = $this->id;
 		$path = $this->path;
 
-		$message = 'feed import error in '.$id.' ('.$path.'): '.$message;
+		$first_message = 'feed import error in '.$id.' ('.$path.')';
+		array_unshift( $messages, $first_message );
 
 		global $postamt;
-		$postamt->log->message( $message );
+		$postamt->log->message( $messages );
 
 		// TODO: disable this feed if it fails multiple times
 
