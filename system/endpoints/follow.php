@@ -13,7 +13,7 @@ $channel_uid = $_REQUEST['channel'];
 $channel = $postamt->channels->get( $channel_uid, true );
 
 if( ! $channel ) {
-	$postamt->error( 'invalid_request', 'channel not found' );
+	$postamt->error( 'invalid_request', 'channel not found', null, null, $channel_uid );
 }
 
 $feeds = new Feeds( $channel );
@@ -49,7 +49,7 @@ if( $request_type == 'get' ) {
 	$new_feed = $feeds->create_feed( $url );
 
 	if( ! $new_feed ) {
-		$postamt->error( 'internal_server_error', 'could not add url to channel', 500 );
+		$postamt->error( 'internal_server_error', 'could not add url to channel', null, null, $url );
 	}
 
 	$new_feed->refresh_posts();
