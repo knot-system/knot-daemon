@@ -11,7 +11,7 @@ class Route {
 		} else if( $_SERVER['REQUEST_METHOD'] === 'GET' ) {
 			$request_type = 'get';
 		} else {
-			$postamt->error( 'invalid_request', 'unknown request method' );
+			$postamt->error( 'invalid_request', 'unknown request method', null, null, $_SERVER['REQUEST_METHOD'] );
 		}
 
 
@@ -65,7 +65,7 @@ class Route {
 
 			} else {
 
-				$postamt->error( 'invalid_request', 'unknown action' );
+				$postamt->error( 'invalid_request', 'unknown action', null, null, $action );
 
 			}
 
@@ -78,7 +78,7 @@ class Route {
 
 		$scope_valid = $postamt->session->check_scope( $required_scopes );
 		if( ! $scope_valid ) {
-			$postamt->error( 'insufficient_scope', 'The scope of this token does not meet the requirements for this request', 403 );
+			$postamt->error( 'insufficient_scope', 'The scope of this token does not meet the requirements for this request', 403, null, $required_scopes );
 		}
 		
 
