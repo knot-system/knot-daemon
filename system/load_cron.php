@@ -29,7 +29,32 @@ if( $secret != $secret_option ) {
 }
 
 
-refresh_feed_items();
+
+$active_feeds = []; // NOTE: these are all the active feeds of _all_ users on this system
+
+
+// TODO: add a filter parameter, to only refresh a specific user
+$userfolders_obj = new Folder( $postamt->abspath.'content/' );
+$userfolders = $userfolders_obj->get_subfolders();
+
+if( empty($userfolders) ) {
+	// no users exist yet
+	return false;
+}
+
+
+foreach( $userfolders as $userfolder ) {
+
+	// TODO: check, when the last user login was; if it was a long time, reduce the frequency of updates
+
+	$channels_obj = new Channels( $postamt, $userfolder['path'] );
+
+	$active_feeds = array_merge( $active_feeds, $channels_obj->get_active_feeds() );
+
+}
+
+
+refresh_feed_items( $active_feeds );
 
 
 exit;

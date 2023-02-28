@@ -371,6 +371,31 @@ class Channels {
 	}
 
 
+	function get_active_feeds() {
+
+		$active_feeds = [];
+
+		$channels = $this->get( false, true );
+
+		if( empty($channels) ) return $active_feeds;
+
+		foreach( $channels as $channel ) {
+
+			$feeds_obj = new Feeds( $channel );
+			$feeds = $feeds_obj->get( false, true );
+
+			if( empty($feeds) ) continue;
+
+			foreach( $feeds as $feed ) {
+				$active_feeds[] = $feed;
+			}
+
+		}
+
+		return $active_feeds;
+	}
+
+
 	function cleanup_channel( $channel ) {
 		unset($channel['_order']);
 		unset($channel['_path']);

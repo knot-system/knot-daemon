@@ -27,7 +27,8 @@ if( $request_type == 'get' ) {
 
 	$refresh_on_connect = $postamt->config->get('refresh_on_connect');
 	if( $refresh_on_connect ) {
-		refresh_feed_items();
+		$active_feeds = $feeds->get( false, true );
+		refresh_feed_items( $active_feeds );
 	}
 	
 
