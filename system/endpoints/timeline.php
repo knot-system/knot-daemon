@@ -15,13 +15,13 @@ if( $request_type == 'get' ) {
 	$channel = $postamt->channels->get($channel_uid, true);
 
 	if( ! $channel ) {
-		$postamt->error( 'invalid_request', 'this channel does not exist' );
+		$postamt->error( 'invalid_request', 'this channel does not exist', null, null, $channel_uid );
 	}
 
 	$feeds = new Feeds( $channel );
 
 	if( ! $feeds ) {
-		$postamt->error( 'invalid_request', 'no feeds found in this channel' );
+		$postamt->error( 'invalid_request', 'no feeds found in this channel', null, null, $channel_uid, $channel );
 	}
 
 		
