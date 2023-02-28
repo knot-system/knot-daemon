@@ -28,6 +28,7 @@ class Log {
 
 		$log_append = '['.$date."]\r\n";
 		foreach( $messages as $message ) {
+			if( is_array($message) || is_object($message) ) $message = json_encode($message);
 			$log_append .= $message."\r\n";
 		}
 
