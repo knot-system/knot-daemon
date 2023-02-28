@@ -113,7 +113,7 @@ class Feed {
 
 		$body = $request->get_body();
 
-		if( str_contains($content_type, 'application/rss+xml') || str_contains($content_type, 'application/atom+xml') || str_contains($content_type, 'application/xml') ) {
+		if( str_contains($content_type, 'application/rss+xml') || str_contains($content_type, 'application/atom+xml') || str_contains($content_type, 'application/xml') || str_contains($content_type, 'text/xml') ) {
 			// handle rss or atom feed
 
 			$this->import_posts_rss( $body );
