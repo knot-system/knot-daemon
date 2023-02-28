@@ -152,7 +152,7 @@ class Feeds {
 		$folder_path = $this->folder.$id;
 
 		if( mkdir( $folder_path, 0777, true ) === false ) {
-			$postamt->error( 'internal_server_error', 'could not create feed (folder error)', 500 );
+			$postamt->error( 'internal_server_error', 'could not create feed (folder error)', 500, null, $id, $url, $folder_path, $status_code );
 		}
 
 		$file = new File( $folder_path.'/_feed.txt' );
@@ -173,14 +173,14 @@ class Feeds {
 		if( ! $file->exists() ) {
 
 			if( ! $file->create($feed) ) {
-				$postamt->error( 'internal_server_error', 'could not create feed (file write error)', 500 );
+				$postamt->error( 'internal_server_error', 'could not create feed (file write error)', 500, null, $folder_path, $feed, $file );
 			}
 
 		}
 
 		$content = $file->get();
 		if( $content['_id'] != $id || $content['url'] != $url ) {
-			$postamt->error( 'internal_server_error', 'could not create feed (file retreive error)', 500 );
+			$postamt->error( 'internal_server_error', 'could not create feed (file retreive error)', 500, null, $folder_path, $content, $id, $url, $feed );
 		}
 
 		$this->refresh_feeds();
@@ -271,7 +271,7 @@ class Feeds {
 				$before_position = 0;
 
 				if( $limit < 0 ) {
-					$postamt->error( 'internal_server_error', 'could not retreive feed, limit is below 0', 500 );
+					$postamt->error( 'internal_server_error', 'could not retreive feed, limit is below 0', 500, null, $limit, $before_position, $before, $last_item_id, count($items) );
 					return [ 'before' => false, 'after' => false, 'items' => [] ];
 				}
 			}
