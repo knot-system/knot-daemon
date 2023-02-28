@@ -24,7 +24,13 @@ if( $request_type == 'get' ) {
 		$postamt->error( 'invalid_request', 'no feeds found in this channel', null, null, $channel_uid, $channel );
 	}
 
-		
+
+	$refresh_on_connect = $postamt->config->get('refresh_on_connect');
+	if( $refresh_on_connect ) {
+		refresh_feed_items();
+	}
+	
+
 	$before = false;
 	if( ! empty($_REQUEST['before']) ) {
 		$before = $_REQUEST['before'];
