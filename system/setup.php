@@ -306,3 +306,5 @@ if( $output ) {
 	<?php
 	exit;
 }
+
+header( 'location: '.$baseurl );
