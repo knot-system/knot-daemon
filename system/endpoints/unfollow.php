@@ -5,7 +5,7 @@ if( ! $postamt ) exit;
 $request_type = $postamt->route->get('request_type');
 
 if( $request_type != 'post' ) {
-	$postamt->error( 'invalid_request', 'only post accepted', null, null, $request_type );
+	$postamt->error( 'invalid_request', 'only post requests accepted', null, null, $request_type );
 }
 
 if( ! isset($_REQUEST['channel']) ) {
