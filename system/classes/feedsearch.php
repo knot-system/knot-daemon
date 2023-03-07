@@ -48,7 +48,21 @@ class Feedsearch {
 
 		if( ! is_array($feeds) ) $feeds = array($feeds);
 
-		$this->results = $feeds;
+		$cleaned_feeds = [];
+		foreach( $feeds as $feed ) {
+
+			$cleaned_feed = $feed;
+
+			if( str_starts_with($cleaned_feed, '//') ) {
+				$cleaned_feed = 'http:'.$cleaned_feed;
+			} elseif( ! str_starts_with($cleaned_feed, 'http') ) {
+				$cleaned_feed = $url.ltrim($cleaned_feed, '/');
+			}
+
+			$cleaned_feeds[] = $cleaned_feed;
+		}
+
+		$this->results = $cleaned_feeds;
 
 		return $this;
 	}
