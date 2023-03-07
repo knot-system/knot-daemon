@@ -84,7 +84,7 @@ class Text {
 
 		global $postamt;
 
-		$regexp = $this->get_link_regex_pattern();
+		$regexp = $this->get_link_regex_pattern( true );
 
 		$replace = '<a class="inline-link" href="$1://$2.$3$4" target="_blank" rel="noopener" title="$1://$2.$3$4">$2.$3$4</a>';
 
@@ -178,10 +178,17 @@ $html .= '		</ol>';
 	}
 
 
-	private function get_link_regex_pattern(){
+	private function get_link_regex_pattern( $output = false ){
 		// TODO: maybe we also want to support gopher:// or other protocols?
-		return '/(?<!src=[\"\'])(http|https)\:\/\/([a-zA-Z0-9\-\.]+)\.([a-zA-Z]+)(\/\S*)*/mix';
+
+		$exclude_attributes = '(?<!src=[\"\'])';
+		if( $output ) $exclude_attributes .= '(?<!href=[\"\'])'; // ignore href as well, for links that are already valid HTML
+
+		$pattern = '/'.$exclude_attributes.'(http|https)\:\/\/([a-zA-Z0-9\-\.]+)\.([a-zA-Z]+)(\/\S*[^.])*/mix';
+
+		return $pattern;
 	}
+
 
 
 }
