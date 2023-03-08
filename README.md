@@ -20,7 +20,7 @@ Here be dragons:
 	- [x] get
 	- [x] post
 - [x] unfollow
-- [ ] search
+- [x] search
 - [ ] preview
 - [ ] timeline
 	- [x] get

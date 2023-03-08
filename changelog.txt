@@ -1,3 +1,12 @@
+alpha.4
+
+- added search action
+- retreive additional feed information (title, description, ..)
+- automatic link detection enhancements
+- added robots.txt to disallow indexing
+- bugfixes & enhancements
+
+
 alpha.3
 
 **you need to manually update to alpha.3**
