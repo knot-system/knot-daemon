@@ -8,10 +8,13 @@ class Feed {
 	private $path;
 	private $info;
 	private $posts;
+	private $file;
 
 	function __construct( $path ) {
 
 		$file = new File( $path.'_feed.txt' );
+
+		$this->file = $file;
 
 		$file_content = $file->get();
 
@@ -127,6 +130,15 @@ class Feed {
 			$this->import_error( 'invalid content-type', $content_type );
 			return false;
 		}
+
+		
+		// update feed information
+		$feed_preview = new FeedPreview($url);
+		$new_info = $feed_preview->get_info();
+		$old_file_info = $this->file->get();
+		$new_feed_info = array_merge( $old_file_info, $new_info );
+		$this->file->create( $new_feed_info );
+
 
 		return $this;
 	}
