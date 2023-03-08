@@ -21,6 +21,15 @@ class Feedsearch {
 
 		if( ! $url ) return $this;
 
+		// check, if $url is already a valid feed
+		$feedPreview = new FeedPreview( $url );
+		if( $feedPreview->is_valid_feed() ) {
+			$this->results = [$url];
+			return $this;
+		}
+
+		// if not, check the html to find linked feeds:
+
 		$request = new Request( $url );
 
 		$request->curl_request();

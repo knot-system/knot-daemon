@@ -2,6 +2,8 @@
 
 if( ! $postamt ) exit;
 
+# Spec: https://indieweb.org/Microsub-spec#Search
+
 $request_type = $postamt->route->get('request_type');
 
 if( $request_type != 'post' ) {
@@ -19,12 +21,11 @@ $results = $search->get_results();
 
 $feeds = [];
 
-foreach( $results as $result ) {
-	$feeds[] = [
-		'type' => 'feed',
-		'url' => $result
-	];
-	// TODO: add things like name, description, photo, author .. see https://indieweb.org/Microsub-spec#Search
+foreach( $results as $feed_url ) {
+
+	$feed = new FeedPreview( $feed_url );
+
+	$feeds[] = $feed->get_info();
 }
 
 $json = [
