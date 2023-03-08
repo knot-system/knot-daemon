@@ -138,14 +138,23 @@ class Feeds {
 			}
 
 		} elseif( $status_code != 200 ) {
-			// 200 OK
+			// not 200 OK
 
 			return false;
-
 		}
 
-		// TODO: check, if the url is a valid feed
-		// (start with RSS, add other feeds later)
+
+		$feed_preview = new FeedPreview( $url );
+
+		if( ! $feed_preview->is_valid_feed() ) {
+			// invalid feed
+
+			// TODO: return a meaningful error message
+			return false;
+		}
+
+		$feed = $feed_preview->get_info();
+
 
 		global $postamt;
 
@@ -157,11 +166,7 @@ class Feeds {
 
 		$file = new File( $folder_path.'/_feed.txt' );
 
-		$feed = [
-			'_id' => $id,
-			'type' => 'feed',
-			'url' => $url
-		];
+		$feed['_id'] = $id;
 
 		if( $original_url ) {
 			$feed['_original_url'] = $original_url;
