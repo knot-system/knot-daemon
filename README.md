@@ -152,3 +152,8 @@ You should routinely backup your content. To do so, copy these files and folders
 - the `content/` folder. This contains the user(s) with their channels and feeds
 
 When you want to restore a backup, delete the current folders & files from your webserver, and upload your backup. You should also delete the `cache/` folder, so everything gets re-cached and is up to date. If you also want to update or reset your system, see the *Update* section above.
+
+## Relocation
+
+You can move the system to a new host by copying all the files to the new location. You can omit the `cache/` folder, it gets recreated and repopulated automatically on the first access at the new location.
+If the installation is in a (or gets moved to a) subfolder, and you change the name of the subfolder, you need to delete the `.htaccess` file, so that it gets regenerated with the correct new path.
