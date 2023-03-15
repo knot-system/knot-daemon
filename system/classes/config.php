@@ -1,28 +1,30 @@
 <?php
 
+// Core Version: 0.1.0
+
 class Config {
 
 	public $config = array();
 
-	function __construct( $postamt ) {
+	function __construct( $core ) {
 
 		// load default config
-		$this->load_config_file( $postamt->abspath.'system/config.php' );
+		$this->load_config_file( $core->abspath.'system/config.php' );
 
 		// NOTE: the file theme/{themename}/config.php may be loaded here; but because at this time we don't have the correct themename yet, this happens in system/classes/theme.php; after the theme config.php gets loaded, it gets overwritten by the local config again.
 		
 		// overwrite with custom local config
-		$this->load_config_file( $postamt->abspath.'config.php' );
+		$this->load_config_file( $core->abspath.'config.php' );
 
 	}
 
 
 	function load_config_file( $config_file ) {
 
-		global $postamt;
+		global $core;
 
 		if( ! file_exists($config_file) ) {
-			$postamt->debug( 'config file not found', $config_file );
+			$core->debug( 'config file not found', $config_file );
 			exit;
 		}
 

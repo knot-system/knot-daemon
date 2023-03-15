@@ -1,5 +1,7 @@
 <?php
 
+// Core Version: 0.1.0
+
 class Request {
 
 	private $user_agent;
@@ -12,9 +14,9 @@ class Request {
 
 	function __construct( $url = false ) {
 
-		global $postamt;
+		global $core;
 
-		$this->user_agent = 'maxhaesslein/postamt/'.$postamt->version();
+		$this->user_agent = 'maxhaesslein/postamt/'.$core->version();
 		$this->timeout = 10;
 
 		if( $url ) $this->url = $url;

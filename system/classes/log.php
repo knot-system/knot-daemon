@@ -1,14 +1,16 @@
 <?php
 
+// Core Version: 0.1.0
+
 class Log {
 
 	private $log_filepath;
 
-	function __construct( $postamt ) {
+	function __construct( $core ) {
 
-		if( ! $postamt->config->get('logging') ) return;
+		if( ! $core->config->get('logging') ) return;
 
-		$log_filepath = $postamt->abspath.'log/';
+		$log_filepath = $core->abspath.'log/';
 
 		if( ! is_dir( $log_filepath) ) {
 			mkdir( $log_filepath, 0777, true );

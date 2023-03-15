@@ -1,17 +1,17 @@
 <?php
 
-if( ! $postamt ) exit;
+if( ! $core ) exit;
 
 # Spec: https://indieweb.org/Microsub-spec#Search
 
-$request_type = $postamt->route->get('request_type');
+$request_type = $core->route->get('request_type');
 
 if( $request_type != 'post' ) {
-	$postamt->error( 'invalid_request', 'only post requests accepted', null, null, $request_type );
+	$core->error( 'invalid_request', 'only post requests accepted', null, null, $request_type );
 }
 
 if( empty($_REQUEST['query']) ) {
-	$postamt->error( 'invalid_request', 'query parameter must be provided' );	
+	$core->error( 'invalid_request', 'query parameter must be provided' );	
 }
 
 $query = $_REQUEST['query'];

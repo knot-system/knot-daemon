@@ -1,5 +1,7 @@
 <?php
 
+// Core Version: 0.1.0
+
 class Feedsearch {
 
 	private $query;
@@ -37,16 +39,16 @@ class Feedsearch {
 		$status_code = $request->get_status_code();
 
 		if( $status_code != 200 ) {
-			global $postamt;
-			$postamt->error( 'bad_request', 'the page returned an invalid status_code', 400, true, $status_code, $url, $query );
+			global $core;
+			$core->error( 'bad_request', 'the page returned an invalid status_code', 400, true, $status_code, $url, $query );
 		}
 
 		$headers = $request->get_headers();
 		$body = $request->get_body();
 
 		if( ! $body ) {
-			global $postamt;
-			$postamt->error( 'bad_request', 'the page did not return an HTML body', 400, true, $status_code, $url, $query );
+			global $core;
+			$core->error( 'bad_request', 'the page did not return an HTML body', 400, true, $status_code, $url, $query );
 		}
 
 		$dom = new Dom( $body );

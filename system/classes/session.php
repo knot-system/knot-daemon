@@ -1,5 +1,7 @@
 <?php
 
+// Core Version: 0.1.0
+
 class Session {
 
 	public $me;
@@ -8,7 +10,7 @@ class Session {
 	public $scope;
 	private $access_token;
 
-	function __construct( $postamt ) {
+	function __construct( $core ) {
 
 		// TODO: rate-limit
 
@@ -22,17 +24,17 @@ class Session {
 
 			if( str_starts_with($_SERVER['HTTP_ACCEPT'], 'text/html') ) {
 				// show html error message
-				$postamt->include( 'system/no-content.php' );
+				$core->include( 'system/no-content.php' );
 				exit;
 			} else {
 				// show json error
-				$postamt->error( 'unauthorized', 'no access_token was provided' );
+				$core->error( 'unauthorized', 'no access_token was provided' );
 			}
 
 		}
 
 		if( ! isset($_REQUEST['me']) ) {
-			$postamt->error( 'unauthorized', 'no me parameter was provided' );
+			$core->error( 'unauthorized', 'no me parameter was provided' );
 		}
 		$me = $_REQUEST['me'];
 
@@ -43,7 +45,7 @@ class Session {
 		$url = $indieauth->normalize_url( $me );
 		$token_endpoint = $indieauth->discover_endpoint( 'token_endpoint', $url );
 		if( ! $token_endpoint ) {
-			$postamt->error( 'unauthorized', 'could not find token endpoint (me url does not provide a token_endpoint)', null, null, $me, $url );
+			$core->error( 'unauthorized', 'could not find token endpoint (me url does not provide a token_endpoint)', null, null, $me, $url );
 		}
 
 		$this->token_endpoint = $token_endpoint;
@@ -59,21 +61,21 @@ class Session {
 		}
 
 		if( isset($token_response['active']) && ! $token_response['active'] ) {
-			$postamt->error( 'unauthorized', 'could not verify via token endpoint (access_token responded with active=false)', null, null, $token_endpoint, $access_token, $token_verify, $token_response, $me, $url );
+			$core->error( 'unauthorized', 'could not verify via token endpoint (access_token responded with active=false)', null, null, $token_endpoint, $access_token, $token_verify, $token_response, $me, $url );
 		}
 
 		if( ! isset($token_response['me']) || ! isset($token_response['scope']) ) {
-			$postamt->error( 'unauthorized', 'could not verify via token endpoint (access_token did not provide me and/or scope parameter)', null, null, $token_endpoint, $access_token, $token_verify, $token_response, $me, $url );
+			$core->error( 'unauthorized', 'could not verify via token endpoint (access_token did not provide me and/or scope parameter)', null, null, $token_endpoint, $access_token, $token_verify, $token_response, $me, $url );
 		}
 
 		if( un_trailing_slash_it($token_response['me']) != $this->canonical_me ) {
-			$postamt->error( 'forbidden', 'The authenticated user does not have permission to perform this request (access_token me does not match provided me)', 403, null, $token_endpoint, $access_token, $token_verify, $token_response, $me, $url );
+			$core->error( 'forbidden', 'The authenticated user does not have permission to perform this request (access_token me does not match provided me)', 403, null, $token_endpoint, $access_token, $token_verify, $token_response, $me, $url );
 		}
 
-		$allowed_users = $postamt->config->get('allowed_urls');
+		$allowed_users = $core->config->get('allowed_urls');
 		$cleaned_allowed_users = array_map( 'un_trailing_slash_it', $allowed_users );
 		if( ! in_array( $this->canonical_me, $cleaned_allowed_users ) ) {
-			$postamt->error( 'forbidden', 'The authenticated user does not have permission to perform this request (this user does not exist in the system)', 403, null, $this->canonical_me, $cleaned_allowed_users, $token_endpoint, $access_token, $token_verify, $token_response, $me, $url );
+			$core->error( 'forbidden', 'The authenticated user does not have permission to perform this request (this user does not exist in the system)', 403, null, $this->canonical_me, $cleaned_allowed_users, $token_endpoint, $access_token, $token_verify, $token_response, $me, $url );
 		}
 
 		$this->access_token = $access_token;
@@ -116,7 +118,7 @@ class Session {
 
 	function check_content_folder(){
 
-		global $postamt;
+		global $core;
 
 		$me = $this->canonical_me;
 
@@ -132,9 +134,9 @@ class Session {
 
 		$this->me_folder = 'content/'.$me_folder.'/';
 
-		if( ! is_dir($postamt->abspath.$this->me_folder) ) {
-			if( mkdir( $postamt->abspath.$this->me_folder, 0777, true ) === false ) {
-				$postamt->error( 'internal_server_error', 'could not create user folder', 500, null, $me, $me_folder );
+		if( ! is_dir($core->abspath.$this->me_folder) ) {
+			if( mkdir( $core->abspath.$this->me_folder, 0777, true ) === false ) {
+				$core->error( 'internal_server_error', 'could not create user folder', 500, null, $me, $me_folder );
 			}
 		}
 

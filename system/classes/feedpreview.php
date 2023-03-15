@@ -1,5 +1,7 @@
 <?php
 
+// Core Version: 0.1.0
+
 // TODO: merge this into the Feed class
 
 class FeedPreview {

@@ -1,5 +1,7 @@
 <?php
 
+// Core Version: 0.1.0
+
 
 function get_postamt_version( $abspath ){
 	return trim(file_get_contents($abspath.'system/version.txt'));
@@ -7,9 +9,9 @@ function get_postamt_version( $abspath ){
 
 
 function url( $path = '', $trailing_slash = true ) {
-	global $postamt;
+	global $core;
 	
-	$path = $postamt->baseurl.$path;
+	$path = $core->baseurl.$path;
 
 	if( $trailing_slash ) {
 		$path = trailing_slash_it($path);
@@ -82,8 +84,8 @@ function streamline_date( $input ) {
 	$date = strtotime($input);
 
 	if( $date === false ) {
-		global $postamt;
-		$postamt->debug( 'could not convert date', $input );
+		global $core;
+		$core->debug( 'could not convert date', $input );
 	}
 
 	$return = date('c', $date);
@@ -94,12 +96,12 @@ function streamline_date( $input ) {
 
 function read_folder( $folderpath, $recursive = false ) {
 
-	global $postamt;
+	global $core;
 
 	$files = [];
 
 	if( ! is_dir( $folderpath ) ) {
-		$postamt->debug( $folderpath.' is no directory' );
+		$core->debug( $folderpath.' is no directory' );
 		return array();
 	}
 
@@ -122,7 +124,7 @@ function read_folder( $folderpath, $recursive = false ) {
 		}
 		closedir($handle);
 	} else {
-		$postamt->debug( 'could not open dir', $folderpath );
+		$core->debug( 'could not open dir', $folderpath );
 		return array();
 	}
 

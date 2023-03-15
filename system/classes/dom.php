@@ -1,5 +1,7 @@
 <?php
 
+// Core Version: 0.1.0
+
 class Dom {
 
 	private $document;

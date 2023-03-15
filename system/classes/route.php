@@ -1,17 +1,19 @@
 <?php
 
+// Core Version: 0.1.0
+
 class Route {
 
 	public $route;
 
-	function __construct( $postamt ) {
+	function __construct( $core ) {
 
 		if( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
 			$request_type = 'post';
 		} else if( $_SERVER['REQUEST_METHOD'] === 'GET' ) {
 			$request_type = 'get';
 		} else {
-			$postamt->error( 'invalid_request', 'unknown request method', null, null, $_SERVER['REQUEST_METHOD'] );
+			$core->error( 'invalid_request', 'unknown request method', null, null, $_SERVER['REQUEST_METHOD'] );
 		}
 
 
@@ -65,20 +67,20 @@ class Route {
 
 			} else {
 
-				$postamt->error( 'invalid_request', 'unknown action', null, null, $action );
+				$core->error( 'invalid_request', 'unknown action', null, null, $action );
 
 			}
 
 		} else {
 
-			$postamt->error( 'invalid_request', 'no action provided' );
+			$core->error( 'invalid_request', 'no action provided' );
 
 		}
 
 
-		$scope_valid = $postamt->session->check_scope( $required_scopes );
+		$scope_valid = $core->session->check_scope( $required_scopes );
 		if( ! $scope_valid ) {
-			$postamt->error( 'insufficient_scope', 'The scope of this token does not meet the requirements for this request', 403, null, $required_scopes );
+			$core->error( 'insufficient_scope', 'The scope of this token does not meet the requirements for this request', 403, null, $required_scopes );
 		}
 		
 

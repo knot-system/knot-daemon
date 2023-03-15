@@ -1,6 +1,8 @@
 <?php
 
-class Postamt {
+// Core Version: 0.1.0
+
+class Core {
 
 	// TODO: check, if we want those variables to be public:
 
@@ -21,8 +23,8 @@ class Postamt {
 	
 	function __construct() {
 
-		global $postamt;
-		$postamt = $this;
+		global $core;
+		$core = $this;
 
 		$abspath = realpath(dirname(__FILE__)).'/';
 		$abspath = preg_replace( '/system\/classes\/$/', '', $abspath );
@@ -96,7 +98,7 @@ class Postamt {
 
 	function include( $file_path, $args = array() ) {
 
-		$postamt = $this;
+		$core = $this;
 
 		$full_file_path = $this->abspath.$file_path;
 
@@ -116,7 +118,7 @@ class Postamt {
 
 	function refresh_cache() {
 		
-		$postamt = $this;
+		$core = $this;
 
 		$cache = new Cache( false, false );
 

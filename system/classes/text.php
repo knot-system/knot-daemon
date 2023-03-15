@@ -1,5 +1,7 @@
 <?php
 
+// Core Version: 0.1.0
+
 class Text {
 
 	public $content;
@@ -20,9 +22,9 @@ class Text {
 
 
 	function remove_html_elements() {
-		global $postamt;
+		global $core;
 
-		$allowed_html_elements = $postamt->config->get('allowed_html_elements');
+		$allowed_html_elements = $core->config->get('allowed_html_elements');
 
 		$this->content = strip_tags( $this->content, $allowed_html_elements );
 
@@ -82,13 +84,13 @@ class Text {
 
 	function auto_a( $hide_anchors = false ) {
 
-		global $postamt;
+		global $core;
 
 		$regexp = $this->get_link_regex_pattern( true );
 
 		$replace = '<a class="inline-link" href="$1://$2.$3$4" target="_blank" rel="noopener" title="$1://$2.$3$4">$2.$3$4</a>';
 
-		$add_footnote_to_links = $postamt->config->get('add_footnote_to_links');
+		$add_footnote_to_links = $core->config->get('add_footnote_to_links');
 
 		if( $hide_anchors ) $add_footnote_to_links = false;
 
@@ -154,14 +156,14 @@ foreach( $this->links as $link ) {
 
 		$classes[] = 'link-preview-needs-refresh';
 
-		global $postamt;
-		if( ! isset($postamt->is_link_refreshing) ) {
+		global $core;
+		if( ! isset($core->is_link_refreshing) ) {
 			// NOTE: we refresh only on link for every request, because this can take a few seconds,
 			// depending on the url and how fast the other server is.
 			// by default, the link refresh also happens async via js, so all the links that don't get
 			// refreshed with this request, should be done by the time this page refreshes again.
 			// this is just a fallback, if js is not active, or doesn't get executed, or is removed by the theme
-			$postamt->is_link_refreshing = true;
+			$core->is_link_refreshing = true;
 			$link_info = $link->get_info()->get_preview();
 		}
 		

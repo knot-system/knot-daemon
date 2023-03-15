@@ -21,7 +21,7 @@ include_once( 'functions/helper.php' );
 include_once( 'functions/request.php' );
 
 	
-$postamt_version = get_postamt_version( $abspath );
+$core_version = get_postamt_version( $abspath );
 
 ?>
 <h1>Postamt System Update</h1>
@@ -45,14 +45,14 @@ if( $step == 'check' ) {
 
 	?>
 	<p>Latest release: <strong><?= $release_name ?></strong><br>
-	Currently installed: <strong><?= $postamt_version ?></strong></p>
+	Currently installed: <strong><?= $core_version ?></strong></p>
 	<?php
 
 	$release_notes = array();
 
 	$new_version_available = false;
-	if( $release_name != $postamt_version ) {
-		$version_number_old = explode('.', str_replace('alpha.', '0.0.', $postamt_version));
+	if( $release_name != $core_version ) {
+		$version_number_old = explode('.', str_replace('alpha.', '0.0.', $core_version));
 		$version_number_new = explode('.', str_replace('alpha.', '0.0.', $release_name));
 
 		for( $i = 0; $i < count($version_number_new); $i++ ){
@@ -136,7 +136,7 @@ if( $step == 'check' ) {
 	$ch = curl_init( $zipball );
 	curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1 );
 	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
-	curl_setopt( $ch, CURLOPT_USERAGENT, 'maxhaesslein/postamt/'.$postamt_version );
+	curl_setopt( $ch, CURLOPT_USERAGENT, 'maxhaesslein/postamt/'.$core_version );
 	curl_setopt( $ch, CURLOPT_FILE, $file_handle );
 	curl_exec( $ch );
 	curl_close( $ch );
@@ -233,7 +233,7 @@ if( $step == 'check' ) {
 	<p><strong>Warning: please backup your <em>config.php</em> file before updating!</strong></p>
 	<p>Also, read the <a href="https://github.com/maxhaesslein/postamt/releases/latest/" target="_blank" rel="noopener">latest release notes</a> before continuing.</p>
 
-	<p>Currently installed version: <em><?= $postamt_version ?></em></p>
+	<p>Currently installed version: <em><?= $core_version ?></em></p>
 
 	<form action="<?= $baseurl ?>" method="GET">
 		<input type="hidden" name="update" value="true">

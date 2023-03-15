@@ -24,8 +24,8 @@ include_once( $abspath.'system/functions.php' );
 include_once( $abspath.'system/classes.php' );
 
 
-$postamt = new Postamt();
-$postamt->setup();
+$core = new Core();
+$core->setup();
 
 
 // here we gooo
@@ -33,10 +33,10 @@ $postamt->setup();
 header("Content-type: application/json");
 
 
-$endpoint = $postamt->route->get('endpoint');
-if( ! file_exists( $postamt->abspath.'system/endpoints/'.$endpoint.'.php') ){
-	$postamt->debug( 'endpoint not found!', $endpoint );
+$endpoint = $core->route->get('endpoint');
+if( ! file_exists( $core->abspath.'system/endpoints/'.$endpoint.'.php') ){
+	$core->debug( 'endpoint not found!', $endpoint );
 	exit;
 }
 
-$postamt->include( 'system/endpoints/'.$endpoint.'.php' );
+$core->include( 'system/endpoints/'.$endpoint.'.php' );

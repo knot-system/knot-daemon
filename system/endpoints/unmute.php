@@ -1,5 +1,5 @@
 <?php
 
-if( ! $postamt ) exit;
+if( ! $core ) exit;
 
-$postamt->error( 'not_implemented', 'this endpoint is not yet implemented' );
+$core->error( 'not_implemented', 'this endpoint is not yet implemented' );

@@ -1,5 +1,7 @@
 <?php
 
+// Core Version: 0.1.0
+
 // NOTE: in system/classes/core.php there is also the 'refresh_cache()' function
 // that takes care of deleting old, obsolete cache files
 
@@ -20,7 +22,7 @@ class Cache {
 		// TODO: add config option to disable cache
 		// TODO: add method to force a cache refresh?
 
-		global $postamt;
+		global $core;
 
 		if( ! $type && ! $input ) return;
 
@@ -53,7 +55,7 @@ class Cache {
 		if( $lifetime ) { // lifetime is in seconds
 			$this->lifetime = $lifetime;
 		} else {
-			$this->lifetime = $postamt->config->get( 'cache_lifetime' );
+			$this->lifetime = $core->config->get( 'cache_lifetime' );
 		}
 
 		$this->cache_file_name = $this->get_file_name();
@@ -65,11 +67,11 @@ class Cache {
 
 	function get_file_name(){
 
-		global $postamt;
+		global $core;
 
 		$hash = $this->hash;
 
-		$folderpath = $postamt->abspath.$this->cache_folder;
+		$folderpath = $core->abspath.$this->cache_folder;
 
 		$files = read_folder( $folderpath, false, false );
 
@@ -103,10 +105,10 @@ class Cache {
 
 
 	function add_data( $data ) {
-		global $postamt;
+		global $core;
 
-		if( ! file_put_contents( $postamt->abspath.$this->cache_file, $data ) ) {
-			$postamt->debug( 'could not create cache file', $this->cache_file );
+		if( ! file_put_contents( $core->abspath.$this->cache_file, $data ) ) {
+			$core->debug( 'could not create cache file', $this->cache_file );
 		}
 
 		return $this;
@@ -130,12 +132,12 @@ class Cache {
 
 
 	private function check_cache_folder(){
-		global $postamt;
+		global $core;
 
-		if( is_dir($postamt->abspath.$this->cache_folder) ) return;
+		if( is_dir($core->abspath.$this->cache_folder) ) return;
 
-		if( mkdir( $postamt->abspath.$this->cache_folder, 0777, true ) === false ) {
-			$postamt->debug( 'could not create cache dir', $this->cache_folder );
+		if( mkdir( $core->abspath.$this->cache_folder, 0777, true ) === false ) {
+			$core->debug( 'could not create cache dir', $this->cache_folder );
 		}
 
 		return $this;
@@ -145,11 +147,11 @@ class Cache {
 	function clear_cache_folder(){
 		// this function clears out old cache files.
 
-		global $postamt;
+		global $core;
 
-		$lifetime = $postamt->config->get( 'cache_lifetime' );
+		$lifetime = $core->config->get( 'cache_lifetime' );
 
-		$folderpath = $postamt->abspath.'cache/';
+		$folderpath = $core->abspath.'cache/';
 
 		$files = read_folder( $folderpath, true );
 

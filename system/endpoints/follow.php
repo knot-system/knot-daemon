@@ -1,19 +1,19 @@
 <?php
 
-if( ! $postamt ) exit;
+if( ! $core ) exit;
 
-$request_type = $postamt->route->get('request_type');
+$request_type = $core->route->get('request_type');
 
 if( ! isset($_REQUEST['channel']) ) {
-	$postamt->error( 'invalid_request', 'missing channel' );
+	$core->error( 'invalid_request', 'missing channel' );
 }
 
 $channel_uid = $_REQUEST['channel'];
 
-$channel = $postamt->channels->get( $channel_uid, true );
+$channel = $core->channels->get( $channel_uid, true );
 
 if( ! $channel ) {
-	$postamt->error( 'invalid_request', 'channel not found', null, null, $channel_uid );
+	$core->error( 'invalid_request', 'channel not found', null, null, $channel_uid );
 }
 
 $feeds = new Feeds( $channel );
@@ -37,19 +37,19 @@ if( $request_type == 'get' ) {
 } elseif( $request_type == 'post' ) {
 
 	if( ! isset($_REQUEST['url']) ) {
-		$postamt->error( 'invalid_request', 'missing url' );
+		$core->error( 'invalid_request', 'missing url' );
 	}
 
 	$url = trim($_REQUEST['url']);
 
 	if( $feeds->feed_exists( false, $url ) ) {
-		$postamt->error( 'invalid_request', 'this url already exists in this channel' );
+		$core->error( 'invalid_request', 'this url already exists in this channel' );
 	}
 
 	$new_feed = $feeds->create_feed( $url );
 
 	if( ! $new_feed ) {
-		$postamt->error( 'internal_server_error', 'could not add url to channel', null, null, $url );
+		$core->error( 'internal_server_error', 'could not add url to channel', null, null, $url );
 	}
 
 	$new_feed->refresh_posts();

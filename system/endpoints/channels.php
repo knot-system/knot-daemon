@@ -1,15 +1,15 @@
 <?php
 
-if( ! $postamt ) exit;
+if( ! $core ) exit;
 
-$request_type = $postamt->route->get('request_type');
+$request_type = $core->route->get('request_type');
 
-$channels = $postamt->channels->get();
+$channels = $core->channels->get();
 
 if( $request_type == 'get' ) {
 
 	if( ! is_array($channels) || ! count($channels) ) {
-		$postamt->error( 'internal_server_error', 'no channels found', 500 );
+		$core->error( 'internal_server_error', 'no channels found', 500 );
 	}
 
 	echo json_encode([
@@ -43,18 +43,18 @@ if( $request_type == 'get' ) {
 	if( $method == 'create' ) {
 
 		if( ! $name ) {
-			$postamt->error( 'invalid_request', 'missing channel name', null, null, $method );
+			$core->error( 'invalid_request', 'missing channel name', null, null, $method );
 		}
 
 		// check if channel exists;
-		if( $postamt->channels->channel_exists( false, $name ) ) {
-			$postamt->error( 'internal_server_error', 'a channel with this name already exists', 500, null, $name, $method );
+		if( $core->channels->channel_exists( false, $name ) ) {
+			$core->error( 'internal_server_error', 'a channel with this name already exists', 500, null, $name, $method );
 		}
 
-		$channel = $postamt->channels->create_channel( $name );
+		$channel = $core->channels->create_channel( $name );
 
 		if( ! $channel ) {
-			$postamt->error( 'internal_server_error', 'could not create channel', 500, null, $name, $method );
+			$core->error( 'internal_server_error', 'could not create channel', 500, null, $name, $method );
 		}
 
 		echo json_encode($channel);
@@ -62,21 +62,21 @@ if( $request_type == 'get' ) {
 	} elseif( $method == 'update' ) {
 		
 		if( ! $name ) {
-			$postamt->error( 'invalid_request', 'missing channel name' );
+			$core->error( 'invalid_request', 'missing channel name' );
 		}
 
 		if( ! $uid ) {
-			$postamt->error( 'invalid_request', 'missing channel uid', null, null, $name, $method );
+			$core->error( 'invalid_request', 'missing channel uid', null, null, $name, $method );
 		}
 
-		if( ! $postamt->channels->channel_exists( $uid ) ) {
-			$postamt->error( 'invalid_request', 'this channel does not exist', null, null, $uid, $name, $method );
+		if( ! $core->channels->channel_exists( $uid ) ) {
+			$core->error( 'invalid_request', 'this channel does not exist', null, null, $uid, $name, $method );
 		}		
 
-		$new_channel = $postamt->channels->update_channel( $uid, $name );
+		$new_channel = $core->channels->update_channel( $uid, $name );
 
 		if( ! $new_channel ) {
-			$postamt->error( 'internal_server_error', 'could not update channel', 500, null, $uid, $name, $method );
+			$core->error( 'internal_server_error', 'could not update channel', 500, null, $uid, $name, $method );
 		}
 
 		echo json_encode($new_channel);
@@ -86,15 +86,15 @@ if( $request_type == 'get' ) {
 	} elseif( $method == 'delete' ) {
 
 		if( ! $uid ) {
-			$postamt->error( 'invalid_request', 'missing channel uid' );
+			$core->error( 'invalid_request', 'missing channel uid' );
 		}
 
-		if( ! $postamt->channels->channel_exists( $uid ) ) {
-			$postamt->error( 'invalid_request', 'this channel does not exist', null, null, $uid, $method );
+		if( ! $core->channels->channel_exists( $uid ) ) {
+			$core->error( 'invalid_request', 'this channel does not exist', null, null, $uid, $method );
 		}
 
-		if( ! $postamt->channels->delete_channel( $uid ) ) {
-			$postamt->error( 'internal_server_error', 'could not delete channel', 500, null, $uid, $method );
+		if( ! $core->channels->delete_channel( $uid ) ) {
+			$core->error( 'internal_server_error', 'could not delete channel', 500, null, $uid, $method );
 		}
 
 		exit;
@@ -102,23 +102,23 @@ if( $request_type == 'get' ) {
 	} elseif( $method == 'order' ) {
 
 		if( empty($_REQUEST['channels']) ) {
-			$postamt->error( 'invalid_request', 'no channels provided', null, null, $method );
+			$core->error( 'invalid_request', 'no channels provided', null, null, $method );
 		}
 
 		$reorder_channels = $_REQUEST['channels'];
 
 		if( ! is_array($reorder_channels) || count($reorder_channels) < 2 ) {
-			$postamt->error( 'invalid_request', 'please provide at least 2 channels', null, null, $reorder_channels, $method );
+			$core->error( 'invalid_request', 'please provide at least 2 channels', null, null, $reorder_channels, $method );
 		}
 
-		if( ! $postamt->channels->reorder( $reorder_channels ) ) {
-			$postamt->error( 'internal_server_error', 'could not reorder channels', 500, null, $reorder_channels, $method );
+		if( ! $core->channels->reorder( $reorder_channels ) ) {
+			$core->error( 'internal_server_error', 'could not reorder channels', 500, null, $reorder_channels, $method );
 		}
 
 		exit;
 
 	} else {
-		$postamt->error( 'invalid_request', 'invalid method', null, null, $method );
+		$core->error( 'invalid_request', 'invalid method', null, null, $method );
 	}
 
 	exit;

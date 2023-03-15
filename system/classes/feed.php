@@ -1,5 +1,7 @@
 <?php
 
+// Core Version: 0.1.0
+
 // Spec: https://indieweb.org/Microsub-spec#Following
 
 class Feed {
@@ -348,8 +350,8 @@ class Feed {
 
 		$updating = false;
 		if( $file->exists() ) {
-			global $postamt;
-			$force_refresh = $postamt->config->get('force_refresh_posts');
+			global $core;
+			$force_refresh = $core->config->get('force_refresh_posts');
 			if( ! $force_refresh ) {
 				return true;
 			}
@@ -588,8 +590,8 @@ class Feed {
 		$first_message = 'feed import error in '.$id.' ('.$path.')';
 		array_unshift( $messages, $first_message );
 
-		global $postamt;
-		$postamt->log->message( $messages );
+		global $core;
+		$core->log->message( $messages );
 
 		// TODO: disable this feed if it fails multiple times
 

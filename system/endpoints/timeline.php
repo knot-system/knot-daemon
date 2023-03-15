@@ -1,31 +1,31 @@
 <?php
 
-if( ! $postamt ) exit;
+if( ! $core ) exit;
 
-$request_type = $postamt->route->get('request_type');
+$request_type = $core->route->get('request_type');
 
 if( $request_type == 'get' ) {
 
 	if( empty($_REQUEST['channel']) ) {
-		$postamt->error( 'invalid_request', 'missing channel name' );
+		$core->error( 'invalid_request', 'missing channel name' );
 	}
 
 	$channel_uid = $_REQUEST['channel'];
 
-	$channel = $postamt->channels->get($channel_uid, true);
+	$channel = $core->channels->get($channel_uid, true);
 
 	if( ! $channel ) {
-		$postamt->error( 'invalid_request', 'this channel does not exist', null, null, $channel_uid );
+		$core->error( 'invalid_request', 'this channel does not exist', null, null, $channel_uid );
 	}
 
 	$feeds = new Feeds( $channel );
 
 	if( ! $feeds ) {
-		$postamt->error( 'invalid_request', 'no feeds found in this channel', null, null, $channel_uid, $channel );
+		$core->error( 'invalid_request', 'no feeds found in this channel', null, null, $channel_uid, $channel );
 	}
 
 
-	$refresh_on_connect = $postamt->config->get('refresh_on_connect');
+	$refresh_on_connect = $core->config->get('refresh_on_connect');
 	if( $refresh_on_connect ) {
 		$active_feeds = $feeds->get( false, true );
 		refresh_feed_items( $active_feeds );
@@ -42,7 +42,7 @@ if( $request_type == 'get' ) {
 		$after = $_REQUEST['after'];
 	}
 
-	$limit = $postamt->config->get( 'item_limit_count' );
+	$limit = $core->config->get( 'item_limit_count' );
 	if( ! empty($_REQUEST['limit']) ) {
 		$limit = (int) $_REQUEST['limit'];
 	}
@@ -63,7 +63,7 @@ if( $request_type == 'get' ) {
 
 } elseif( $request_type == 'post' ) {
 
-	$postamt->error( 'not_implemented', 'this endpoint is not yet implemented' );
+	$core->error( 'not_implemented', 'this endpoint is not yet implemented' );
 
 	exit;
 

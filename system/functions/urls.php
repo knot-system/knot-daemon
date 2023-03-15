@@ -1,5 +1,7 @@
 <?php
 
+// Core Version: 0.1.0
+
 function normalize_url( $url, $fragment_allowed = true ) {
 
 	$url = parse_url($url);
