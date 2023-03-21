@@ -55,10 +55,11 @@ if( $step == 'check' ) {
 		$version_number_old = explode('.', str_replace('alpha.', '0.0.', $core_version));
 		$version_number_new = explode('.', str_replace('alpha.', '0.0.', $release_name));
 
-		for( $i = 0; $i < count($version_number_new); $i++ ){
-			$dot_old = $version_number_old[$i];
-			$dot_new = $version_number_new[$i];
-			if( $dot_new > $dot_old ) $new_version_available = true;
+		if( $version_number_new[0] > $version_number_old[0] 
+		 || ($version_number_new[0] == $version_number_old[0] && $version_number_new[1] > $version_number_old[1] )
+		 || ($version_number_new[0] == $version_number_old[0] && $version_number_new[1] == $version_number_old[1] && $version_number_new[2] > $version_number_old[2] )
+		){
+		 	$new_version_available = true;
 		}
 
 		if( $new_version_available ) {
@@ -67,15 +68,19 @@ if( $step == 'check' ) {
 				$release_number = explode('.', str_replace('alpha.', '0.0.', $release->tag_name));
 
 				$newer_version = false;
-				for( $i = 0; $i < count($release_number); $i++ ){
-					$dot_old = $version_number_old[$i];
-					$dot_new = $release_number[$i];
-					if( $dot_new > $dot_old ) $newer_version = true;
+				if( $release_number[0] > $version_number_old[0] 
+				 || ($release_number[0] == $version_number_old[0] && $release_number[1] > $version_number_old[1] )
+				 || ($release_number[0] == $version_number_old[0] && $release_number[1] == $version_number_old[1] && $release_number[2] > $version_number_old[2] )
+				){
+				 	$newer_version = true;
 				}
 
 				if( ! $newer_version ) break;
 
-				$release_notes[] = '<h3>'.$release->tag_name."</h3>\n\n".$release->body;
+				$release_notes[] = [
+					'title' => $release->tag_name,
+					'body' => $release->body
+				];
 			}
 		
 			echo '<p><strong>New version available!</strong> You should update your system.</p>';
@@ -84,9 +89,16 @@ if( $step == 'check' ) {
 				?>
 				<h2>Release notes:</h2>
 				<?php
-				include_once($abspath.'system/classes/text.php');
-				$text = new Text( implode("\n\n\n", $release_notes) );
-				echo $text->auto_p()->get();
+				
+				foreach( $release_notes as $release_note ) {
+					echo '<h3>'.$release_note['title'].'</h3>';
+
+					$body = htmlentities($release_note['body']);
+					$body = nl2br($body);
+				
+					echo $body;
+				}
+
 			}
 		}
 
