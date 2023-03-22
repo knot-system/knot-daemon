@@ -1,6 +1,6 @@
 <?php
 
-// update: 2023-03-15
+// update: 2023-03-22
 
 
 function get_system_version( $abspath ){
@@ -40,16 +40,29 @@ function un_trailing_slash_it( $string ) {
 }
 
 
+function get_class_attribute( $classes ) {
+
+	if( ! is_array( $classes ) ) $classes = explode( ' ', $classes );
+
+	$classes = array_unique( $classes ); // remove double class names
+	$classes = array_filter( $classes ); // remove empty class names
+
+	if( ! count($classes) ) return '';
+
+	return ' class="'.implode( ' ', $classes ).'"';
+}
+
+
 function sanitize_string_for_url( $string ) {
 
-	// Entferne alle nicht druckbaren ASCII-Zeichen
+	// remove non-printable ASCII
 	$string = preg_replace('/[\x00-\x1F\x7F]/u', '', $string);
 
 	$string = mb_strtolower($string);
 
 	$string = str_replace(array("ä", "ö", "ü", "ß"), array("ae", "oe", "ue", "ss"), $string);
 
-	// Ersetze Sonderzeichen durch '-'
+	// replace special characters with '-'
 	$string = preg_replace('/[^\p{L}\p{N}]+/u', '-', $string);
 
 	$string = trim($string, '-');
@@ -79,22 +92,7 @@ function get_hash( $input ) {
 }
 
 
-function streamline_date( $input ) {
-
-	$date = strtotime($input);
-
-	if( $date === false ) {
-		global $core;
-		$core->debug( 'could not convert date', $input );
-	}
-
-	$return = date('c', $date);
-
-	return $return;
-}
-
-
-function read_folder( $folderpath, $recursive = false ) {
+function read_folder( $folderpath, $recursive = false, $return_folderpath = true ) {
 
 	global $core;
 
@@ -113,13 +111,14 @@ function read_folder( $folderpath, $recursive = false ) {
 			if( is_dir($folderpath.$file) ) {
 
 				if( $recursive ) {
-					$files = array_merge( $files, read_folder($folderpath.$file.'/', $recursive));
+					$files = array_merge( $files, read_folder($folderpath.$file.'/', $recursive, $return_folderpath));
 				}
 
 				continue;
 			}
 
-			$files[] = $folderpath.$file;
+			if( $return_folderpath ) $files[] = $folderpath.$file;
+			else $files[] = $file;
 
 		}
 		closedir($handle);
@@ -129,19 +128,4 @@ function read_folder( $folderpath, $recursive = false ) {
 	}
 
 	return $files;
-}
-
-
-function refresh_feed_items( $active_feeds ){
-
-	if( empty($active_feeds) ) return false;
-
-	// TODO: build some type of queue, so we don't loop over _all_ active feeds every time, but split it up into multiple requests to cron
-
-	foreach( $active_feeds as $active_feed ) {
-		$active_feed->refresh_posts();
-		$active_feed->cleanup_posts();
-	}
-
-	return true;
 }
