@@ -8,7 +8,9 @@ class Channels {
 	public $folder;
 	public $channels = [];
 
-	function __construct( $core, $folder = false ) {
+	function __construct( $folder = false ) {
+
+		global $core;
 
 		if( ! $folder ) {
 

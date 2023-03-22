@@ -42,20 +42,20 @@ class Core {
 		$this->version = get_system_version( $abspath );
 
 
-		$this->config = new Config( $this );
-		$this->log = new Log( $this );
+		$this->config = new Config();
+		$this->log = new Log();
 
 	}
 
 	function setup() {
 
-		$this->session = new Session( $this );
+		$this->session = new Session();
 		
-		$this->route = new Route( $this );
+		$this->route = new Route();
 
 		$this->refresh_cache();
 
-		$this->channels = new Channels( $this );
+		$this->channels = new Channels();
 
 		return $this;
 	}

@@ -7,7 +7,9 @@ class Config {
 
 	public $config = array();
 
-	function __construct( $core ) {
+	function __construct() {
+
+		global $core;
 
 		// load default config
 		$this->load_config_file( $core->abspath.'system/config.php' );

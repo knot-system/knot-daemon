@@ -5,7 +5,9 @@ class Route {
 
 	public $route;
 
-	function __construct( $core ) {
+	function __construct() {
+
+		global $core;
 
 		if( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
 			$request_type = 'post';

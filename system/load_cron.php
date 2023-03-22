@@ -47,7 +47,7 @@ foreach( $userfolders as $userfolder ) {
 
 	// TODO: check, when the last user login was; if it was a long time, reduce the frequency of updates
 
-	$channels_obj = new Channels( $core, $userfolder['path'] );
+	$channels_obj = new Channels( $userfolder['path'] );
 
 	$active_feeds = array_merge( $active_feeds, $channels_obj->get_active_feeds() );
 

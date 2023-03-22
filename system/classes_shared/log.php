@@ -7,7 +7,9 @@ class Log {
 
 	private $log_filepath;
 
-	function __construct( $core ) {
+	function __construct() {
+
+		global $core;
 
 		if( ! $core->config->get('logging') ) return;
 

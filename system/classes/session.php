@@ -9,7 +9,9 @@ class Session {
 	public $scope;
 	private $access_token;
 
-	function __construct( $core ) {
+	function __construct() {
+
+		global $core;
 
 		// TODO: rate-limit
 
