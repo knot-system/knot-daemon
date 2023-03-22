@@ -21,7 +21,7 @@ include_once( 'functions/helper.php' );
 include_once( 'functions/request.php' );
 
 	
-$core_version = get_postamt_version( $abspath );
+$core_version = get_system_version( $abspath );
 
 ?>
 <h1>Postamt System Update</h1>

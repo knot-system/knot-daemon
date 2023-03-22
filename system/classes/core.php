@@ -40,7 +40,7 @@ class Core {
 		$this->baseurl = $baseurl;
 
 
-		$this->version = get_postamt_version( $abspath );
+		$this->version = get_system_version( $abspath );
 
 
 		$this->config = new Config( $this );
