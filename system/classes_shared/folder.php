@@ -1,5 +1,7 @@
 <?php
 
+// update: 2023-03-22
+
 
 class Folder {
 	
@@ -68,7 +70,7 @@ class Folder {
 	}
 
 
-	function get_content( $recursive = false ) {
+	function get_content( $recursive = false, $type = false ) {
 
 		$handle = opendir( $this->folder_path );
 
@@ -77,6 +79,9 @@ class Folder {
 		while( ($entry = readdir($handle)) !== false ) {
 
 			if( str_starts_with( $entry, '.' ) ) continue;
+
+			if( $type == 'dir' && ! is_dir($this->folder_path.$entry) ) continue;
+			if( $type == 'file' && is_dir($this->folder_path.$entry) ) continue;
 
 			if( is_dir( $this->folder_path.$entry ) ) $entry = trailing_slash_it($entry);
 
