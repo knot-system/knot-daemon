@@ -89,26 +89,30 @@ class FeedPreview {
 
 			$rss = simplexml_load_string( $body );
 
-			if( $rss->title ) {
-				$title = $rss->title;
-			} elseif( $rss->channel->title ) {
-				$title = $rss->channel->title;
-			}
-			if( $title ) $title = $title->__toString();
+			if( $rss !== false ) {
 
-			if( $rss->channel->description ) {
-				$description = $rss->channel->description;
-			}
-			if( $description ) $description = $description->__toString();
+				if( $rss->title ) {
+					$title = $rss->title;
+				} elseif( $rss->channel->title ) {
+					$title = $rss->channel->title;
+				}
+				if( $title ) $title = $title->__toString();
 
-			if( $rss->channel->image ) {
-				if( $rss->channel->image->link ) {
-					$image = $rss->channel->image->url;
-				} else {
-					$image = $rss->channel->image;
+				if( $rss->channel->description ) {
+					$description = $rss->channel->description;
+				}
+				if( $description ) $description = $description->__toString();
+
+				if( $rss->channel->image ) {
+					if( $rss->channel->image->link ) {
+						$image = $rss->channel->image->url;
+					} else {
+						$image = $rss->channel->image;
+					}
+
+					if( $image ) $image = $image->__toString();
 				}
 
-				if( $image ) $image = $image->__toString();
 			}
 
 		}

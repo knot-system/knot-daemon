@@ -149,6 +149,11 @@ class Feed {
 
 		$rss = simplexml_load_string( $body );
 
+		if( $rss === false ) {
+			$this->import_error( 'rss: xml error', $body );
+			return false;
+		}
+
 		if( $rss->channel->item ) {
 			$items = $rss->channel->item;
 		} elseif( $rss->entry ) {
