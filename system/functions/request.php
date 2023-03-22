@@ -52,8 +52,10 @@ function get_user_agent(){
 		$version = $core->version();
 	} else {
 		global $abspath;
-		$version = get_postamt_version( $abspath );
+		$version = get_eigenheim_version( $abspath );
 	}
 
-	return 'maxhaesslein/postamt/'.$version;
+	$user_agent = $core->config->get('user_agent');
+
+	return $user_agent.$version;
 }
