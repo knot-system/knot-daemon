@@ -1,12 +1,16 @@
 <?php
 
-// update: 2023-03-15
+// update: 2023-03-22
+
 
 class Request {
 
 	private $user_agent;
 	private $timeout;
 	private $url;
+	private $request_type = 'get';
+	private $request_headers = [];
+	private $post_data = [];
 
 	private $http_status_code;
 	private $headers = [];
@@ -16,7 +20,7 @@ class Request {
 
 		global $core;
 
-		$this->user_agent = 'maxhaesslein/postamt/'.$core->version();
+		$this->user_agent = get_user_agent();
 		$this->timeout = 10;
 
 		if( $url ) $this->url = $url;
@@ -30,6 +34,34 @@ class Request {
 	}
 
 
+	function set_headers( $headers ) {
+		if( ! is_array($headers) ) $headers = array( $headers );
+
+		$this->request_headers = $headers;
+
+		return $this;
+	}
+
+
+	function set_post_data( $data ) {
+		if( ! is_array($data) ) $data = array( $data );
+
+		$this->post_data = $data;
+
+		$this->request_type = 'post';
+
+		return $this;
+	}
+
+
+	function set_request_type( $request_type ) {
+
+		$this->request_type = $request_type;
+
+		return $this;
+	}
+
+
 	function curl_request( $followlocation = true, $nobody = false ) {
 
 		if( ! $this->url ) return false;
@@ -38,6 +70,18 @@ class Request {
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
 		curl_setopt( $ch, CURLOPT_HEADER, true );
 		curl_setopt( $ch, CURLOPT_USERAGENT, $this->user_agent );
+
+		if( count($this->request_headers) ) {
+			curl_setopt( $ch, CURLOPT_HTTPHEADER, $this->request_headers );
+		}
+
+		if( $this->request_type == 'post' ) {
+			curl_setopt( $ch, CURLOPT_POST, 1 );
+			if( count($this->post_data) ) {
+				$post_data = $this->post_data;
+				curl_setopt( $ch, CURLOPT_POSTFIELDS, $post_data );
+			}
+		}
 
 		if( $nobody ) {
 			curl_setopt( $ch, CURLOPT_NOBODY, true );
@@ -84,6 +128,9 @@ class Request {
 
 
 	function get_status_code() {
+
+		if( ! $this->http_status_code ) return false;
+
 		return $this->http_status_code;
 	}
 

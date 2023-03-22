@@ -1,6 +1,5 @@
 <?php
 
-// update: 2023-03-15
 
 // TODO: merge this into the Feed class
 

@@ -1,6 +1,7 @@
 <?php
 
-// update: 2023-03-15
+// update: 2023-03-22
+
 
 // NOTE: in system/classes/core.php there is also the 'refresh_cache()' function
 // that takes care of deleting old, obsolete cache files
@@ -126,6 +127,24 @@ class Cache {
 		if( ! file_exists($this->cache_file) ) return $this;
 
 		touch( $this->cache_file );
+
+		return $this;
+	}
+
+
+	function get_remote_file( $url ) {
+
+		$url = html_entity_decode($url);
+
+		$ch = curl_init( $url );
+		$fp = fopen( $this->cache_file, 'wb' );
+		curl_setopt( $ch, CURLOPT_FILE, $fp );
+		curl_setopt( $ch, CURLOPT_HEADER, 0 );
+		curl_setopt( $ch, CURLOPT_USERAGENT, get_user_agent() );
+		curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
+		curl_exec( $ch );
+		curl_close( $ch );
+		fclose( $fp );
 
 		return $this;
 	}

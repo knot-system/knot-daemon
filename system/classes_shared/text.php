@@ -1,6 +1,7 @@
 <?php
 
-// update: 2023-03-15
+// update: 2023-03-22
+
 
 class Text {
 
@@ -190,7 +191,6 @@ $html .= '		</ol>';
 
 		return $pattern;
 	}
-
 
 
 }

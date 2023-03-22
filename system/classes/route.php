@@ -1,6 +1,5 @@
 <?php
 
-// update: 2023-03-15
 
 class Route {
 
