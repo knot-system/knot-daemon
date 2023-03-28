@@ -241,6 +241,17 @@ class Feed {
 				$pubDate = false;
 			}
 
+			// bugfix, if the date is only available as dc:date (not as pubDate)
+			if( ! $pubDate ) {
+				$namespacesMeta = $rss_item->getNamespaces(true);
+				if( ! empty($namespacesMeta) ) {
+					$dc_namespace = $rss_item->children($namespacesMeta['dc']);
+					if( ! empty($dc_namespace) ) {
+						$pubDate = $dc_namespace->date->__toString();
+					}
+				}
+			}
+
 			$image_url = $rss_item->enclosure->url;
 			if( $image_url ) {
 				$image_url = $image_url->__toString();
