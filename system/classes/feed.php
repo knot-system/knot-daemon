@@ -464,7 +464,16 @@ class Feed {
 		}
 
 
-		// TODO: if $updating is true, keep old read state
+		if( $updating ) {
+
+			$file_content = $file->get();
+
+			$date_published = $file_content['date_published']; // keep the previous published date
+			
+			// TODO: if $updating is true, keep old read state
+
+
+		}
 
 
 		$post = [
