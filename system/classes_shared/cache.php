@@ -1,6 +1,6 @@
 <?php
 
-// update: 2023-03-22
+// update: 2023-03-28
 
 
 // NOTE: in system/classes/core.php there is also the 'refresh_cache()' function
@@ -60,25 +60,24 @@ class Cache {
 		}
 
 		$this->cache_file_name = $this->get_file_name();
-
 		$this->cache_file = $this->cache_folder.$this->cache_file_name;
 
 	}
 
 
-	function get_file_name(){
+	function get_file_name( $skip_existing = false ){
 
 		global $core;
 
 		$hash = $this->hash;
 
-		$folderpath = $core->abspath.$this->cache_folder;
-
-		$files = read_folder( $folderpath, false, false );
-
-		foreach( $files as $filename ) {
-			if( str_starts_with($filename, $hash) ) {
-				return $filename;
+		if( ! $skip_existing ) {
+			$folderpath = $core->abspath.$this->cache_folder;
+			$files = read_folder( $folderpath, false, false );
+			foreach( $files as $filename ) {
+				if( str_starts_with($filename, $hash) ) {
+					return $filename;
+				}
 			}
 		}
 
@@ -123,10 +122,15 @@ class Cache {
 	}
 
 
-	function touch() {
+	function refresh_lifetime() {
 		if( ! file_exists($this->cache_file) ) return $this;
 
-		touch( $this->cache_file );
+		$old_filename = $this->get_file_name();
+		$new_filename = $this->get_file_name(true);
+		if( rename( $this->cache_folder.$old_filename, $this->cache_folder.$new_filename ) ) {
+			$this->cache_file_name = $new_filename;
+			$this->cache_file = $this->cache_folder.$this->cache_file_name;
+		}
 
 		return $this;
 	}
