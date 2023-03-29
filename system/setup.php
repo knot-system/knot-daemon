@@ -85,7 +85,7 @@ if( $baseurl == '' ) {
 
 if( $config_missing ) {
 	
-	if( empty($_POST['authorized_urls']) ) {
+	if( empty($_REQUEST['authorized_urls']) ) {
 		?>
 		<hr>
 		<form action="<?= $baseurl ?>" method="POST">
@@ -248,7 +248,7 @@ if( $output ) {
 if( $config_missing ) {
 
 	$authorized_urls = [];
-	foreach( explode( "\n", $_POST['authorized_urls']) as $url ) {
+	foreach( explode( "\n", $_REQUEST['authorized_urls']) as $url ) {
 		$authorized_urls[] = trim($url);
 	}
 
@@ -256,7 +256,7 @@ if( $config_missing ) {
 	$random_string = get_hash( $abspath.uniqid() );
 
 	$refresh_on_connect = 'false';
-	if( isset($_POST['refresh_on_connect']) && $_POST['refresh_on_connect'] == 'true' ) {
+	if( isset($_REQUEST['refresh_on_connect']) && $_REQUEST['refresh_on_connect'] == 'true' ) {
 		$refresh_on_connect = 'true';
 	}
 
