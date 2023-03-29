@@ -90,7 +90,7 @@ if( $config_missing ) {
 		<hr>
 		<form action="<?= $baseurl ?>" method="POST">
 			<p><label><strong>Allowed URLs</strong><br><small>One URL per line; this field is required</small><br><textarea name="authorized_urls" style="width: 400px; height: 100px;" required placeholder="https://www.example.com/eigenheim/"></textarea></label></p>
-			<p><label><input type="checkbox" name="refresh_on_connect" value="true" checked> <strong>refresh on connect</strong> <small>(this makes getting the posts slower, but you don't need to set up a cronjob; you can change this later via the config.php)</small></label>
+			<p><label><input type="checkbox" name="refresh_on_connect" value="true" checked> <strong>refresh on connect</strong> <small>(this makes refreshing the feeds slower, but you don't need to set up a cronjob; you can change this later via the <code>config.php</code>)</small></label></p>
 			<p><button>start installation</button></p>
 		</form>
 		<?php
@@ -252,7 +252,7 @@ if( $config_missing ) {
 		$authorized_urls[] = trim($url);
 	}
 
-	include_once( $abspath.'system/functions/helper.php' );
+	include_once( $abspath.'system/functions_shared/helper.php' );
 	$random_string = get_hash( $abspath.uniqid() );
 
 	$refresh_on_connect = 'false';

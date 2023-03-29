@@ -13,7 +13,7 @@ if( ! file_exists($abspath.'config.php') || ! file_exists($abspath.'.htaccess') 
 include_once( $abspath.'system/functions.php' );
 include_once( $abspath.'system/classes.php' );
 
-$core = new Core( true );
+$core = new Core();
 
 if( empty($_GET['secret']) ) {
 	$core->error( 'invalid_request', 'missing secret', 400, false );
