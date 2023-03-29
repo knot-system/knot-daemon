@@ -1,6 +1,6 @@
 <?php
 
-// update: 2023-03-22
+// update: 2023-03-29
 
 
 function request_post( $url, $headers = array() ){
@@ -50,12 +50,13 @@ function get_user_agent(){
 	global $core;
 	if( $core ) {
 		$version = $core->version();
+		$user_agent = $core->config->get('user_agent');
+		$user_agent .= $version;
 	} else {
 		global $abspath;
-		$version = get_eigenheim_version( $abspath );
+		$version = get_system_version( $abspath );
+		$user_agent = 'maxhaesslein/updater/'.$version;
 	}
 
-	$user_agent = $core->config->get('user_agent');
-
-	return $user_agent.$version;
+	return $user_agent;
 }
