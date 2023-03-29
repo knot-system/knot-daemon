@@ -1,3 +1,14 @@
+v.0.1.0
+
+this is the first beta release.
+
+- renamed global $postamt to $core for better compatibility between modules
+- moved some functions and classes into a _shared folder, for simpler sharing between modules
+- updater fix
+- bugfixes & enhancements
+- compatibility with the homestead installer
+
+
 alpha.4
 
 - added search action
