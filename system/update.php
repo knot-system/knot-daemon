@@ -17,8 +17,8 @@ $baseurl .= $_SERVER['HTTP_HOST'];
 $baseurl .= $basefolder;
 
 
-include_once( 'functions/helper.php' );
-include_once( 'functions/request.php' );
+include_once( 'functions_shared/helper.php' );
+include_once( 'functions_shared/request.php' );
 
 	
 $core_version = get_system_version( $abspath );
