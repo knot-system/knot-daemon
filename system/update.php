@@ -52,8 +52,8 @@ if( $step == 'check' ) {
 
 	$new_version_available = false;
 	if( $release_name != $core_version ) {
-		$version_number_old = explode('.', str_replace('alpha.', '0.0.', $core_version));
-		$version_number_new = explode('.', str_replace('alpha.', '0.0.', $release_name));
+		$version_number_old = explode('.', $core_version);
+		$version_number_new = explode('.', $release_name);
 
 		if( $version_number_new[0] > $version_number_old[0] 
 		 || ($version_number_new[0] == $version_number_old[0] && $version_number_new[1] > $version_number_old[1] )
@@ -65,7 +65,7 @@ if( $step == 'check' ) {
 		if( $new_version_available ) {
 
 			foreach( $json as $release ) {
-				$release_number = explode('.', str_replace('alpha.', '0.0.', $release->tag_name));
+				$release_number = explode('.', $release->tag_name);
 
 				$newer_version = false;
 				if( $release_number[0] > $version_number_old[0] 
