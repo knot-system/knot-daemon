@@ -113,7 +113,7 @@ if( $step == 'check' ) {
 		<input type="hidden" name="update" value="true">
 		<input type="hidden" name="step" value="install">
 		<p><label>Version: <select name="version">
-			<option value="latest" selected>latest release (v.<?= $release_name ?>)</option>
+			<option value="latest" selected>latest stable release (v.<?= $release_name ?>)</option>
 			<option value="dev">unstable dev release (not recommended)</option>
 		</select></label></p>
 		<p><button>update system</button></p>
@@ -224,7 +224,7 @@ if( $step == 'check' ) {
 		if( $obj == '.' || $obj == '..' ) continue;
 		if( ! is_dir($temp_folder.$obj) ) continue;
 		if( ! str_starts_with($obj, $zip_folder_name_start) ) continue;
-		// the zip file should have exactly one subfolder, called 'maxhaesslein-postamt-{hash}'. this is what we want to get here
+		// the zip file should have exactly one subfolder. this is what we want to get here
 		$subfolder = $temp_folder.$obj.'/';
 	}
 
