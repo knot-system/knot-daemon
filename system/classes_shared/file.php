@@ -1,6 +1,6 @@
 <?php
 
-// update: 2023-03-22
+// update: 2023-04-12
 
 
 class File {
@@ -48,7 +48,10 @@ class File {
 
 		$file_content = file_get_contents( $this->filepath );
 
-		$file_content = explode( "\r\n\r\n----\r\n\r\n", $file_content );
+		$file_content = str_replace("\r\n", "\n", $file_content); // convert windows line endings to unix line endings
+		$file_content = str_replace("\r", "\n", $file_content); // convert (very old) mac line endings to unix line endings
+
+		$file_content = explode( "\n\n----\n\n", $file_content );
 
 		if( ! is_array($file_content) || ! count($file_content) ) {
 			return false;
