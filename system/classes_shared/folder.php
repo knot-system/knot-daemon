@@ -1,6 +1,6 @@
 <?php
 
-// update: 2023-03-22
+// update: 2023-04-12
 
 
 class Folder {
@@ -73,6 +73,8 @@ class Folder {
 	function get_content( $recursive = false, $type = false ) {
 
 		$handle = opendir( $this->folder_path );
+
+		if( ! $handle ) return [];
 
 		$entries = [];
 
