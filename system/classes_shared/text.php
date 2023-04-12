@@ -1,6 +1,6 @@
 <?php
 
-// update: 2023-03-22
+// update: 2023-04-12
 
 
 class Text {
@@ -184,10 +184,15 @@ $html .= '		</ol>';
 	private function get_link_regex_pattern( $output = false ){
 		// TODO: maybe we also want to support gopher:// or other protocols?
 
-		$exclude_attributes = '(?<!src=[\"\'])';
+		$exclude_attributes = '(?<!src=[\"\'])'; // ignore src attributes
 		if( $output ) $exclude_attributes .= '(?<!href=[\"\'])'; // ignore href as well, for links that are already valid HTML
 
-		$pattern = '/'.$exclude_attributes.'(http|https)\:\/\/([a-zA-Z0-9\-\.]+)\.([a-zA-Z]+)(\/\S*[^.])*/mix';
+		$scheme = '(http|https)\:\/\/'; // http:// or https://
+		$domain = '([a-zA-Z0-9\-\.]+)'; // domain (with subdomain)
+		$tld = '([a-zA-Z]+)';
+		$path = '(\/[^\r\n\t\f\v \<]*)*'; // path (with query); no linebreak, space or <
+
+		$pattern = '/'.$exclude_attributes.$scheme.$domain.'\.'.$tld.$path.'/mix';
 
 		return $pattern;
 	}
