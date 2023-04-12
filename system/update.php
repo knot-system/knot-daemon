@@ -53,58 +53,54 @@ if( $step == 'check' ) {
 
 	$release_notes = array();
 
-	$new_version_available = false;
-	if( $release_name != $core_version ) {
-		$version_number_old = explode('.', $core_version);
-		$version_number_new = explode('.', $release_name);
+	$version_number_old = explode('.', $core_version);
+	$version_number_new = explode('.', $release_name);
 
-		if( $version_number_new[0] > $version_number_old[0] 
-		 || ($version_number_new[0] == $version_number_old[0] && $version_number_new[1] > $version_number_old[1] )
-		 || ($version_number_new[0] == $version_number_old[0] && $version_number_new[1] == $version_number_old[1] && $version_number_new[2] > $version_number_old[2] )
-		){
-		 	$new_version_available = true;
+	if( $version_number_new[0] > $version_number_old[0] 
+	 || ($version_number_new[0] == $version_number_old[0] && $version_number_new[1] > $version_number_old[1] )
+	 || ($version_number_new[0] == $version_number_old[0] && $version_number_new[1] == $version_number_old[1] && $version_number_new[2] > $version_number_old[2] )
+	){
+
+		foreach( $json as $release ) {
+			$tag_name = str_replace( 'v.', '', $release->tag_name );
+			$release_number = explode('.', $tag_name);
+
+			$newer_version = false;
+			if( $release_number[0] > $version_number_old[0] 
+			 || ($release_number[0] == $version_number_old[0] && $release_number[1] > $version_number_old[1] )
+			 || ($release_number[0] == $version_number_old[0] && $release_number[1] == $version_number_old[1] && $release_number[2] > $version_number_old[2] )
+			){
+			 	$newer_version = true;
+			}
+
+			if( ! $newer_version ) break;
+
+			$release_notes[] = [
+				'title' => $release->tag_name,
+				'body' => $release->body
+			];
+		}
+	
+		echo '<p><strong>New version available!</strong> You should update your system.</p>';
+
+		if( count($release_notes) ) {
+			?>
+			<h2>Release notes:</h2>
+			<?php
+			
+			foreach( $release_notes as $release_note ) {
+				echo '<h3>'.$release_note['title'].'</h3>';
+
+				$body = htmlentities($release_note['body']);
+				$body = nl2br($body);
+			
+				echo $body;
+			}
+
 		}
 
-		if( $new_version_available ) {
-
-			foreach( $json as $release ) {
-				$release_number = explode('.', $release->tag_name);
-
-				$newer_version = false;
-				if( $release_number[0] > $version_number_old[0] 
-				 || ($release_number[0] == $version_number_old[0] && $release_number[1] > $version_number_old[1] )
-				 || ($release_number[0] == $version_number_old[0] && $release_number[1] == $version_number_old[1] && $release_number[2] > $version_number_old[2] )
-				){
-				 	$newer_version = true;
-				}
-
-				if( ! $newer_version ) break;
-
-				$release_notes[] = [
-					'title' => $release->tag_name,
-					'body' => $release->body
-				];
-			}
-		
-			echo '<p><strong>New version available!</strong> You should update your system.</p>';
-
-			if( count($release_notes) ) {
-				?>
-				<h2>Release notes:</h2>
-				<?php
-				
-				foreach( $release_notes as $release_note ) {
-					echo '<h3>'.$release_note['title'].'</h3>';
-
-					$body = htmlentities($release_note['body']);
-					$body = nl2br($body);
-				
-					echo $body;
-				}
-
-			}
-		}
-
+	} else {
+		echo '<p>You are running the latest version.</p>';
 	}
 	?>
 	<hr>
