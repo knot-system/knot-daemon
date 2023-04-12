@@ -77,6 +77,14 @@ class Text {
 		// If there is a <br> tag after a </p> tag, remove it:
 		$text = preg_replace( "/\<\/p\>\<br\>/", '</p>', $text );
 
+		// remove brs inside <ul> and <ol> tags
+		$text = preg_replace( "/\<ul\>\<br\>/", '<ul>', $text );
+		$text = preg_replace( "/\<\/ul\>\<br\>/", '</ul>', $text );
+		$text = preg_replace( "/\<ol\>\<br\>/", '<ol>', $text );
+		$text = preg_replace( "/\<\/ol\>\<br\>/", '</ol>', $text );
+		$text = preg_replace( "/\<br\>\<li\>/", '<li>', $text );
+		$text = preg_replace( "/\<\/li\>\<br\>/", '</li>', $text );
+
 		$this->content = $text;
 
 		return $this;
