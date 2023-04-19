@@ -190,6 +190,8 @@ class Feeds {
 			$feed['_redirect_url'] = $redirect_url;
 		}
 
+		$feed['_date_subscribed'] = date( 'c', time() );
+
 		if( ! $file->exists() ) {
 
 			if( ! $file->create($feed) ) {
