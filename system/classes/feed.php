@@ -348,10 +348,8 @@ class Feed {
 
 		if( ! empty($item['id']) ) {
 			$id = $item['id'];
-			$internal_id = $id;
 		} else {
 			$id = get_hash( $permalink );
-			$internal_id = $id;
 		}
 
 		$internal_id = get_hash( $this->path.$id ); // create a unique id for this item in this feed in this channel
