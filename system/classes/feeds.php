@@ -7,10 +7,11 @@ class Feeds {
 
 	public $channel;
 	public $folder;
+	public $source_id; // filter by a specific feed, only show posts in this source_id
 	public $feeds = [];
 	private $items;
 
-	function __construct( $channel ) {
+	function __construct( $channel, $source_id = false ) {
 
 		$this->channel = $channel;
 
@@ -19,6 +20,8 @@ class Feeds {
 		if( ! is_dir($folder) ) return false; // this should not happen (if this folder is missing, we create the folder in the Channels class and abort if this fails, but better make a sanity check here .. )
 
 		$this->folder = $folder;
+
+		if( $source_id ) $this->source_id = $source_id;
 
 		$this->refresh_feeds();
 
@@ -32,6 +35,17 @@ class Feeds {
 
 		$subfolders = $folder->get_subfolders();
 
+		if( $this->source_id ) {
+			// only show one source
+
+			if( array_key_exists($this->source_id, $subfolders) ) {
+				$subfolders = [ $subfolders[$this->source_id] ];
+			} else {
+				$subfolders = [];
+			}
+
+		}
+		
 		foreach( $subfolders as $subfolder ) {
 
 			$path = $subfolder['path'];

@@ -18,7 +18,13 @@ if( $request_type == 'get' ) {
 		$core->error( 'invalid_request', 'this channel does not exist', null, null, $channel_uid );
 	}
 
-	$feeds = new Feeds( $channel );
+
+	// for source parameter, see https://indieweb.org/Microsub-spec#Source_Parameter and https://github.com/indieweb/microsub/issues/21
+	$source_id = false;
+	if( ! empty($_REQUEST['source']) ) $source_id = $_REQUEST['source'];
+	
+
+	$feeds = new Feeds( $channel, $source_id );
 
 	if( ! $feeds ) {
 		$core->error( 'invalid_request', 'no feeds found in this channel', null, null, $channel_uid, $channel );

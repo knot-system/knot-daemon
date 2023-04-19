@@ -2,6 +2,7 @@ v.0.1.2
 
 - updater: fix for displaying relevant release information
 - don't delete .htaccess file on update
+- 'timeline' endpoint can have a 'source' parameter to only show a specific feed
 - bugfixes & enhancements
 
 
