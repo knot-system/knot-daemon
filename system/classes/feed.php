@@ -50,7 +50,6 @@ class Feed {
 		$feed_info = $this->info;
 
 		if( $cleanup ) {
-			unset($feed_info['_id']);
 			unset($feed_info['_path']);
 			unset($feed_info['_original_url']);
 			unset($feed_info['_redirect_url']);
