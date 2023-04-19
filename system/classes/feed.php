@@ -453,6 +453,7 @@ class Feed {
 
 		if( ! $date_modified ) $date_modified = $date_published; // fallback, if no modified date is set
 
+
 		$categories = false;
 		if( ! empty($item['categories']) ) {
 			$categories = $item['categories'];
@@ -461,14 +462,25 @@ class Feed {
 		}
 
 
+		$date_imported = date( 'c', time() );
+
+		$read_state = false;
+
 		if( $updating ) {
+
+			// don't update some specific fields:
 
 			$file_content = $file->get();
 
-			$date_published = $file_content['date_published']; // keep the previous published date
-			
-			// TODO: if $updating is true, keep old read state
+			$date_published = $file_content['date_published'];
 
+			if( ! empty($file_content['_date_imported']) ) {
+				$date_imported = $file_content['_date_imported'];
+			}
+
+			if( ! empty($file_content['_is_read']) ) {
+				$read_state = $file_content['_is_read'];
+			}
 
 		}
 
@@ -488,7 +500,9 @@ class Feed {
 			'feed_link' => $feed_link,
 			'category' => json_encode($categories),
 			'image' => $image,
-			'_raw' => json_encode($item)
+			'_is_read' => $read_state,
+			'_date_imported' => $date_imported,
+			'_raw' => json_encode($item),
 		];
 
 		$file->create( $post );
