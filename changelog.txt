@@ -6,6 +6,7 @@ v.0.1.2
 - feeds and items now record the date & time when they were added
 - when subscribing to new feeds, the date & time get saved
 - session authentication gets cached for a few minutes, to make subsequent requests much faster
+- respect xml:base when importing rss feeds
 - bugfixes & enhancements
 
 

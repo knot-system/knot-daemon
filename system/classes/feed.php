@@ -216,17 +216,29 @@ class Feed {
 				$guid = false;
 			}
 
+			$base = false;
 			$content = false;
 			if( $rss_item->description ) {
 				$content = $rss_item->description;
 			} elseif( $rss_item->content ) {
 				$content = $rss_item->content;
+
+				$xml_attributes = $rss_item->content->attributes('xml', true);
+				if( ! empty($xml_attributes->base) ) {
+					$base = $xml_attributes->base->__toString();
+				}
+
 			}
 			if( $content ) {
 				$content = $content->__toString();
 			} else {
 				$content = false;
 			}
+
+			if( $base ) {
+				$content = $this->add_base_to_html( $content, $base );
+			}
+
 
 			$pubDate = false;
 			if( $rss_item->pubDate ) {
@@ -614,6 +626,17 @@ class Feed {
 		// TODO: set $post['_is_read']	
 
 		return $post;
+	}
+
+
+	function add_base_to_html( $content, $base ) {
+
+		$base = trailing_slash_it($base);
+
+		$content = str_replace( 'href="/', 'href="'.$base, $content );
+		$content = str_replace( 'src="/', 'src="'.$base, $content );
+
+		return $content;
 	}
 
 
