@@ -49,6 +49,10 @@ class Session {
 			$core->error( 'forbidden', 'The authenticated user does not have permission to perform this request (invalid scope)', 403, null, $this->canonical_me, $access_token, $token_response, $me );
 		}
 
+		if( un_trailing_slash_it($token_response['me']) != $this->canonical_me ) {
+			$core->error( 'forbidden', 'The authenticated user does not have permission to perform this request (access_token me does not match provided me)', 403, null, $token_endpoint, $access_token, $token_verify, $token_response, $me, $url );
+		}
+
 		$allowed_users = $core->config->get('allowed_urls');
 		$cleaned_allowed_users = array_map( 'un_trailing_slash_it', $allowed_users );
 		if( ! in_array( $this->canonical_me, $cleaned_allowed_users ) ) {
@@ -167,10 +171,6 @@ class Session {
 
 		if( ! isset($token_response['me']) || ! isset($token_response['scope']) ) {
 			$core->error( 'unauthorized', 'could not verify via token endpoint (access_token did not provide me and/or scope parameter)', null, null, $token_endpoint, $access_token, $token_verify, $token_response, $me, $url );
-		}
-
-		if( un_trailing_slash_it($token_response['me']) != $this->canonical_me ) {
-			$core->error( 'forbidden', 'The authenticated user does not have permission to perform this request (access_token me does not match provided me)', 403, null, $token_endpoint, $access_token, $token_verify, $token_response, $me, $url );
 		}
 
 		$cache->add_data( json_encode($token_response) );
