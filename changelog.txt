@@ -5,6 +5,7 @@ v.0.1.2
 - 'timeline' endpoint can have a 'source' parameter to only show a specific feed
 - feeds and items now record the date & time when they were added
 - when subscribing to new feeds, the date & time get saved
+- session authentication gets cached for a few minutes, to make subsequent requests much faster
 - bugfixes & enhancements
 
 
