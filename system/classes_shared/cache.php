@@ -1,6 +1,6 @@
 <?php
 
-// update: 2023-03-28
+// update: 2023-04-25
 
 
 // NOTE: in system/classes/core.php there is also the 'refresh_cache()' function
@@ -76,6 +76,14 @@ class Cache {
 			$files = read_folder( $folderpath, false, false );
 			foreach( $files as $filename ) {
 				if( str_starts_with($filename, $hash) ) {
+
+					$current_timestamp = time();
+					$expire_timestamp = $this->get_expire_timestamp( $filename );
+					if( $expire_timestamp < $current_timestamp ) { // cachefile too old
+						@unlink($folderpath.$file); // delete old cache file; fail silently
+						break;
+					}
+
 					return $filename;
 				}
 			}
@@ -172,8 +180,6 @@ class Cache {
 
 		global $core;
 
-		$lifetime = $core->config->get( 'cache_lifetime' );
-
 		$folderpath = $core->abspath.'cache/';
 
 		$files = read_folder( $folderpath, true );
@@ -182,14 +188,21 @@ class Cache {
 
 		foreach( $files as $file ) {
 
-			$file_explode = explode( '_', $file );
-			$expire_timestamp = (int) end($file_explode);
+			$expire_timestamp = $this->get_expire_timestamp( $file );
 
 			if( $expire_timestamp < $current_timestamp ) { // cachefile too old
 				@unlink($file); // delete old cache file; fail silently
 			}
 
 		}
+	}
+
+
+	function get_expire_timestamp( $file ) {
+		$file_explode = explode( '_', $file );
+		$expire_timestamp = (int) end($file_explode);
+
+		return $expire_timestamp;
 	}
 
 
