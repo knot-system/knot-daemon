@@ -128,7 +128,18 @@ class Session {
 
 		$me = $this->me;
 
-		// TODO: cache indieauth authentication for a few minutes, so we don't need to verify at every request
+
+		$cache_hash = get_hash( $access_token );
+		$cache_lifetime = $core->config->get('auth_cache_lifetime');
+		$cache = new Cache( 'indieauth', $cache_hash, true, $cache_lifetime );
+
+		$token_response = $cache->get_data();
+
+		if( $token_response ) {
+			// return cached result:
+			$token_response_array = json_decode( $token_response, true );
+			return $token_response_array;
+		}
 
 
 		$indieauth = new IndieAuth();
@@ -161,6 +172,8 @@ class Session {
 		if( un_trailing_slash_it($token_response['me']) != $this->canonical_me ) {
 			$core->error( 'forbidden', 'The authenticated user does not have permission to perform this request (access_token me does not match provided me)', 403, null, $token_endpoint, $access_token, $token_verify, $token_response, $me, $url );
 		}
+
+		$cache->add_data( json_encode($token_response) );
 
 		return $token_response;
 	}
