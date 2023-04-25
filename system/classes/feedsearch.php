@@ -53,6 +53,7 @@ class Feedsearch {
 		$dom = new Dom( $body );
 
 		$feeds = $dom->find( 'link', 'alternate' );
+		// TODO: only consider type="application/rss+xml" and type="application/json" (and maybe other) -- if we consider all rel="alternate", we also get things like /wp-json/ urls
 
 		if( ! $feeds ) return $this;
 

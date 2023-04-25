@@ -42,42 +42,19 @@ class Session {
 		$this->me = $me;
 		$this->canonical_me = un_trailing_slash_it($me); // NOTE: for our purposes, https://www.example.com/ and https://www.example.com are the same user
 
-		$indieauth = new IndieAuth();
-		$url = $indieauth->normalize_url( $me );
-		$token_endpoint = $indieauth->discover_endpoint( 'token_endpoint', $url );
-		if( ! $token_endpoint ) {
-			$core->error( 'unauthorized', 'could not find token endpoint (me url does not provide a token_endpoint)', null, null, $me, $url );
-		}
 
-		$this->token_endpoint = $token_endpoint;
+		$token_response = $this->verify_indieauth( $access_token ); // NOTE: this will exit if we fail authentication
 
-		$token_endpoint_request = new Request();
-		$token_verify = $token_endpoint_request->get( $token_endpoint, false, [ 'Authorization: Bearer '.$access_token ] );
-
-		$token_verify = explode( '&', $token_verify );
-		$token_response = [];
-		foreach( $token_verify as $url_part ) {
-			$url_part = explode( '=', $url_part );
-			$token_response[$url_part[0]] = urldecode($url_part[1]);
-		}
-
-		if( isset($token_response['active']) && ! $token_response['active'] ) {
-			$core->error( 'unauthorized', 'could not verify via token endpoint (access_token responded with active=false)', null, null, $token_endpoint, $access_token, $token_verify, $token_response, $me, $url );
-		}
-
-		if( ! isset($token_response['me']) || ! isset($token_response['scope']) ) {
-			$core->error( 'unauthorized', 'could not verify via token endpoint (access_token did not provide me and/or scope parameter)', null, null, $token_endpoint, $access_token, $token_verify, $token_response, $me, $url );
-		}
-
-		if( un_trailing_slash_it($token_response['me']) != $this->canonical_me ) {
-			$core->error( 'forbidden', 'The authenticated user does not have permission to perform this request (access_token me does not match provided me)', 403, null, $token_endpoint, $access_token, $token_verify, $token_response, $me, $url );
+		if( ! $token_response || empty($token_response['scope']) ) {
+			$core->error( 'forbidden', 'The authenticated user does not have permission to perform this request (invalid scope)', 403, null, $this->canonical_me, $access_token, $token_response, $me );
 		}
 
 		$allowed_users = $core->config->get('allowed_urls');
 		$cleaned_allowed_users = array_map( 'un_trailing_slash_it', $allowed_users );
 		if( ! in_array( $this->canonical_me, $cleaned_allowed_users ) ) {
-			$core->error( 'forbidden', 'The authenticated user does not have permission to perform this request (this user does not exist in the system)', 403, null, $this->canonical_me, $cleaned_allowed_users, $token_endpoint, $access_token, $token_verify, $token_response, $me, $url );
+			$core->error( 'forbidden', 'The authenticated user does not have permission to perform this request (this user does not exist in the system)', 403, null, $this->canonical_me, $cleaned_allowed_users, $access_token, $token_response, $me );
 		}
+
 
 		$this->access_token = $access_token;
 		
@@ -142,6 +119,50 @@ class Session {
 		}
 
 		return $this;
+	}
+
+
+	function verify_indieauth( $access_token ){
+
+		global $core;
+
+		$me = $this->me;
+
+		// TODO: cache indieauth authentication for a few minutes, so we don't need to verify at every request
+
+
+		$indieauth = new IndieAuth();
+		$url = $indieauth->normalize_url( $me );
+		$token_endpoint = $indieauth->discover_endpoint( 'token_endpoint', $url );
+		if( ! $token_endpoint ) {
+			$core->error( 'unauthorized', 'could not find token endpoint (me url does not provide a token_endpoint)', null, null, $me, $url );
+		}
+
+		$this->token_endpoint = $token_endpoint;
+
+		$token_endpoint_request = new Request();
+		$token_verify = $token_endpoint_request->get( $token_endpoint, false, [ 'Authorization: Bearer '.$access_token ] );
+
+		$token_verify = explode( '&', $token_verify );
+		$token_response = [];
+		foreach( $token_verify as $url_part ) {
+			$url_part = explode( '=', $url_part );
+			$token_response[$url_part[0]] = urldecode($url_part[1]);
+		}
+
+		if( isset($token_response['active']) && ! $token_response['active'] ) {
+			$core->error( 'unauthorized', 'could not verify via token endpoint (access_token responded with active=false)', null, null, $token_endpoint, $access_token, $token_verify, $token_response, $me, $url );
+		}
+
+		if( ! isset($token_response['me']) || ! isset($token_response['scope']) ) {
+			$core->error( 'unauthorized', 'could not verify via token endpoint (access_token did not provide me and/or scope parameter)', null, null, $token_endpoint, $access_token, $token_verify, $token_response, $me, $url );
+		}
+
+		if( un_trailing_slash_it($token_response['me']) != $this->canonical_me ) {
+			$core->error( 'forbidden', 'The authenticated user does not have permission to perform this request (access_token me does not match provided me)', 403, null, $token_endpoint, $access_token, $token_verify, $token_response, $me, $url );
+		}
+
+		return $token_response;
 	}
 
 
