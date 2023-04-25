@@ -85,6 +85,9 @@ class FeedPreview {
 				$image = $json->photo;
 			}
 
+			if( is_object($title) ) $title = json_encode($title);
+			if( is_object($description) ) $description = json_encode($description);
+
 		} elseif( $this->type == 'rss' || $this->type == 'atom' ) {
 
 			$rss = simplexml_load_string( $body );
@@ -117,9 +120,9 @@ class FeedPreview {
 
 		}
 
-		if( $description ) $info['description'] = $description;
-		if( $image ) $info['photo'] = $image;
-		if( $title ) $info['name'] = $title;
+		if( $description ) $info['description'] = trim($description);
+		if( $image ) $info['photo'] = trim($image);
+		if( $title ) $info['name'] = trim($title);
 
 		return $info;
 	}
