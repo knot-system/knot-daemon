@@ -1,6 +1,7 @@
 v.0.1.3
 
-- 
+- https://www.example.com and http://www.example.com are now seen as the same user
+- bugfixes & enhancements
 
 
 v.0.1.2

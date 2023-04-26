@@ -50,13 +50,11 @@ class Session {
 		}
 
 		if( un_trailing_slash_it($token_response['me']) != $this->canonical_me ) {
-			$core->error( 'forbidden', 'The authenticated user does not have permission to perform this request (access_token me does not match provided me)', 403, null, $token_endpoint, $access_token, $token_verify, $token_response, $me, $url );
+			$core->error( 'forbidden', 'The authenticated user does not have permission to perform this request (access_token me does not match provided me)', 403, null, $access_token, $token_response, $me );
 		}
 
-		$allowed_users = $core->config->get('allowed_urls');
-		$cleaned_allowed_users = array_map( 'un_trailing_slash_it', $allowed_users );
-		if( ! in_array( $this->canonical_me, $cleaned_allowed_users ) ) {
-			$core->error( 'forbidden', 'The authenticated user does not have permission to perform this request (this user does not exist in the system)', 403, null, $this->canonical_me, $cleaned_allowed_users, $access_token, $token_response, $me );
+		if( ! $this->is_allowed_user( $this->canonical_me ) ) {
+			$core->error( 'forbidden', 'The authenticated user does not have permission to perform this request (this user does not exist in the system)', 403, null, $this->canonical_me, $access_token, $token_response, $me );
 		}
 
 
@@ -69,6 +67,29 @@ class Session {
 
 		$this->check_content_folder();
 
+	}
+
+
+	function is_allowed_user( $me ) {
+
+		// NOTE: for our purposes, https://wwww.example.com/, https://www.example.com and http://www.example.com are the same user
+
+		global $core;
+
+		$allowed_users = $core->config->get('allowed_urls');
+
+		$cleaned_allowed_users = array_map( 'un_trailing_slash_it', $allowed_users );
+		$cleaned_allowed_users = array_map( function( $el ){
+			$el = str_replace( array('https://', 'http://'), '', $el );
+			return $el;
+		}, $cleaned_allowed_users);
+
+		$me = str_replace( array('https://', 'http://'), '', $me );
+		$me = un_trailing_slash_it($me);
+
+		$is_allowed = in_array( $me, $cleaned_allowed_users );
+
+		return $is_allowed;
 	}
 
 
