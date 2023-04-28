@@ -264,7 +264,7 @@ if( $config_missing ) {
 	foreach( $authorized_urls as $authorized_url ) {
 		$content .= "\r\n		'".$authorized_url."',";
 	}
-	$content .= "\r\n	],\r\n];\r\n"; // CLEANUP: remove the debug option, when the system is stable enough
+	$content .= "\r\n	],\r\n];\r\n";
 	if( file_put_contents( $abspath.'config.php', $content ) === false ) {
 
 		if( $output ) {
