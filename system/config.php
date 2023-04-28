@@ -3,7 +3,7 @@
 // NOTE: you can overwrite these options via the config.php in the root folder
 
 return [
-	'debug' => true, // show additional information when an error occurs
+	'debug' => false, // show additional information when an error occurs
 	'logging' => true, // write logfiles into the /log directory
 	'cache_lifetime' => 60*60*24*30, // 30 days, in seconds
 	'auth_cache_lifetime' => 60*15, // 15 minutes, in seconds
