@@ -43,6 +43,11 @@ class Core {
 
 
 		$this->config = new Config();
+
+		if( ! $this->config->get('debug') ) {
+			error_reporting(0);
+		}
+
 		$this->log = new Log();
 
 	}
