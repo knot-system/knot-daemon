@@ -175,7 +175,7 @@ class Feeds {
 
 		$folder_path = $this->folder.$id;
 
-		if( mkdir( $folder_path, 0777, true ) === false ) {
+		if( mkdir( $folder_path, 0774, true ) === false ) {
 			$core->error( 'internal_server_error', 'could not create feed (folder error)', 500, null, $id, $url, $folder_path, $status_code );
 		}
 

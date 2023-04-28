@@ -138,7 +138,7 @@ class Session {
 		$this->me_folder = 'content/'.$me_folder.'/';
 
 		if( ! is_dir($core->abspath.$this->me_folder) ) {
-			if( mkdir( $core->abspath.$this->me_folder, 0777, true ) === false ) {
+			if( mkdir( $core->abspath.$this->me_folder, 0774, true ) === false ) {
 				$core->error( 'internal_server_error', 'could not create user folder', 500, null, $me, $me_folder );
 			}
 		}

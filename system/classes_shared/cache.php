@@ -1,6 +1,6 @@
 <?php
 
-// update: 2023-04-25
+// update: 2023-04-28
 
 
 // NOTE: in system/classes/core.php there is also the 'refresh_cache()' function
@@ -167,7 +167,7 @@ class Cache {
 
 		if( is_dir($core->abspath.$this->cache_folder) ) return;
 
-		if( mkdir( $core->abspath.$this->cache_folder, 0777, true ) === false ) {
+		if( mkdir( $core->abspath.$this->cache_folder, 0774, true ) === false ) {
 			$core->debug( 'could not create cache dir', $this->cache_folder );
 		}
 

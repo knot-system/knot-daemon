@@ -165,7 +165,7 @@ if( ! is_dir( $abspath.'content/') ) {
 		<?php
 	}
 
-	if( mkdir( $abspath.'content/', 0777, true ) === false ) {
+	if( mkdir( $abspath.'content/', 0774, true ) === false ) {
 
 		if( $output ) {
 			?>
@@ -209,7 +209,7 @@ if( ! is_dir( $abspath.'cache/') ) {
 		<?php
 	}
 
-	if( mkdir( $abspath.'cache/', 0777, true ) === false ) {
+	if( mkdir( $abspath.'cache/', 0774, true ) === false ) {
 
 		if( $output ) {
 			?>

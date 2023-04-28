@@ -1,6 +1,6 @@
 <?php
 
-// update: 2023-03-22
+// update: 2023-04-28
 
 
 class Log {
@@ -16,7 +16,7 @@ class Log {
 		$log_filepath = $core->abspath.'log/';
 
 		if( ! is_dir( $log_filepath) ) {
-			mkdir( $log_filepath, 0777, true );
+			mkdir( $log_filepath, 0774, true );
 			if( ! is_dir( $log_filepath) ) return;
 		}
 

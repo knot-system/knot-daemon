@@ -179,7 +179,7 @@ class Channels {
 
 		$folder_path = $this->folder.$order.'_'.$uid;
 
-		if( mkdir( $folder_path, 0777, true ) === false ) {
+		if( mkdir( $folder_path, 0774, true ) === false ) {
 			$core->error( 'internal_server_error', 'could not create channel (folder error)', 500, null, $folder_path, $order, $uid, $name );
 		}
 
