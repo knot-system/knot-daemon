@@ -90,7 +90,7 @@ class FeedPreview {
 
 		} elseif( $this->type == 'rss' || $this->type == 'atom' ) {
 
-			$rss = simplexml_load_string( $body );
+			$rss = @simplexml_load_string( $body );
 
 			if( $rss !== false ) {
 

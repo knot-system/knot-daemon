@@ -146,7 +146,7 @@ class Feed {
 
 	function import_posts_rss( $body ) {
 
-		$rss = simplexml_load_string( $body );
+		$rss = @simplexml_load_string( $body );
 
 		if( $rss === false ) {
 			$this->import_error( 'rss: xml error', $body );
