@@ -1,5 +1,12 @@
 v.0.1.3
 
+- delay refreshing of inactive feeds; this depends on the following delay table (may change in the future):
+	- latest post older than 1 year: refresh every month
+	- latest post older than 6 months: refresh every week
+	- latest post older than 1 month: refresh every day
+	- latest post older than 2 weeks: refresh every 12 hours
+	- latest post older than 1 week: refresh every 6 hours
+	- latest post younger: refresh every time
 - https://www.example.com and http://www.example.com are now seen as the same user
 - setup: add comments to .htaccess, at beginning and end of our block
 - bugfixes & enhancements

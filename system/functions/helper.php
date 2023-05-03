@@ -21,11 +21,48 @@ function refresh_feed_items( $active_feeds ){
 
 	if( empty($active_feeds) ) return false;
 
-	// TODO: build some type of queue, so we don't loop over _all_ active feeds every time, but split it up into multiple requests to cron
+	global $core;
+
+	$refresh_delay = $core->config->get('refresh_delay');
+	ksort($refresh_delay);
 
 	foreach( $active_feeds as $active_feed ) {
+
+		// NOTE: we check, when the last post was written; we also check the last time,
+		// this feed was refreshed. we then use $refresh_delay to find out, if we want
+		// to refresh this feed now, or skip it (and maybe refresh the next time)
+
+		$now_datetime = new DateTime();
+
+		$posts = $active_feed->get_posts();
+		$latest_post = reset($posts);
+		$latest_post_update = $latest_post['_updated'];
+
+		$latest_post_update_datetime = new DateTime( $latest_post_update );
+		$refresh_threshold_interval = $latest_post_update_datetime->diff($now_datetime);
+		$refresh_threshold_weeks = floor($refresh_threshold_interval->format('%a')/7);
+
+		$delay_hours = 0;
+		foreach( $refresh_delay as $weeks_treshold => $hours_delay ) {
+			if( $weeks_treshold > $refresh_threshold_weeks ) break;
+			$delay_hours = $hours_delay;
+		}
+
+		$last_feed_refresh = $active_feed->get_info('_last_refresh');
+		$last_feed_refresh_datetime = new DateTime($last_feed_refresh);
+		$last_feed_refresh_interval = $last_feed_refresh_datetime->diff($now_datetime);
+		$last_feed_refresh_hours = ($last_feed_refresh_interval->format('%a')*24)+$last_feed_refresh_interval->format('%h');
+
+		if( $last_feed_refresh_hours < $delay_hours ) {
+			// don't refresh yet
+			continue;
+		}
+
 		$active_feed->refresh_posts();
 		$active_feed->cleanup_posts();
+
+		$active_feed->save_info( '_last_refresh', $now_datetime->format('c') );
+
 	}
 
 	return true;

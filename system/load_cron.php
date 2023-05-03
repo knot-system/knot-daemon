@@ -34,6 +34,7 @@ $active_feeds = []; // NOTE: these are all the active feeds of _all_ users on th
 
 
 // TODO: add a filter parameter, to only refresh a specific user
+// could be 'cron.php?me=www-example-com-subfolder&secret=..'
 $userfolders_obj = new Folder( $core->abspath.'content/' );
 $userfolders = $userfolders_obj->get_subfolders();
 

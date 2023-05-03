@@ -45,6 +45,16 @@ class Feed {
 		return $this->info[$key];
 	}
 
+	function save_info( $key, $info ) {
+		if( ! $this->file->exists() ) return false;
+
+		$this->info[$key] = $info;
+
+		$success = $this->file->create( $this->info );
+
+		return $success;
+	}
+
 	function get( $cleanup = false ) {
 
 		$feed_info = $this->info;
@@ -575,6 +585,7 @@ class Feed {
 		$post = [
 			'_sort_id' => $sort_id,
 			'_id' => $file_content['internal_id'],
+			'_updated' => $date,
 			'type' => 'entry',
 			'uid' => $file_content['id'],
 			'name' => $file_content['title'],
