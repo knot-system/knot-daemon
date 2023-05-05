@@ -30,7 +30,11 @@ class IndieAuth {
 
 		$dom = new Dom( $body );
 
-		$endpoint = $dom->find( 'link', $name );
+		$endpoints = $dom->find_elements( 'link' )->filter_elements( 'rel', $name )->return_elements( 'href' );
+
+		if( empty($endpoints) ) return false;
+
+		$endpoint = $endpoints[0];
 
 		if( ! $endpoint ) return false;
 

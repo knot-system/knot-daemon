@@ -1,6 +1,6 @@
 <?php
 
-// update: 2023-05-03
+// update: 2023-05-05
 
 
 class Dom {
@@ -69,23 +69,6 @@ class Dom {
 
 			$values[] = $value;
 		}
-
-		return $values;
-	}
-
-
-	// NOTE/TODO/DEBUG: this is a legacy function, that is just a wrapper around newer functions. get rid of this function
-	function find( $find_tagname, $find_rel) {
-
-		$this->find_elements( $find_tagname );
-
-		$this->filter_elements( 'rel', $find_rel );
-
-		$values = $this->return_elements( 'href' );
-
-		if( ! count($values) ) return false;
-		
-		if( count($values) == 1 ) return $values[0];
 
 		return $values;
 	}

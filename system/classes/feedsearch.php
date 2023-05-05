@@ -52,7 +52,7 @@ class Feedsearch {
 
 		$dom = new Dom( $body );
 
-		$feeds = $dom->find( 'link', 'alternate' );
+		$feeds = $dom->find_elements( 'link' )->filter_elements( 'rel', 'alternate' )->return_elements( 'href' );
 
 		if( ! $feeds ) return $this;
 
