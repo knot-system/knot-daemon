@@ -91,6 +91,8 @@ If you use an external service, point it to the `cron.php` in your base url, and
 
 The recommended frequency is 1 hour. You should not use a frequency lower than 5 minutes to not overwhelm your own server or the servers of people you follow.
 
+Feeds, that are not very active, are not refreshed every time, so it can take some time until some posts show up in your feed.
+
 ## Additional Options
 
 You may want to edit the `config.php` a bit after the initial setup and add additional settings:
