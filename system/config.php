@@ -15,8 +15,8 @@ return [
 	'refresh_delay' => [ // refresh feeds, where the last item was published 'x weeks' ago only every 'y hours'
 		52 => 4*7*24, // ~1 year   => ~1 month
 		26 => 7*24,   // ~6 months =>  1 week
-		4  => 24,     // ~1 month  =>  1 day
-		2  => 12,     //  2 weeks  => 12 hours
-		1  => 6,      //  1 week   =>  6 hours
+		4  => 3*24,   // ~1 month  =>  3 days
+		2  => 24,     //  2 weeks  =>  1 day
+		1  => 12,     //  1 week   => 12 hours
 	],
 ];
