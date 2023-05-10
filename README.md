@@ -93,6 +93,8 @@ The recommended frequency is 1 hour. You should not use a frequency lower than 5
 
 Feeds, that are not very active, are not refreshed every time, so it can take some time until some posts show up in your feed.
 
+You can also add a specific user and/or channel to the cronjob URL, and all other users/channels will be ignored. This helps with users or channels, that have a lot of feeds. You could add a seperate cronjob for every user or channel. For this, you need the user-uid or the channel-uid. The user-uid is the name of the userfolder in the `content/` directory, for channels it's the channel id, that can be found in the `_channel.txt` file in the `_id` field (or the foldername of the channel). Add a `me=user-uid` and/or `channel=channel-uid` to the `cron.php` file as a parameter, for example `cron.php?me=example-com&channel=home&secret=…`.
+
 ## Additional Options
 
 You may want to edit the `config.php` a bit after the initial setup and add additional settings:
