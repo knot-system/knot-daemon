@@ -29,6 +29,12 @@ if( $secret != $secret_option ) {
 }
 
 
+$channel = false;
+if( ! empty($_GET['channel']) ) {
+	$channel = $_GET['channel'];
+}
+
+
 
 $active_feeds = []; // NOTE: these are all the active feeds of _all_ users on this system
 
@@ -46,9 +52,11 @@ if( empty($userfolders) ) {
 
 foreach( $userfolders as $userfolder ) {
 
-	// TODO: check, when the last user login was; if it was a long time, reduce the frequency of updates
-
 	$channels_obj = new Channels( $userfolder['path'] );
+
+	if( $channel ) {
+		$channels_obj->filter_channel( $channel );
+	}
 
 	$active_feeds = array_merge( $active_feeds, $channels_obj->get_active_feeds() );
 

@@ -374,6 +374,22 @@ class Channels {
 	}
 
 
+	function filter_channel( $filter_channel ) {
+
+		$channels = [];
+
+		foreach( $this->channels as $channel ) {
+			if( $channel['uid'] != $filter_channel ) continue;
+
+			$channels[] = $channel;
+		}
+
+		$this->channels = $channels;
+
+		return $this;
+	}
+
+
 	function get_active_feeds() {
 
 		$active_feeds = [];
