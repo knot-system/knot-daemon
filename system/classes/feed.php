@@ -579,8 +579,22 @@ class Feed {
 		} else {
 			$date = $file_content['date_published'];
 		}
+		$sort_date = new DateTime($date);
+		if( $sort_date ) {
+			$sort_date_string = $sort_date->format('YmdHis');
+		} else {
+			$sort_date_string = '';
+		}
 
-		$sort_id = $date.'-'.$file_content['internal_id'];
+		if( ! empty($file_content['_date_imported']) ) {
+			// prefer date_imported for sorting, if available
+			$import_date = new DateTime($file_content['_date_imported']);
+			if( $import_date ) {
+				$sort_date_string = $import_date->format('YmdHis').'-'.$sort_date_string;
+			}
+		}
+		
+		$sort_id = $sort_date_string.'-'.$file_content['internal_id'];
 
 		$post = [
 			'_sort_id' => $sort_id,
