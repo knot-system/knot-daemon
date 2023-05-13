@@ -13,10 +13,10 @@ return [
 	'allowed_urls' => [], // an array with urls of allowed users ('me' parameters)
 	'user_agent' => 'maxhaesslein/postamt/', // version will be automatically appended
 	'refresh_delay' => [ // refresh feeds, where the last item was published 'x weeks' ago only every 'y hours'
-		52 => 4*7*24, // ~1 year   => ~1 month
-		26 => 7*24,   // ~6 months =>  1 week
-		4  => 3*24,   // ~1 month  =>  3 days
-		2  => 24,     //  2 weeks  =>  1 day
-		1  => 12,     //  1 week   => 12 hours
+		52 => 7*24, // ~1 year   =>  1 week
+		26 => 3*24, // ~6 months =>  3 days
+		4  => 24,   // ~1 month  =>  1 day
+		2  => 12,   //  2 weeks  => 12 hours
+		1  => 6,    //  1 week   =>  6 hours
 	],
 ];
