@@ -587,10 +587,10 @@ class Feed {
 		}
 
 		if( ! empty($file_content['_date_imported']) ) {
-			// prefer date_imported for sorting, if available
+			// prefer date_imported for sorting, if available; ignore seconds
 			$import_date = new DateTime($file_content['_date_imported']);
 			if( $import_date ) {
-				$sort_date_string = $import_date->format('YmdHis').'-'.$sort_date_string;
+				$sort_date_string = $import_date->format('YmdHi').'-'.$sort_date_string;
 			}
 		}
 		
