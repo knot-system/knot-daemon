@@ -1,6 +1,6 @@
 <?php
 
-// update: 2023-04-12
+// update: 2023-05-16
 
 
 class Text {
@@ -42,7 +42,7 @@ class Text {
 		// TODO: we may want to rewrite this based on our use case
 
 		if ( trim( $text ) === '' ) {
-			return '';
+			return $this;
 		}
 
 		// Change multiple <br>'s into two line breaks, which will turn into paragraphs.
@@ -93,6 +93,8 @@ class Text {
 
 	function auto_a( $hide_anchors = false ) {
 
+		if( trim($this->content) == '' ) return $this;
+
 		global $core;
 
 		$regexp = $this->get_link_regex_pattern( true );
@@ -103,7 +105,7 @@ class Text {
 
 		if( $hide_anchors ) $add_footnote_to_links = false;
 
-		if( doing_feed() ) $add_footnote_to_links = false;
+		if( function_exists('doing_feed') && doing_feed() ) $add_footnote_to_links = false;
 
 		if( $add_footnote_to_links ) {
 			$replace .= '<sup class="footnote"><a href="#$2.$3$4">*</a></sup>';
@@ -137,6 +139,9 @@ class Text {
 
 		}
 
+		$links = array_map( 'trim', $links );
+		$links = array_filter($links); // remove empty elements
+
 		$this->links = $links;
 
 		return $this;
@@ -147,43 +152,42 @@ class Text {
 
 		if( ! count($this->links ) ) return '';
 
-$html = '<ol class="link-preview-list">
-';
-foreach( $this->links as $link ) {
+		$html = '<ol class="link-preview-list">
+		';
+		foreach( $this->links as $link_url ) {
 
-	$link = new Link( $link );
-	$link_id = $link->id;
+			$link = new Link( $link_url );
+			$link_id = $link->id;
 
+			$link_info = $link->get_preview();
 
-	$link_info = $link->get_preview();
+			$classes = array( 'link-preview' );
 
-	$classes = array( 'link-preview' );
+			$max_age = 60*60*6; // we currently refresh links after 6 hours - TODO: finetune this value
 
-	$max_age = 60*60*6; // we currently refresh links after 6 hours - TODO: finetune this value
+			if( empty($link_info['last_refresh']) || time()-$link_info['last_refresh'] > $max_age ) {
 
-	if( empty($link_info['last_refresh']) || time()-$link_info['last_refresh'] > $max_age ) {
+				$classes[] = 'link-preview-needs-refresh';
 
-		$classes[] = 'link-preview-needs-refresh';
+				global $core;
+				if( ! isset($core->is_link_refreshing) ) {
+					// NOTE: we refresh only on link for every request, because this can take a few seconds,
+					// depending on the url and how fast the other server is.
+					// by default, the link refresh also happens async via js, so all the links that don't get
+					// refreshed with this request, should be done by the time this page refreshes again.
+					// this is just a fallback, if js is not active, or doesn't get executed, or is removed by the theme
+					$core->is_link_refreshing = true;
+					$link_info = $link->get_info()->get_preview();
+				}
+				
+			}
 
-		global $core;
-		if( ! isset($core->is_link_refreshing) ) {
-			// NOTE: we refresh only on link for every request, because this can take a few seconds,
-			// depending on the url and how fast the other server is.
-			// by default, the link refresh also happens async via js, so all the links that don't get
-			// refreshed with this request, should be done by the time this page refreshes again.
-			// this is just a fallback, if js is not active, or doesn't get executed, or is removed by the theme
-			$core->is_link_refreshing = true;
-			$link_info = $link->get_info()->get_preview();
-		}
-		
-	}
-
-$html .= '			<li>
+			$html .= '			<li>
 				<a id="'.$link_id.'" class="'.implode(' ', $classes).'" name="'.$link->short_url.'" href="'.$link->url.'" target="_blank" rel="noopener" data-preview-hash="'.$link_info['preview_html_hash'].'">'.$link_info['preview_html'].'</span></a>
 			</li>
-';
-}
-$html .= '		</ol>';
+			';
+		}
+		$html .= '		</ol>';
 
 		return $html;
 	}
@@ -198,7 +202,7 @@ $html .= '		</ol>';
 		$scheme = '(http|https)\:\/\/'; // http:// or https://
 		$domain = '([a-zA-Z0-9\-\.]+)'; // domain (with subdomain)
 		$tld = '([a-zA-Z]+)';
-		$path = '(\/[^\r\n\t\f\v \<]*)*'; // path (with query); no linebreak, space or <
+		$path = '(\/[^\r\n\t\f\v \<\"\']*)*'; // path (with query); no linebreak, space or <
 
 		$pattern = '/'.$exclude_attributes.$scheme.$domain.'\.'.$tld.$path.'/mix';
 
