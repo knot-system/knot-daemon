@@ -1,6 +1,6 @@
 <?php
 
-// update: 2023-05-05
+// update: 2023-05-16
 
 
 class Dom {
@@ -10,8 +10,12 @@ class Dom {
 	private $elements = [];
 
 	function __construct( $html ) {
+
 		$doc = new DOMDocument();
-		@$doc->loadHTML($html);
+
+		if( $html ) {
+			@$doc->loadHTML($html);
+		}
 
 		$this->document = $doc;
 	}
