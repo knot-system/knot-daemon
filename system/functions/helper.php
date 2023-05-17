@@ -26,10 +26,12 @@ function refresh_feed_items( $active_feeds ){
 	$refresh_delay = $core->config->get('refresh_delay');
 	ksort($refresh_delay);
 
+	$min_seconds_delay = $core->config->get('refresh_delay_min_seconds');
+
 	foreach( $active_feeds as $active_feed ) {
 
 		// NOTE: we check, when the last post was written; we also check the last time,
-		// this feed was refreshed. we then use $refresh_delay to find out, if we want
+		// this feed was refreshed. we then use $refresh_delay to find out if we want
 		// to refresh this feed now, or skip it (and maybe refresh the next time)
 
 		$now_datetime = new DateTime();
@@ -55,6 +57,13 @@ function refresh_feed_items( $active_feeds ){
 
 		if( $last_feed_refresh_hours < $delay_hours ) {
 			// don't refresh yet
+			continue;
+		}
+
+		// safety margin: check if refresh was more than X seconds ago
+		$last_feed_refresh_seconds_ago = $now_datetime->getTimestamp() - $last_feed_refresh_datetime->getTimestamp();
+		if( $last_feed_refresh_seconds_ago < $min_seconds_delay ) {
+			// don't refresh, was already refreshed a few seconds ago
 			continue;
 		}
 
