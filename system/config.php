@@ -14,9 +14,10 @@ return [
 	'user_agent' => 'maxhaesslein/postamt/', // version will be automatically appended
 	'refresh_delay' => [ // refresh feeds, where the last item was published 'x weeks' ago only every 'y hours'
 		52 => 7*24, // ~1 year   =>  1 week
-		26 => 3*24, // ~6 months =>  3 days
-		4  => 24,   // ~1 month  =>  1 day
-		2  => 12,   //  2 weeks  => 12 hours
-		1  => 6,    //  1 week   =>  6 hours
+		26 => 2*24, // ~6 months =>  2 days
+		8  => 24,   // ~2 month  =>  1 day
+		4  => 12,   // ~1 month  => 12 hours
+		2  => 6,    //  2 weeks  =>  6 hours
+		1  => 1,    //  1 week   =>  1 hour
 	],
 ];
