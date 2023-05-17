@@ -1,6 +1,6 @@
 <?php
 
-// update: 2023-05-16
+// update: 2023-05-17
 
 
 class Text {
@@ -140,7 +140,8 @@ class Text {
 		}
 
 		$links = array_map( 'trim', $links );
-		$links = array_filter($links); // remove empty elements
+		$links = array_filter( $links ); // remove empty elements
+		$links = array_unique( $links );
 
 		$this->links = $links;
 
@@ -196,7 +197,7 @@ class Text {
 	private function get_link_regex_pattern( $output = false ){
 		// TODO: maybe we also want to support gopher:// or other protocols?
 
-		$exclude_attributes = '(?<!src=[\"\'])'; // ignore src attributes
+		$exclude_attributes = '(?<!src=[\"\'])(?<!alt=[\"\'])(?<!title=[\"\;])'; // ignore some attributes
 		if( $output ) $exclude_attributes .= '(?<!href=[\"\'])'; // ignore href as well, for links that are already valid HTML
 
 		$scheme = '(http|https)\:\/\/'; // http:// or https://
