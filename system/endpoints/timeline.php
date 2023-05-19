@@ -31,7 +31,7 @@ if( $request_type == 'get' ) {
 	}
 
 
-	$refresh_on_connect = $core->config->get('refresh_on_connect');
+	$refresh_on_connect = get_config('refresh_on_connect');
 	if( $refresh_on_connect ) {
 		$active_feeds = $feeds->get( false, true );
 		refresh_feed_items( $active_feeds );
@@ -48,7 +48,7 @@ if( $request_type == 'get' ) {
 		$after = $_REQUEST['after'];
 	}
 
-	$limit = $core->config->get( 'item_limit_count' );
+	$limit = get_config( 'item_limit_count' );
 	if( ! empty($_REQUEST['limit']) ) {
 		$limit = (int) $_REQUEST['limit'];
 	}

@@ -1,6 +1,6 @@
 <?php
 
-// update: 2023-05-17
+// update: 2023-05-19
 
 
 class Text {
@@ -25,7 +25,7 @@ class Text {
 	function remove_html_elements() {
 		global $core;
 
-		$allowed_html_elements = $core->config->get('allowed_html_elements');
+		$allowed_html_elements = get_config('allowed_html_elements');
 
 		$this->content = strip_tags( $this->content, $allowed_html_elements );
 
@@ -101,7 +101,7 @@ class Text {
 
 		$replace = '<a class="inline-link" href="$1://$2.$3$4" target="_blank" rel="noopener" title="$1://$2.$3$4">$2.$3$4</a>';
 
-		$add_footnote_to_links = $core->config->get('add_footnote_to_links');
+		$add_footnote_to_links = get_config('add_footnote_to_links');
 
 		if( $hide_anchors ) $add_footnote_to_links = false;
 

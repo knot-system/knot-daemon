@@ -271,7 +271,7 @@ class Feeds {
 
 		if( ! $limit ) {
 			global $core;
-			$limit = $core->config->get( 'item_limit_count' );
+			$limit = get_config( 'item_limit_count' );
 		}
 
 		if( $limit < 1 ) $limit = 1;

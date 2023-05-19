@@ -23,10 +23,10 @@ function refresh_feed_items( $active_feeds ){
 
 	global $core;
 
-	$refresh_delay = $core->config->get('refresh_delay');
+	$refresh_delay = get_config('refresh_delay');
 	ksort($refresh_delay);
 
-	$min_seconds_delay = $core->config->get('refresh_delay_min_seconds');
+	$min_seconds_delay = get_config('refresh_delay_min_seconds');
 
 	foreach( $active_feeds as $active_feed ) {
 

@@ -21,7 +21,7 @@ if( empty($_GET['secret']) ) {
 
 $secret = $_GET['secret'];
 
-$secret_option = $core->config->get('cron_secret');
+$secret_option = get_config('cron_secret');
 
 if( $secret != $secret_option ) {
 	$core->error( 'invalid_request', 'invalid secret', 400, false );

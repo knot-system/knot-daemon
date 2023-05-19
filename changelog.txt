@@ -3,6 +3,7 @@ v.0.1.4
 - prefer sorting by date_imported, so that items we import with a greater interval don't appear at a lower position, if another feed with higher interval gets refreshed in the meantime
 - refresh a feed at most every 60 seconds (see 'refresh_delay_min_seconds' config option)
 - shortened time delay of inactive feeds (see 'refresh_delay' in system/config.php for details)
+- get_config() helper function
 - bugfixes & enhancements
 
 

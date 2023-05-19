@@ -1,6 +1,6 @@
 <?php
 
-// update: 2023-03-29
+// update: 2023-05-19
 
 
 function request_post( $url, $headers = array() ){
@@ -50,7 +50,7 @@ function get_user_agent(){
 	global $core;
 	if( $core ) {
 		$version = $core->version();
-		$user_agent = $core->config->get('user_agent');
+		$user_agent = get_config('user_agent');
 		$user_agent .= $version;
 	} else {
 		global $abspath;

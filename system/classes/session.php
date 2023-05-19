@@ -76,7 +76,7 @@ class Session {
 
 		global $core;
 
-		$allowed_users = $core->config->get('allowed_urls');
+		$allowed_users = get_config('allowed_urls');
 
 		$cleaned_allowed_users = array_map( 'un_trailing_slash_it', $allowed_users );
 		$cleaned_allowed_users = array_map( function( $el ){
@@ -155,7 +155,7 @@ class Session {
 
 
 		$cache_hash = get_hash( $access_token );
-		$cache_lifetime = $core->config->get('auth_cache_lifetime');
+		$cache_lifetime = get_config('auth_cache_lifetime');
 		$cache = new Cache( 'indieauth', $cache_hash, true, $cache_lifetime );
 
 		$token_response = $cache->get_data();

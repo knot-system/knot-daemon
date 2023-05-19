@@ -1,6 +1,6 @@
 <?php
 
-// update: 2023-03-22
+// update: 2023-05-19
 
 
 function get_system_version( $abspath ){
@@ -128,4 +128,11 @@ function read_folder( $folderpath, $recursive = false, $return_folderpath = true
 	}
 
 	return $files;
+}
+
+
+function get_config( $option, $fallback = false ) {
+	global $core;
+
+	return $core->config->get( $option, $fallback );
 }

@@ -1,6 +1,6 @@
 <?php
 
-// update: 2023-04-28
+// update: 2023-05-19
 
 
 // NOTE: in system/classes/core.php there is also the 'refresh_cache()' function
@@ -56,7 +56,7 @@ class Cache {
 		if( $lifetime ) { // lifetime is in seconds
 			$this->lifetime = $lifetime;
 		} else {
-			$this->lifetime = $core->config->get( 'cache_lifetime' );
+			$this->lifetime = get_config( 'cache_lifetime' );
 		}
 
 		$this->cache_file_name = $this->get_file_name();

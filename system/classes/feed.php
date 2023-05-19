@@ -385,7 +385,7 @@ class Feed {
 		$updating = false;
 		if( $file->exists() ) {
 			global $core;
-			$force_refresh = $core->config->get('force_refresh_posts');
+			$force_refresh = get_config('force_refresh_posts');
 			if( ! $force_refresh ) {
 				return true;
 			}

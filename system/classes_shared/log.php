@@ -1,6 +1,6 @@
 <?php
 
-// update: 2023-04-28
+// update: 2023-05-19
 
 
 class Log {
@@ -11,7 +11,7 @@ class Log {
 
 		global $core;
 
-		if( ! $core->config->get('logging') ) return;
+		if( ! get_config('logging') ) return;
 
 		$log_filepath = $core->abspath.'log/';
 
