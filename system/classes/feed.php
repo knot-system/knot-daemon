@@ -552,6 +552,8 @@ class Feed {
 
 			$post = $this->get_post( $filepath );
 
+			if( $this->is_on_blacklist( $post ) ) continue;
+
 			$sort_id = $post['_sort_id'];
 			unset($post['_sort_id']);
 			
@@ -563,6 +565,33 @@ class Feed {
 		$this->posts = $posts;
 
 		return $posts;
+	}
+
+
+	function is_on_blacklist( $post ) {
+		global $core;
+
+		$blacklist = $core->config->get('blacklist');
+
+		if( ! $blacklist ) return false;
+
+		if( ! empty($blacklist['title']) && is_array($blacklist['title']) ) {
+			foreach( $blacklist['title'] as $search_string ) {
+				if( stripos( $post['name'], $search_string ) !== false ) {
+					return true;
+				}
+			}
+		}
+
+		if( ! empty($blacklist['content']) && is_array($blacklist['content']) ) {
+			foreach( $blacklist['content'] as $search_string ) {
+				if( stripos( $post['content']['text'], $search_string ) !== false ) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 

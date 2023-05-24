@@ -21,4 +21,11 @@ return [
 		1  => 1,    //  1 week   =>  1 hour
 	],
 	'refresh_delay_min_seconds' => 60, // refresh a feed at most every X seconds
+	'blacklist' => [ // don't show posts with these strings:
+		'title' => [
+			'[sponsor]',
+		],
+		'content' => [
+		],
+	],
 ];
