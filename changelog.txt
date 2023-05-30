@@ -1,3 +1,8 @@
+v.0.1.5
+
+- 
+
+
 v.0.1.4
 
 - prefer sorting by date_imported, so that items we import with a greater interval don't appear at a lower position, if another feed with higher interval gets refreshed in the meantime
