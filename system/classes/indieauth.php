@@ -3,7 +3,8 @@
 
 class IndieAuth {
 
-	public $request;
+	private $indieauth_metadata = NULL;
+	private $requests = [];
 
 	function __construct(){
 
@@ -24,7 +25,48 @@ class IndieAuth {
 
 		if( ! $this->url_is_valid($url) ) return false;
 
-		$body = $this->request()->set_url($url)->curl_request()->get_body();
+		if( $name != 'indieauth-metadata' && $this->indieauth_metadata === NULL ) {
+
+			$this->indieauth_metadata = false;
+
+			$indieauth_metadata = $this->discover_endpoint( 'indieauth-metadata', $url );
+			if( $indieauth_metadata ) {
+
+				$request = $this->request($indieauth_metadata);
+				$body = $request->get_body();
+
+				if( $body ) {
+					$json = json_decode($body, true);
+					if( is_array($json) ) {
+						$this->indieauth_metadata = $json;
+					}
+				}
+			}
+		}
+
+		if( $this->indieauth_metadata ) {
+			$metadata = $this->get_metadata( $name );
+			if( $metadata ) return $metadata;
+		}
+
+		$request = $this->request( $url );
+
+		$headers = $request->get_headers();
+		if( ! empty($headers['link']) ) {
+			// endpoint provided via http 'link' header
+			$links = explode(',', $headers['link']);
+			$links = array_map( 'trim', $links );
+
+			foreach( $links as $link ) {
+				if( preg_match( '/\<(.*?)\>.*?rel="'.$name.'"/i', $link, $matches ) ) {
+					return( $matches[1] );
+				}
+			}
+		}
+
+		// endpoint may be provided via <link rel=".." href=".."> metatag
+
+		$body = $request->get_body();
 
 		if( ! $body ) return false;
 
@@ -42,6 +84,15 @@ class IndieAuth {
 	}
 
 
+	function get_metadata( $endpoint ) {
+		if( ! $this->indieauth_metadata ) return false;
+
+		if( ! array_key_exists( $endpoint, $this->indieauth_metadata ) ) return false;
+
+		return $this->indieauth_metadata[$endpoint];
+	}
+
+
 	function url_is_valid( $url ) {
 
 		$url = parse_url( $url );
@@ -55,12 +106,14 @@ class IndieAuth {
 	}
 
 
-	function request(){
-		if( ! $this->request ) {
-			$this->request = new Request();
+	function request( $url ){
+
+		if( ! array_key_exists( $url, $this->requests ) ) {
+			$this->requests[$url] = new Request($url);
+			$this->requests[$url]->curl_request();
 		}
 
-		return $this->request;
+		return $this->requests[$url];
 	}
 
 	
