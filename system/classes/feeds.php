@@ -346,7 +346,10 @@ class Feeds {
 		$items = [];
 
 		foreach( $this->feeds as $feed ) {
-			$items = array_merge( $items, $feed->get_posts() );
+			$posts = $feed->get_posts();
+			if( is_array($posts) && count($posts) ) {
+				$items = array_merge( $items, $posts );
+			}
 		}
 
 		krsort($items);

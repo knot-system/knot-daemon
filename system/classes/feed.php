@@ -535,7 +535,7 @@ class Feed {
 
 	function get_posts() {
 
-		if( $this->posts ) return $posts;
+		if( $this->posts ) return $this->posts;
 
 		$posts = [];
 
