@@ -1,5 +1,6 @@
 <?php
 
+// 2023-06-02
 
 function normalize_url( $url, $fragment_allowed = true ) {
 
