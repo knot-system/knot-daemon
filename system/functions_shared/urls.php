@@ -2,6 +2,7 @@
 
 // 2023-06-02
 
+
 function normalize_url( $url, $fragment_allowed = true ) {
 
 	$url = parse_url($url);
@@ -42,7 +43,11 @@ function normalize_url( $url, $fragment_allowed = true ) {
 		}
 	}
 
-	return build_url($url);
+	$url = build_url($url);
+
+	$url = strtolower($url);
+
+	return $url;
 }
 
 
