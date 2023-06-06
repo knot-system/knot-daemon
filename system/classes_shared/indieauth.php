@@ -1,6 +1,6 @@
 <?php
 
-// 2023-06-02
+// 2023-06-06
 
 
 class IndieAuth {
@@ -93,7 +93,6 @@ class IndieAuth {
 		];
 
 		$authorization_url = $this->build_authorization_url( $authorization_endpoint, $authorization_data );
-
 
 		// the client gets redirected to the $authorization_url, which then should call the /action/redirect/ url, which in turn calls the complete() function below to finish the authorization
 
@@ -415,7 +414,7 @@ class IndieAuth {
 	}
 
 	function generate_pkce_code_verifier(){
-		return $this->generate_random_string( 32 );
+		return $this->generate_random_string( 64 );
 	}
 
 	function generate_random_string( $num_bytes ) {
@@ -431,7 +430,7 @@ class IndieAuth {
 
 	function base64_urlencode( $string ) {
 		$string = base64_encode($string);
-		$string = strstr($string, '+/', '-_');
+		$string = str_replace('+/', '-_', $string);
 		return rtrim($string, '=' );
 	}
 
