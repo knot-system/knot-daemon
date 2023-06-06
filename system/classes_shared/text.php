@@ -1,6 +1,6 @@
 <?php
 
-// update: 2023-05-19
+// update: 2023-06-06
 
 
 class Text {
@@ -18,7 +18,7 @@ class Text {
 
 
 	function cleanup( $hide_anchors = false ) {
-		return $this->remove_html_elements()->auto_a( $hide_anchors )->auto_p();
+		return $this->remove_html_elements()->fix_html()->auto_a( $hide_anchors )->auto_p();
 	}
 
 
@@ -28,6 +28,19 @@ class Text {
 		$allowed_html_elements = get_config('allowed_html_elements');
 
 		$this->content = strip_tags( $this->content, $allowed_html_elements );
+
+		return $this;
+	}
+
+
+	function fix_html() {
+
+		$html = $this->content;
+
+		// sometimes, we have HTML like this: < img src = "..." > which messes with our link detection in auto_a(), so we need to remove the extra whitspace to get <img src="...">
+		$html = preg_replace( '/(src|alt|title|href)\s+=\s+(\"|\')/mi', '$1=$2', $html );
+
+		$this->content = $html;
 
 		return $this;
 	}
@@ -152,6 +165,8 @@ class Text {
 	function get_link_preview() {
 
 		if( ! count($this->links ) ) return '';
+		
+		global $core;
 
 		$html = '<ol class="link-preview-list">
 		';
@@ -164,14 +179,14 @@ class Text {
 
 			$classes = array( 'link-preview' );
 
-			$max_age = 60*60*6; // we currently refresh links after 6 hours - TODO: finetune this value
+			$max_age = get_config('link_preview_max_age');
 
 			if( empty($link_info['last_refresh']) || time()-$link_info['last_refresh'] > $max_age ) {
 
 				$classes[] = 'link-preview-needs-refresh';
 
-				global $core;
-				if( ! isset($core->is_link_refreshing) ) {
+				$nojs_refresh = get_config('link_preview_nojs_refresh');
+				if( $nojs_refresh && ! isset($core->is_link_refreshing) ) {
 					// NOTE: we refresh only on link for every request, because this can take a few seconds,
 					// depending on the url and how fast the other server is.
 					// by default, the link refresh also happens async via js, so all the links that don't get
@@ -180,7 +195,7 @@ class Text {
 					$core->is_link_refreshing = true;
 					$link_info = $link->get_info()->get_preview();
 				}
-				
+
 			}
 
 			$html .= '			<li>
