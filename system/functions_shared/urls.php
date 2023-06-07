@@ -52,6 +52,21 @@ function normalize_url( $url, $fragment_allowed = true ) {
 
 
 function build_url( $parsed_url ) {
+
+	if( is_array($parsed_url['query']) ) {
+
+		$query = [];
+
+		foreach( $parsed_url['query'] as $query_key => $query_value ) {
+			$query_part = $query_key.'='.$query_value;
+			$query[] = $query_part;
+		}
+
+		$query = implode('&', $query);
+
+		$parsed_url['query'] = $query;
+	}
+
 	$scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
 	$host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
 	$port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
