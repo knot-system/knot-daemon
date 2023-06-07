@@ -1,6 +1,6 @@
 <?php
 
-// 2023-06-02
+// 2023-06-07
 
 
 function normalize_url( $url, $fragment_allowed = true ) {
@@ -63,4 +63,18 @@ function build_url( $parsed_url ) {
 	$fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
 
 	return "$scheme$user$pass$host$port$path$query$fragment";
+}
+
+
+function decode_formurlencoded( $string ) {
+	
+	$parts = explode( '&', $string );
+	$return = array();
+
+	foreach( $parts as $part ) {
+		$part = explode( '=', $part );
+		$return[urldecode($part[0])] = urldecode($part[1]);
+	}
+
+	return $return;
 }

@@ -176,15 +176,24 @@ class Session {
 
 		$this->token_endpoint = $token_endpoint;
 
-		$token_endpoint_request = new Request();
-		$token_verify = $token_endpoint_request->get( $token_endpoint, false, [ 'Authorization: Bearer '.$access_token ] );
+		$token_endpoint_request = new Request( $token_endpoint );
+		$token_endpoint_request->set_headers([
+			'Content-Type: application/json',
+			'Authorization: Bearer '.$access_token
+		]);
+		$token_endpoint_request->curl_request();
 
-		$token_verify = explode( '&', $token_verify );
-		$token_response = [];
-		foreach( $token_verify as $url_part ) {
-			$url_part = explode( '=', $url_part );
-			$token_response[$url_part[0]] = urldecode($url_part[1]);
+		$status_code = $token_endpoint_request->get_status_code();
+		$headers = $token_endpoint_request->get_headers();
+		$token_response = $token_endpoint_request->get_body();
+
+		if( ! empty($headers['content-type']) && $headers['content-type'] == 'application/json' ) {
+			$token_response = json_decode( $token_response, true );
+		} else {
+			// fallback to x-www-form-urlencoded
+			$token_response = decode_formurlencoded( $token_response );
 		}
+
 
 		if( isset($token_response['active']) && ! $token_response['active'] ) {
 			$core->error( 'unauthorized', 'could not verify via token endpoint (access_token responded with active=false)', null, null, $token_endpoint, $access_token, $token_verify, $token_response, $me, $url );
