@@ -2,6 +2,7 @@ v.0.1.5
 
 - allow endpoint discovery via 'indieauth-metadata'
 - allow endpoint discovery via http header
+- better general compatibility with IndieAuth
 - bugfixes & enhancements
 
 
