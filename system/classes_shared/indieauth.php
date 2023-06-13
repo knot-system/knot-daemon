@@ -1,6 +1,6 @@
 <?php
 
-// 2023-06-06
+// 2023-06-13
 
 
 class IndieAuth {
@@ -97,6 +97,10 @@ class IndieAuth {
 		// the client gets redirected to the $authorization_url, which then should call the /action/redirect/ url, which in turn calls the complete() function below to finish the authorization
 
 		return $authorization_url;
+	}
+
+	function set_absolute_url( $url ) {
+		$this->url = $url;
 	}
 
 
@@ -211,7 +215,7 @@ class IndieAuth {
 	}
 
 
-	function discover_endpoint( $name, $url ) {
+	function discover_endpoint( $name, $url, $multiple = false ) {
 
 		if( ! $this->url_is_valid($url) ) return false;
 
@@ -243,6 +247,8 @@ class IndieAuth {
 		}
 
 		$request = $this->request($url);
+		
+		$elemenst = [];
 
 		$headers = $request->get_headers();
 		if( ! empty($headers['link']) ) {
@@ -254,34 +260,58 @@ class IndieAuth {
 				if( preg_match( '/\<(.*?)\>.*?rel="'.$name.'"/i', $link, $matches ) ) {
 					$url_from_header = $matches[1];
 
-					if( $url_from_header ) {
-						$url_from_header = $this->cleanup_relative_url( $url_from_header );
-						return $url_from_header;
-					}
+					if( ! $url_from_header ) continue;
+					
+					$elements[] = $this->cleanup_relative_url( $url_from_header );
 
 				}
 			}
+
 		}
 
-		// endpoint may be provided via <link rel=".." href=".."> metatag
 
-		$body = $request->get_body();
+		if( ! count($elements) ) {
 
-		if( ! $body ) return false;
+			// endpoint may be provided via <link rel=".." href=".."> metatag
 
-		$dom = new Dom( $body );
+			$body = $request->get_body();
 
-		$endpoints = $dom->find_elements( 'link' )->filter_elements( 'rel', $name )->return_elements( 'href' );
+			if( ! $body ) return false;
 
-		if( empty($endpoints) ) return false;
+			$dom = new Dom( $body );
 
-		$url_from_link_tag = $endpoints[0];
+			$endpoints = $dom->find_elements( 'link' )->filter_elements( 'rel', $name )->return_elements( 'href' );
 
-		if( ! $url_from_link_tag ) return false;
+			if( empty($endpoints) ) return false;
 
-		$url_from_link_tag = $this->cleanup_relative_url( $url_from_link_tag );
+			$elements = [];
 
-		return $url_from_link_tag;
+			foreach( $endpoints as $endpoint ) {
+
+				$url_from_link_tag = $endpoint;
+
+				if( ! $url_from_link_tag ) continue;
+
+				$url_from_link_tag = $this->cleanup_relative_url( $url_from_link_tag );
+
+				$elements[] = $url_from_link_tag;
+
+			}
+
+		}
+
+
+		if( empty($elements) ) {
+			return false;
+		}
+
+
+		if( $multiple ) {
+			return $elements;
+		} else {
+			return $elements[0];
+		}
+
 	}
 
 
