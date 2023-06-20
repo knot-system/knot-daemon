@@ -1,6 +1,6 @@
 <?php
 
-// 2023-06-13
+// 2023-06-20
 
 
 class IndieAuth {
@@ -248,7 +248,7 @@ class IndieAuth {
 
 		$request = $this->request($url);
 		
-		$elemenst = [];
+		$elements = [];
 
 		$headers = $request->get_headers();
 		if( ! empty($headers['link']) ) {
