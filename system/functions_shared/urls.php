@@ -1,6 +1,6 @@
 <?php
 
-// 2023-06-07
+// 2023-06-20
 
 
 function normalize_url( $url, $fragment_allowed = true ) {
@@ -53,7 +53,7 @@ function normalize_url( $url, $fragment_allowed = true ) {
 
 function build_url( $parsed_url ) {
 
-	if( is_array($parsed_url['query']) ) {
+	if( ! empty($parsed_url['query']) && is_array($parsed_url['query']) ) {
 
 		$query = [];
 
