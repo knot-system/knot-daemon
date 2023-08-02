@@ -1,5 +1,7 @@
 v.0.1.6
 
+- added compatibility with homestead-control
+
 
 v.0.1.5
 
