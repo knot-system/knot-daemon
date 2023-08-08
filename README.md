@@ -1,6 +1,6 @@
 # Knot Daemon
 
-A small microsub server, which is part of a larger system called **Knot System**. You can install it as a standalone service, or use the [Knot Installer](https://github.com/knot-system/knot-installer), which also installs other modules alongside it.
+A small microsub server, which is part of a larger system called [Knot System](https://github.com/knot-system). You can install it as a standalone service, or use the [Knot Installer](https://github.com/knot-system/knot-installer), which also installs other modules alongside it.
 
 **This is an early beta version!** Some things may break, or change in the future!
 
