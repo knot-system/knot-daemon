@@ -36,7 +36,7 @@ if( ! file_exists($abspath.'config.php') ) {
 
 if( $output ) {
 	?>
-	<p>Hi. This is the first-time setup of Postamt.</p>
+	<p>Hi. This is the first-time setup of Knot Daemon.</p>
 	<p>We create some files and folders to get everything up and running.</p>
 
 	<hr>
@@ -89,7 +89,7 @@ if( $config_missing ) {
 		?>
 		<hr>
 		<form action="<?= $baseurl ?>" method="POST">
-			<p><label><strong>Allowed URLs</strong><br><small>One URL per line; this field is required</small><br><textarea name="authorized_urls" style="width: 400px; height: 100px;" required placeholder="https://www.example.com/eigenheim/"></textarea></label></p>
+			<p><label><strong>Allowed URLs</strong><br><small>One URL per line; this field is required</small><br><textarea name="authorized_urls" style="width: 400px; height: 100px;" required placeholder="https://www.example.com/knot-site/"></textarea></label></p>
 			<p><label><input type="checkbox" name="refresh_on_connect" value="true" checked> <strong>refresh on connect</strong> <small>(this makes refreshing the feeds slower, but you don't need to set up a cronjob; you can change this later via the <code>config.php</code>)</small></label></p>
 			<p><button>start installation</button></p>
 		</form>
@@ -118,7 +118,7 @@ if( ! file_exists( $abspath.'.htaccess' ) ) {
 		<?php
 	}
 
-	$content = "# BEGIN postamt\r\n<IfModule mod_rewrite.c>\r\nRewriteEngine on\r\nRewriteBase ".$rewrite_base."\r\n\r\nRewriteRule (^|/)\.(?!well-known\/) index.php [L]\r\nRewriteRule ^content/(.*)\.(txt|md|mdown)$ index.php [L]\r\nRewriteRule ^content/(.*)\.(jpg|jpeg|png)$ index.php [L]\r\nRewriteRule ^system/(.*) index.php [L]\r\nRewriteRule ^log/(.*) index.php [L]\r\nRewriteRule ^cache/(.*) index.php [L]\r\n\r\nRewriteCond %{REQUEST_FILENAME} !-d\r\nRewriteCond %{REQUEST_FILENAME} !-f\r\nRewriteRule . index.php [L]\r\n</IfModule>\r\n# END postamt\r\n";
+	$content = "# BEGIN knot-daemon\r\n<IfModule mod_rewrite.c>\r\nRewriteEngine on\r\nRewriteBase ".$rewrite_base."\r\n\r\nRewriteRule (^|/)\.(?!well-known\/) index.php [L]\r\nRewriteRule ^content/(.*)\.(txt|md|mdown)$ index.php [L]\r\nRewriteRule ^content/(.*)\.(jpg|jpeg|png)$ index.php [L]\r\nRewriteRule ^system/(.*) index.php [L]\r\nRewriteRule ^log/(.*) index.php [L]\r\nRewriteRule ^cache/(.*) index.php [L]\r\n\r\nRewriteCond %{REQUEST_FILENAME} !-d\r\nRewriteCond %{REQUEST_FILENAME} !-f\r\nRewriteRule . index.php [L]\r\n</IfModule>\r\n# END knot-daemon\r\n";
 	if( file_put_contents( $abspath.'.htaccess', $content ) === false ) {
 
 		if( $output ) {

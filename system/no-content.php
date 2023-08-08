@@ -5,4 +5,4 @@ if( ! $core ) exit;
 ?>
 <h1>Unauthorized</h1>
 <p>You cannot open this page directly. Use a microsub client to connect to this server.</p>
-<p><small><a href="https://github.com/maxhaesslein/postamt" target="_blank" rel="noopener">Postamt</a> v.<?= $core->version() ?></small></p>
+<p><small><a href="https://github.com/maxhaesslein/knot-daemon" target="_blank" rel="noopener">Knot Daemon</a> v.<?= $core->version() ?></small></p>

@@ -11,7 +11,7 @@ return [
 	'force_refresh_posts' => false, // set this to true if you want to refresh all post content when refreshing feeds, or set to false if you want to skip all existing posts, even if they changed
 	'refresh_on_connect' => true, // this will refresh all items of all feeds of a channel, if you call the 'timeline' endpoint to get the feeds. set to false if you use a cronjob, to make the system faster
 	'allowed_urls' => [], // an array with urls of allowed users ('me' parameters)
-	'user_agent' => 'maxhaesslein/postamt/', // version will be automatically appended
+	'user_agent' => 'knot/daemon/', // version will be automatically appended
 	'refresh_delay' => [ // refresh feeds, where the last item was published 'x weeks' ago only every 'y hours'
 		52 => 7*24, // ~1 year   =>  1 week
 		26 => 2*24, // ~6 months =>  2 days

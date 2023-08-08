@@ -1,6 +1,6 @@
 <?php
 
-// these options are displayed in the 'homestead-control' module
+// these options are displayed in the 'knot-control' module
 
 return [
 	'force_refresh_posts' => [

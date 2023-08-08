@@ -1,3 +1,8 @@
+v.0.2.0
+
+- renamed to 'Knot Daemon' (was 'Postamt')
+
+
 v.0.1.6
 
 - added compatibility with homestead-control

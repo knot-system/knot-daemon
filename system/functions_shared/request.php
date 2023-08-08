@@ -1,6 +1,6 @@
 <?php
 
-// update: 2023-05-19
+// update: 2023-08-08
 
 
 function request_post( $url, $headers = array() ){
@@ -55,7 +55,7 @@ function get_user_agent(){
 	} else {
 		global $abspath;
 		$version = get_system_version( $abspath );
-		$user_agent = 'maxhaesslein/updater/'.$version;
+		$user_agent = 'knot/updater/'.$version;
 	}
 
 	return $user_agent;

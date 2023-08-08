@@ -1,8 +1,8 @@
-# Postamt
+# Knot Daemon
 
-A small microsub server, which is part of a larger system called [Homestead](https://github.com/maxhaesslein/homestead). You can install it as a standalone service, or use the Homestead installer, which also installs other modules alongside it.
+A small microsub server, which is part of a larger system called **Knot System**. You can install it as a standalone service, or use the [Knot Installer](https://github.com/maxhaesslein/knot-installer), which also installs other modules alongside it.
 
-This is currently in beta stage. **Things may break, and are likely to change in the future!**
+**This is an early beta version!** Some things may break, or change in the future!
 
 ## currently implemented
 
@@ -67,7 +67,7 @@ The setup also creates some other files that are needed, like a (hidden) `.htacc
 You can now add the url as a microsub endpoint to your website, and then use a microsub client to login. To add the microsub endpoint, add something like this to your HTML \<head\>:
 
 ```html
-<link rel="microsub" href="https://www.example.com/postamt/">
+<link rel="microsub" href="https://www.example.com/knot-daemon/">
 ```
 
 ### Cronjob
@@ -83,11 +83,11 @@ Add a cronjob, and point it to the `cron.php` in the root directory. Append the 
 ```
 $ crontab -e
 
-# postamt cronjob, every hour at minute 37:
-37 */1 * * * curl -s 'https://www.example.com/postamt/cron.php?secret=…'
+# knot-daemon cronjob, every hour at minute 37:
+37 */1 * * * curl -s 'https://www.example.com/knot-daemon/cron.php?secret=…'
 ```
 
-If you use an external service, point it to the `cron.php` in your base url, and append the secret string: `https://www.example.com/postamt/cron.php?secret=…`
+If you use an external service, point it to the `cron.php` in your base url, and append the secret string: `https://www.example.com/knot-daemon/cron.php?secret=…`
 
 The recommended frequency is 1 hour. You should not use a frequency lower than 5 minutes to not overwhelm your own server or the servers of people you follow.
 
@@ -108,7 +108,7 @@ return [
 	'cron_secret' => '[a random string]',
 	'refresh_on_connect' => true, // this will refresh all items of all feeds of a channel, if you call the 'timeline' endpoint to get the feeds. set to false if you use a cronjob, to make the system faster
 	'allowed_urls' => [ // a list of 'me' URLs that are allowed to use this microsub server. every user has their own folder with their own channels and feeds
-		'https://www.example.com/eigenheim/',
+		'https://www.example.com/knot-site/',
 		'https://www.example.com/other-identity/',
 	],
 	
@@ -128,6 +128,8 @@ The loading order of the config is as follows:
 ## Updating
 
 **Important:** Before updating, backup your `config.php` and the `content/` folder. Better be safe than sorry.
+
+You can use [Knot Control](https://github.com/maxhaesslein/knot-control) to update this module automatically. Or you use the following instructions:
 
 Create a new empty file called `update` (or `update.txt`) in the root folder of your installation. Then open the website, and append `?update` to the URL to trigger the update process. **Important:** if you don't finish the update, manually delete the `update` (or `update.txt`) file (if the update process finishes, this file gets deleted automatically).
 
