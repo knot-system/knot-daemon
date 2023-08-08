@@ -2,8 +2,8 @@
 
 // this file can update the system with the latest release from github. create a empty file called 'update' or 'update.txt' in the root directory, and then add '?update' to the url, to trigger the update
 
-$api_url = 'https://api.github.com/repos/maxhaesslein/knot-daemon/releases';
-$dev_zip = 'https://github.com/maxhaesslein/knot-daemon/archive/refs/heads/main.zip';
+$api_url = 'https://api.github.com/repos/knot-system/knot-daemon/releases';
+$dev_zip = 'https://github.com/knot-system/knot-daemon/archive/refs/heads/main.zip';
 
 $step = false;
 if( ! empty($_GET['step']) ) $step = $_GET['step'];
@@ -135,7 +135,7 @@ if( $step == 'check' ) {
 
 		$zipball = $latest_release->zipball_url;
 
-		$zip_folder_name_start = 'maxhaesslein-knot-daemon-';
+		$zip_folder_name_start = 'knot-system-knot-daemon-';
 
 	} elseif( $_REQUEST['version'] == 'dev' ) {
 
